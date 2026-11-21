@@ -20,11 +20,15 @@ ready-made combination.
 
 ## 2. Soul Mark v2 (agent-ready)
 
-The same theme, built to the Baseline Rule:
+The same theme, built to the Baseline Rule. **This repo is where v2 is made.** ArtCraft gets a
+copy of the engine plus its own adapter (settings screen, CSS variables), sent once ArtCraft has
+merged v1. A preview branch on the ArtCraft fork runs the same copy, so the theme can be seen and
+screenshotted in the real app; `soul-mark/v2/scripts/compare-copy.mjs` fails if the copy drifts.
 
+- [x] **Core:** the color engine and readability guard as a framework-free TypeScript package
+      (`soul-mark/v2`), with gradients, tests and CI.
 - [ ] **Data:** every theme and preset as a JSON file following the W3C Design Tokens format, with
-      a schema.
-- [ ] **Core:** the color engine and readability guard as a framework-free TypeScript package.
+      a schema. (Started: status colors in `data/meaning-colors.json`.)
 - [ ] **CLI:** `compose`, `check`, `export` (CSS variables, JSON, Tailwind, Android), `list`,
       `encode`/`decode` theme codes; `--help`, `--json`, exit codes.
 - [ ] **CI:** tests and the readability sweep on every pull request.
@@ -34,9 +38,14 @@ The same theme, built to the Baseline Rule:
 
 ## 3. Gradients
 
-Two or three colors flowing into each other behind everything, with a direction and a strength.
-Panels stay solid, tinted from the gradient. The guard checks text against every part of the
-gradient.
+Built into v2's engine; first look reviewed by the owner on the ArtCraft preview branch.
+
+- Color 1 (the background), color 2 and an optional color 3. Color 2 never repeats color 1.
+- Quick fades for colors 2 and 3 (black, white, gray, midnight), then the full palette.
+- Top to bottom by default; an elliptical glow from the top as the other shape.
+- The page, panels, dialogs and the side menu each carry the gradient; controls stay solid.
+- The guard checks text on every color and on the blends between them.
+- Signature gradients first, led by Neon Deep.
 
 ## 4. Neon
 
