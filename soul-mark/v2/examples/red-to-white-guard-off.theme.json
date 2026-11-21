@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/theme.schema.json",
+  "name": "Red to white, guard off",
+  "theme": "gradients",
+  "seeds": {
+    "background": "#FE2712",
+    "accent": "#2D81FF",
+    "tint": 0.5,
+    "character": "soft",
+    "guard": false,
+    "color2": "#FFFFFF",
+    "shape": "vertical"
+  }
+}

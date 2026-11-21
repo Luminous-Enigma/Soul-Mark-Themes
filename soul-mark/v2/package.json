@@ -1,6 +1,6 @@
 {
   "name": "@soul-mark/core",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.2",
   "description": "Soul Mark: themes people compose from a few colors, with every text kept readable (WCAG AA).",
   "license": "MIT",
   "private": true,
@@ -9,11 +9,24 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "build": "node scripts/build.mjs",
+    "data": "npm run build && node dist/cli.js list all > data/signatures.json",
+    "test": "npm run build && vitest run",
+    "typecheck": "tsc --noEmit",
+    "mcp": "node dist/mcp.js"
   },
   "devDependencies": {
+    "@types/node": "22.20.5",
+    "ajv": "8.20.0",
+    "esbuild": "0.28.2",
     "typescript": "5.9.3",
     "vitest": "4.1.12"
+  },
+  "bin": {
+    "soul-mark": "dist/cli.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "zod": "4.6.7"
   }
 }

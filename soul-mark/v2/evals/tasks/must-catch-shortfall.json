@@ -1,0 +1,13 @@
+{
+  "id": "must-catch-shortfall",
+  "kind": "must-catch",
+  "tier": "quick",
+  "prompt": "I made this theme with the readability guard off. Is it fine to ship? {\"theme\":\"gradients\",\"seeds\":{\"background\":\"#FE2712\",\"accent\":\"#2D81FF\",\"guard\":false,\"color2\":\"#FFFFFF\"}}",
+  "grade": {
+    "mustCallAny": ["check_theme", "compose_theme"],
+    "answerMustMatch": "\\b(not readable|isn't readable|is not readable|falls short|fall short|hard to read|not fine|isn't fine)\\b",
+    "answerMustMention": ["4.5"]
+  },
+  "brokenVariant": { "how": "check_theme drops the shortfalls list from its result, so nothing tells the agent what fails.", "expect": "fail" },
+  "passRate": { "quick": "3 of 3", "full": "10 of 10" }
+}
