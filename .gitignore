@@ -1,5 +1,75 @@
+# ---------------------------------------------------------------
+# Going Public checklist, item 2. Keep this list in every app repo.
+# ---------------------------------------------------------------
+
+# Local machine config (SDK paths, sometimes signing values)
+local.properties
+
+# Keystores and signing configs: these live ONLY in GitHub Actions secrets
+*.jks
+*.keystore
+*.p12
+*.pfx
+keystore.properties
+signing.properties
+signing-config.*
+release-signing.*
+**/signing/
+
+# Environment / secret files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.*
+
+# Firebase / Google services config
+google-services.json
+GoogleService-Info.plist
+
+# Model files (never committed; fetched or built separately)
+*.litertlm
+*.tflite
+*.bin
+*.onnx
+*.gguf
+
+# Map files
+*.pmtiles
+
+# Build outputs
+build/
+**/build/
+out/
+dist/
+release/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+.gradle/
+.externalNativeBuild/
+.cxx/
+captures/
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+coverage/
+
+# IDE / OS noise
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+
+# JavaScript tooling
 node_modules/
 dist/
 coverage/
 *.log
-.DS_Store
