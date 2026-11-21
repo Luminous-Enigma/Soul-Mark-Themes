@@ -10,17 +10,18 @@ keeps text readable, so you can be as bold as you like without losing anything.
 
 ## The themes
 
-Soul Mark v1 is the theme contributed to [ArtCraft](https://github.com/storytold/artcraft-services).
+Soul Mark: Solid Tones (v1) is the theme contributed to
+[ArtCraft](https://github.com/storytold/artcraft-services).
 
-| Theme         | What it is                                                                | Status                   |
-|---------------|---------------------------------------------------------------------------|--------------------------|
-| Soul Mark v1  | Solid colors with a readability guard, exactly as contributed to ArtCraft | After ArtCraft merges it |
-| Soul Mark v2  | The same theme, agent-ready: files, CLI, CI and MCP                       | Next                     |
-| Gradients     | Colors flowing into each other, still readable                            | Planned                  |
-| Neon          | Heads-up display: glowing lines on near-black                             | Planned                  |
-| Glass         | See-through, frosted panels with clear text                               | Planned                  |
-| High contrast | Strong, clear colors for anyone who wants them                            | Planned                  |
-| Patterns      | Textures and patterns behind the interface                                | Planned                  |
+| Theme                      | What it is                                                                | Status                   |
+|----------------------------|---------------------------------------------------------------------------|--------------------------|
+| Soul Mark: Solid Tones, v1 | Solid colors with a readability guard, exactly as contributed to ArtCraft | After ArtCraft merges it |
+| Soul Mark: Solid Tones, v2 | The same theme, agent-ready: files, CLI, CI and MCP                       | In progress              |
+| Soul Mark: Gradients       | Two or three colors flowing into each other, still readable               | Built, in review         |
+| Soul Mark: Neon            | Heads-up display: glowing lines on near-black                             | Next                     |
+| Soul Mark: Glass           | Frosted, see-through backgrounds, windows and menus, with clear text      | Planned                  |
+| Soul Mark: High Contrast   | Strong, clear colors for anyone who wants them                            | Planned                  |
+| Soul Mark: Patterns        | Textures and patterns behind the interface                                | Planned                  |
 
 See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the order and what each one includes.
 
