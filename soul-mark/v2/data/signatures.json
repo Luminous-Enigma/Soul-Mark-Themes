@@ -1,0 +1,654 @@
+{
+  "$comment": "Generated from src/presets.ts by `npm run data`. Do not edit by hand; a test fails if this file is out of date.",
+  "signatureThemes": [
+    {
+      "theme": "solid-tones",
+      "name": "Paper and Cobalt",
+      "background": "#FFFFFF",
+      "accent": "#0969DA"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Deep space and Azure",
+      "background": "#0D1117",
+      "accent": "#1F6FEB"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Navy and Cerulean",
+      "background": "#011627",
+      "accent": "#219FD5"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Midnight and Teal",
+      "background": "#101B44",
+      "accent": "#1CB6BE"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Sky and Blue",
+      "background": "#BFDBF1",
+      "accent": "#2D81FF"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Deep red and Red",
+      "background": "#5D101B",
+      "accent": "#E23E57"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Deep green and Green",
+      "background": "#0C2F1C",
+      "accent": "#10B981"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Night and Blue",
+      "background": "#0B0E14",
+      "accent": "#2D81FF"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Deep blue and Light blue",
+      "background": "#0D2661",
+      "accent": "#749AFE"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Royal blue and Teal",
+      "background": "#19206A",
+      "accent": "#1CB6BE"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Deep purple and Pink",
+      "background": "#391961",
+      "accent": "#E86FA6"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Deep rose and Pink",
+      "background": "#521232",
+      "accent": "#E86FA6"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Reddish brown and Amber",
+      "background": "#441E13",
+      "accent": "#F59E0B"
+    },
+    {
+      "theme": "solid-tones",
+      "name": "Brown and Orange",
+      "background": "#34241A",
+      "accent": "#FB9902"
+    }
+  ],
+  "signatureGradients": [
+    {
+      "theme": "gradients",
+      "name": "Neon Deep",
+      "colors": [
+        "#0E1A2E",
+        "#070B14"
+      ],
+      "shape": "vertical",
+      "accent": "#00E5FF",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "Midnight and Teal",
+      "colors": [
+        "#101B44",
+        "#000000"
+      ],
+      "shape": "vertical",
+      "accent": "#1CB6BE",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "Royal blue to black",
+      "colors": [
+        "#19206A",
+        "#000000"
+      ],
+      "shape": "vertical",
+      "accent": "#1F6FEB",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "Deep red to black",
+      "colors": [
+        "#5D101B",
+        "#000000"
+      ],
+      "shape": "vertical",
+      "accent": "#E23E57",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "Deep violet to black",
+      "colors": [
+        "#500169",
+        "#000000"
+      ],
+      "shape": "vertical",
+      "accent": "#E86FA6",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "Deep green to black",
+      "colors": [
+        "#0C2F1C",
+        "#000000"
+      ],
+      "shape": "vertical",
+      "accent": "#10B981",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "Sky to white",
+      "colors": [
+        "#BFDBF1",
+        "#FFFFFF"
+      ],
+      "shape": "vertical",
+      "accent": "#0969DA",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "Rose to white",
+      "colors": [
+        "#F9CADE",
+        "#FFFFFF"
+      ],
+      "shape": "vertical",
+      "accent": "#C21460",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "Aurora",
+      "colors": [
+        "#0D2661",
+        "#0C2F1C",
+        "#0B0E14"
+      ],
+      "shape": "vertical",
+      "accent": "#1CB6BE",
+      "colorCount": 3
+    },
+    {
+      "theme": "gradients",
+      "name": "Synthwave",
+      "colors": [
+        "#391961",
+        "#521232",
+        "#0B0E14"
+      ],
+      "shape": "vertical",
+      "accent": "#E86FA6",
+      "colorCount": 3
+    },
+    {
+      "theme": "gradients",
+      "name": "Nebula",
+      "colors": [
+        "#19206A",
+        "#391961",
+        "#0B0E14"
+      ],
+      "shape": "vertical",
+      "accent": "#E86FA6",
+      "colorCount": 3
+    },
+    {
+      "theme": "gradients",
+      "name": "Ember",
+      "colors": [
+        "#5D101B",
+        "#441E13",
+        "#0B0E14"
+      ],
+      "shape": "vertical",
+      "accent": "#F59E0B",
+      "colorCount": 3
+    },
+    {
+      "theme": "gradients",
+      "name": "Twilight",
+      "colors": [
+        "#521232",
+        "#391961",
+        "#101B44"
+      ],
+      "shape": "vertical",
+      "accent": "#E86FA6",
+      "colorCount": 3
+    },
+    {
+      "theme": "gradients",
+      "name": "Event horizon",
+      "colors": [
+        "#19206A",
+        "#000000"
+      ],
+      "shape": "elliptical",
+      "accent": "#219FD5",
+      "colorCount": 2
+    }
+  ],
+  "palettes": {
+    "backgrounds": {
+      "primaries": [
+        {
+          "name": "Red",
+          "hex": "#FE2712"
+        },
+        {
+          "name": "Red-orange",
+          "hex": "#FC600A"
+        },
+        {
+          "name": "Orange",
+          "hex": "#FB9902"
+        },
+        {
+          "name": "Yellow-orange",
+          "hex": "#FCCC1A"
+        },
+        {
+          "name": "Yellow",
+          "hex": "#FEFE33"
+        },
+        {
+          "name": "Yellow-green",
+          "hex": "#B2D732"
+        },
+        {
+          "name": "Green",
+          "hex": "#66B032"
+        },
+        {
+          "name": "Blue-green",
+          "hex": "#347C98"
+        },
+        {
+          "name": "Blue",
+          "hex": "#0247FE"
+        },
+        {
+          "name": "Blue-violet",
+          "hex": "#4424D6"
+        },
+        {
+          "name": "Violet",
+          "hex": "#8601AF"
+        },
+        {
+          "name": "Red-violet",
+          "hex": "#C21460"
+        }
+      ],
+      "light": [
+        {
+          "name": "Paper",
+          "hex": "#FFFFFF"
+        },
+        {
+          "name": "Blush",
+          "hex": "#FDF2F7"
+        },
+        {
+          "name": "Rose",
+          "hex": "#F9CADE"
+        },
+        {
+          "name": "Coral",
+          "hex": "#FFCCC4"
+        },
+        {
+          "name": "Peach",
+          "hex": "#FFD8A8"
+        },
+        {
+          "name": "Butter",
+          "hex": "#FFE066"
+        },
+        {
+          "name": "Honey",
+          "hex": "#F3D588"
+        },
+        {
+          "name": "Mint",
+          "hex": "#BFE3C6"
+        },
+        {
+          "name": "Sky",
+          "hex": "#BFDBF1"
+        }
+      ],
+      "deep": [
+        {
+          "name": "ArtCraft",
+          "hex": "#121316"
+        },
+        {
+          "name": "Night",
+          "hex": "#0B0E14"
+        },
+        {
+          "name": "Deep space",
+          "hex": "#0D1117"
+        },
+        {
+          "name": "Navy",
+          "hex": "#011627"
+        },
+        {
+          "name": "Midnight blue",
+          "hex": "#101B44"
+        },
+        {
+          "name": "Deep blue",
+          "hex": "#0D2661"
+        },
+        {
+          "name": "Royal blue",
+          "hex": "#19206A"
+        },
+        {
+          "name": "Deep purple",
+          "hex": "#391961"
+        },
+        {
+          "name": "Deep rose",
+          "hex": "#521232"
+        },
+        {
+          "name": "Deep red",
+          "hex": "#5D101B"
+        },
+        {
+          "name": "Reddish brown",
+          "hex": "#441E13"
+        },
+        {
+          "name": "Brown",
+          "hex": "#34241A"
+        },
+        {
+          "name": "Deep green",
+          "hex": "#0C2F1C"
+        }
+      ],
+      "bold": [
+        {
+          "name": "Red",
+          "hex": "#E23E57"
+        },
+        {
+          "name": "Crimson",
+          "hex": "#DC143C"
+        },
+        {
+          "name": "Burnt orange",
+          "hex": "#CC5500"
+        },
+        {
+          "name": "Royal blue",
+          "hex": "#4169E1"
+        },
+        {
+          "name": "Violet",
+          "hex": "#7A4FBF"
+        },
+        {
+          "name": "Gray",
+          "hex": "#777777"
+        },
+        {
+          "name": "Emerald",
+          "hex": "#10B981"
+        },
+        {
+          "name": "Orange",
+          "hex": "#F59E0B"
+        },
+        {
+          "name": "Hot pink",
+          "hex": "#E86FA6"
+        },
+        {
+          "name": "Teal",
+          "hex": "#1CB6BE"
+        }
+      ]
+    },
+    "accents": {
+      "classic": [
+        {
+          "name": "Blue",
+          "hex": "#2D81FF"
+        },
+        {
+          "name": "Cobalt",
+          "hex": "#0969DA"
+        },
+        {
+          "name": "Azure",
+          "hex": "#1F6FEB"
+        },
+        {
+          "name": "Cerulean",
+          "hex": "#219FD5"
+        },
+        {
+          "name": "Purple",
+          "hex": "#9B4DCA"
+        },
+        {
+          "name": "Pink",
+          "hex": "#E86FA6"
+        },
+        {
+          "name": "Red",
+          "hex": "#E23E57"
+        },
+        {
+          "name": "Amber",
+          "hex": "#F59E0B"
+        },
+        {
+          "name": "Green",
+          "hex": "#10B981"
+        },
+        {
+          "name": "Teal",
+          "hex": "#1CB6BE"
+        },
+        {
+          "name": "Ink",
+          "hex": "#111111"
+        }
+      ],
+      "wheel": [
+        {
+          "name": "Red",
+          "hex": "#FE2712"
+        },
+        {
+          "name": "Red-orange",
+          "hex": "#FC600A"
+        },
+        {
+          "name": "Orange",
+          "hex": "#FB9902"
+        },
+        {
+          "name": "Yellow-orange",
+          "hex": "#FCCC1A"
+        },
+        {
+          "name": "Yellow",
+          "hex": "#FEFE33"
+        },
+        {
+          "name": "Yellow-green",
+          "hex": "#B2D732"
+        },
+        {
+          "name": "Green",
+          "hex": "#66B032"
+        },
+        {
+          "name": "Blue-green",
+          "hex": "#347C98"
+        },
+        {
+          "name": "Blue",
+          "hex": "#0247FE"
+        },
+        {
+          "name": "Blue-violet",
+          "hex": "#4424D6"
+        },
+        {
+          "name": "Violet",
+          "hex": "#8601AF"
+        },
+        {
+          "name": "Red-violet",
+          "hex": "#C21460"
+        }
+      ],
+      "light": [
+        {
+          "name": "Light red",
+          "hex": "#FE887D"
+        },
+        {
+          "name": "Light red-orange",
+          "hex": "#FDA878"
+        },
+        {
+          "name": "Light orange",
+          "hex": "#FDC774"
+        },
+        {
+          "name": "Light yellow-orange",
+          "hex": "#FDE381"
+        },
+        {
+          "name": "Light yellow",
+          "hex": "#FEFE8F"
+        },
+        {
+          "name": "Light yellow-green",
+          "hex": "#D5E98E"
+        },
+        {
+          "name": "Light green",
+          "hex": "#ABD48E"
+        },
+        {
+          "name": "Light blue-green",
+          "hex": "#8FB7C6"
+        },
+        {
+          "name": "Light blue",
+          "hex": "#749AFE"
+        },
+        {
+          "name": "Light blue-violet",
+          "hex": "#9887E8"
+        },
+        {
+          "name": "Light violet",
+          "hex": "#BC73D3"
+        },
+        {
+          "name": "Light red-violet",
+          "hex": "#DD7EA8"
+        }
+      ],
+      "deep": [
+        {
+          "name": "Deep red",
+          "hex": "#98170B"
+        },
+        {
+          "name": "Deep red-orange",
+          "hex": "#973A06"
+        },
+        {
+          "name": "Deep orange",
+          "hex": "#975C01"
+        },
+        {
+          "name": "Deep yellow-orange",
+          "hex": "#977A10"
+        },
+        {
+          "name": "Deep yellow",
+          "hex": "#98981F"
+        },
+        {
+          "name": "Deep yellow-green",
+          "hex": "#6B811E"
+        },
+        {
+          "name": "Deep green",
+          "hex": "#3D6A1E"
+        },
+        {
+          "name": "Deep blue-green",
+          "hex": "#1F4A5B"
+        },
+        {
+          "name": "Deep blue",
+          "hex": "#012B98"
+        },
+        {
+          "name": "Deep blue-violet",
+          "hex": "#291680"
+        },
+        {
+          "name": "Deep violet",
+          "hex": "#500169"
+        },
+        {
+          "name": "Deep red-violet",
+          "hex": "#740C3A"
+        }
+      ]
+    },
+    "gradientFades": [
+      {
+        "name": "Black",
+        "hex": "#000000"
+      },
+      {
+        "name": "White",
+        "hex": "#FFFFFF"
+      },
+      {
+        "name": "Gray",
+        "hex": "#4A4E55"
+      },
+      {
+        "name": "Midnight",
+        "hex": "#101B44"
+      }
+    ]
+  }
+}

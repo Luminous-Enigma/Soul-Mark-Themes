@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/theme.schema.json",
+  "name": "Aurora",
+  "theme": "gradients",
+  "seeds": {
+    "background": "#0D2661",
+    "accent": "#1CB6BE",
+    "tint": 0.5,
+    "character": "soft",
+    "guard": true,
+    "color2": "#0C2F1C",
+    "color3": "#0B0E14",
+    "shape": "vertical"
+  }
+}
