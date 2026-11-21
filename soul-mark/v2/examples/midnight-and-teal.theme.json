@@ -1,0 +1,12 @@
+{
+  "$schema": "../schema/theme.schema.json",
+  "name": "Midnight and Teal",
+  "theme": "solid-tones",
+  "seeds": {
+    "background": "#101B44",
+    "accent": "#1CB6BE",
+    "tint": 0.5,
+    "character": "soft",
+    "guard": true
+  }
+}

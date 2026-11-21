@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Luminous-Enigma/Soul-Mark-Themes/main/soul-mark/v2/schema/check-result.schema.json",
+  "title": "Soul Mark readability report",
+  "description": "What `soul-mark check` and the check_theme tool return: whether every text meets WCAG AA, at every point of a gradient.",
+  "type": "object",
+  "required": ["theme", "code", "guard", "readable", "shortfalls", "notes", "colors"],
+  "additionalProperties": false,
+  "properties": {
+    "theme": { "enum": ["Soul Mark: Solid Tones", "Soul Mark: Gradients"] },
+    "name": { "type": "string" },
+    "code": { "type": "string", "pattern": "^SM[12]-" },
+    "guard": { "type": "boolean" },
+    "readable": { "type": "boolean", "description": "True when no text falls short." },
+    "shortfalls": {
+      "type": "array",
+      "description": "Each kind of text that falls short, at its worst. Ratios are rounded down, never up.",
+      "items": {
+        "type": "object",
+        "required": ["label", "ratio", "floor"],
+        "additionalProperties": false,
+        "properties": { "label": { "type": "string" }, "ratio": { "type": "number" }, "floor": { "type": "number" } }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "seed", "chosen", "used", "message"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": { "enum": ["adjusted", "info", "warning"] },
+          "seed": { "enum": ["background", "accent", "text", "gradient"] },
+          "chosen": { "$ref": "#/$defs/hex" },
+          "used": { "$ref": "#/$defs/hex" },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "colors": {
+      "type": "object",
+      "required": ["background", "accent", "text", "panel"],
+      "additionalProperties": false,
+      "properties": {
+        "background": { "$ref": "#/$defs/hex" },
+        "accent": { "$ref": "#/$defs/hex" },
+        "text": { "$ref": "#/$defs/hex" },
+        "panel": { "$ref": "#/$defs/hex" }
+      }
+    },
+    "gradient": {
+      "type": "object",
+      "required": ["shape", "stops"],
+      "additionalProperties": false,
+      "properties": {
+        "shape": { "enum": ["vertical", "elliptical"] },
+        "stops": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "$ref": "#/$defs/hex" } }
+      }
+    }
+  },
+  "$defs": { "hex": { "type": "string", "pattern": "^#[0-9A-F]{6}$" } }
+}

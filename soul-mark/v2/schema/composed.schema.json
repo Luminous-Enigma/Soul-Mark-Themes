@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Luminous-Enigma/Soul-Mark-Themes/main/soul-mark/v2/schema/composed.schema.json",
+  "title": "Soul Mark composed theme",
+  "description": "Every color of a theme, as `soul-mark export --format json` writes it. Derived from the seeds; text colors are always readable with the guard on.",
+  "type": "object",
+  "required": ["theme", "code", "seeds", "tokens", "scheme", "textFade"],
+  "additionalProperties": false,
+  "properties": {
+    "theme": { "enum": ["Soul Mark: Solid Tones", "Soul Mark: Gradients"] },
+    "name": { "type": "string" },
+    "code": { "type": "string", "pattern": "^SM[12]-" },
+    "seeds": { "$ref": "theme.schema.json#/properties/seeds" },
+    "tokens": {
+      "type": "object",
+      "description": "The composed colors by role: background, panel, controls, sunken, text, ink, deep, the accent and its shades, and scrollbars.",
+      "required": ["background", "panel", "controls", "sunken", "text", "ink", "deep", "accent", "accent-text", "accent-line"],
+      "additionalProperties": { "type": "string", "pattern": "^#[0-9A-F]{6}$" }
+    },
+    "scheme": { "enum": ["dark", "light"], "description": "dark means light text on a dark ground." },
+    "textFade": { "type": "number", "minimum": 0.4, "maximum": 1, "description": "How see-through faded text may be; lower is stronger." },
+    "gradient": {
+      "type": "object",
+      "required": ["shape", "stops", "panelStops", "css"],
+      "additionalProperties": false,
+      "properties": {
+        "shape": { "enum": ["vertical", "elliptical"] },
+        "stops": { "type": "array", "items": { "type": "string" } },
+        "panelStops": { "type": "array", "items": { "type": "string" } },
+        "css": { "type": "string" }
+      }
+    }
+  }
+}
