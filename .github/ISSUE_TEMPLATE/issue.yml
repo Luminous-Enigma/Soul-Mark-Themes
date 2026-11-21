@@ -1,0 +1,27 @@
+name: Issue or suggestion
+description: Report a problem, or suggest a change.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not post personal information.** No photos of real letters or documents,
+        no real names, addresses, phone numbers, account numbers, or anything about a minor.
+        Use made-up examples instead. Security problems: use the private
+        "Report a security problem" link, not a public issue. See SECURITY.md.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, or what do you suggest?
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Which part (file, screen or section)?
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: This issue contains no real personal information, photos of real documents, or secrets.
+          required: true
