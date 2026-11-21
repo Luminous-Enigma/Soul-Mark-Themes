@@ -38,7 +38,10 @@ screenshotted in the real app; `soul-mark/v2/scripts/compare-copy.mjs` fails if 
 
 ## 3. Gradients
 
-Built into v2's engine; first look reviewed by the owner on the ArtCraft preview branch.
+**Its own theme, beside Soul Mark** (the owner's call: one picker for both was too crowded).
+Settings › Appearance offers three cards: ArtCraft, Soul Mark (solid colors) and Gradients. Each
+keeps its own colors, so switching between them loses nothing. Both use the v2 engine; a theme
+code says which one it belongs to (SM1 solid, SM2 gradient). Gradients starts from Neon Deep.
 
 - Color 1 (the background), color 2 and an optional color 3. Color 2 never repeats color 1.
 - Quick fades for colors 2 and 3 (black, white, gray, midnight), then the full palette.
