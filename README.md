@@ -26,10 +26,23 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the order and what each one include
 
 ## Agent-ready
 
-Everything here follows the [Agent-Ready Standard](https://github.com/Luminous-Enigma/Agent-Ready-Standard):
-each theme ships as plain theme files with a schema, a command line tool, automatic CI checks, an
-MCP server so AI assistants can make and check themes, and a skill that teaches them how. A
-person, a script and an AI can all use it.
+Everything here follows [Cornerstone](https://github.com/Luminous-Enigma/Cornerstone): each theme
+ships as plain theme files with a schema, a command line tool, automatic CI checks, an MCP server
+so AI assistants can make and check themes, and a skill that teaches them how. A person, a script
+and an AI can all use it, and agent tests prove an AI uses it correctly and safely.
+
+Every pull request runs Cornerstone's safety gates and their self-test
+([what they check](https://github.com/Luminous-Enigma/Cornerstone/blob/main/docs/GATES.md)):
+
+```bash
+bash scripts/test-gates.sh
+```
+
+```bash
+bash scripts/public-gates.sh
+```
+
+Security problems: please report them privately, as [SECURITY.md](SECURITY.md) explains.
 
 ## License
 
