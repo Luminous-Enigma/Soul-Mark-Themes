@@ -46,5 +46,9 @@ npm test
 - A new MCP tool needs an entry in `test/mcp.test.ts`'s EXPECTED, with annotations that match
   its effect. Tools that change, spend, send or delete need a person's confirmation in the app.
 - Never weaken a test to make it pass. Readability is the promise.
+- After changing dependencies, rebuild the lock file from scratch with npm 11
+  (`rm -rf node_modules package-lock.json && npx npm@11.6.2 install`), then confirm
+  `npm ci` works with Node 22's own npm 10, which CI uses. npm 10 itself fails to resolve
+  vitest 4's peer packages, and an in-place npm 11 update can leave a lock npm 10 rejects.
 - Bump the version in `package.json`, `src/cli.ts` and `src/mcp.ts` together, and add a line to
   `CHANGELOG.md`.
