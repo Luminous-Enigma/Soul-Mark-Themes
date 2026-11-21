@@ -1,7 +1,9 @@
 # Roadmap
 
-Order, as decided by the owner: Soul Mark v1, Soul Mark v2, Gradients, Neon, Glass, then the
-rest, with Patterns last.
+Order, as decided by the owner: Soul Mark: Solid Tones (v1, then v2), Soul Mark: Gradients,
+Soul Mark: Neon, Soul Mark: Glass, Soul Mark: High Contrast, then Soul Mark: Patterns last.
+
+Every theme is named "Soul Mark: <name>" wherever people see it.
 
 Every theme uses the same layout people already know from Soul Mark:
 
@@ -12,13 +14,13 @@ Every theme uses the same layout people already know from Soul Mark:
 Every theme keeps the readability promise: all text meets WCAG AA, checked by tests over every
 ready-made combination.
 
-## 1. Soul Mark v1 (frozen)
+## 1. Soul Mark: Solid Tones, v1 (frozen)
 
 - Exactly the version merged into ArtCraft, copied once it is merged, with the ArtCraft commit it
   came from written in `soul-mark/v1/SOURCE.md`.
 - Never edited afterwards. Fixes and features go into v2.
 
-## 2. Soul Mark v2 (agent-ready)
+## 2. Soul Mark: Solid Tones, v2 (agent-ready)
 
 The same theme, built to the Baseline Rule. **This repo is where v2 is made.** ArtCraft gets a
 copy of the engine plus its own adapter (settings screen, CSS variables), sent once ArtCraft has
@@ -36,10 +38,11 @@ screenshotted in the real app; `soul-mark/v2/scripts/compare-copy.mjs` fails if 
 - [ ] **Skill:** `SKILL.md` on designing a good theme with the engine.
 - [ ] **Adapters:** web (CSS variables), Tailwind, Android/Compose (from VidScripter's port).
 
-## 3. Gradients
+## 3. Soul Mark: Gradients
 
-**Its own theme, beside Soul Mark** (the owner's call: one picker for both was too crowded).
-Settings › Appearance offers three cards: ArtCraft, Soul Mark (solid colors) and Gradients. Each
+**Its own theme, beside Soul Mark: Solid Tones** (the owner's call: one picker for both was too
+crowded). Settings › Appearance offers three cards: ArtCraft, Soul Mark: Solid Tones and
+Soul Mark: Gradients. Each
 keeps its own colors, so switching between them loses nothing. Both use the v2 engine; a theme
 code says which one it belongs to (SM1 solid, SM2 gradient). Gradients starts from Neon Deep.
 
@@ -50,20 +53,20 @@ code says which one it belongs to (SM1 solid, SM2 gradient). Gradients starts fr
 - The guard checks text on every color and on the blends between them.
 - Signature gradients first, led by Neon Deep.
 
-## 4. Neon
+## 4. Soul Mark: Neon
 
-A heads-up display: near-black glass, glowing cyan, green or amber lines, soft glow on borders
+A heads-up display in the style of the Watchers app: near-black glass, glowing cyan, green or amber lines, soft glow on borders
 and buttons, a faint grid. Glow sits around text and never replaces its contrast.
 
-## 5. Glass
+## 5. Soul Mark: Glass
 
-See-through, frosted panels over a background, with clear text.
+Frosted, see-through backgrounds, windows and menus over a background, with clear text.
 
-## 6. High contrast
+## 6. Soul Mark: High Contrast
 
 Strong, clear color for people who need it and people who like it.
 
-## 7. Patterns
+## 7. Soul Mark: Patterns
 
 Textures and patterns behind the interface. Last, because keeping text readable over a pattern is
 the hardest problem here.
