@@ -62,8 +62,12 @@ code says which one it belongs to (SM1 solid, SM2 gradient). Gradients starts fr
 
 ## 4. Soul Mark: Neon
 
-A heads-up display: near-black glass, glowing cyan, green or amber lines, soft glow on borders
-and buttons, a faint grid. Glow sits around text and never replaces its contrast.
+For the futuristic digital craftsman. The grid comes from the people who build things: architects'
+blueprints, engineers' drafting tables, the floor of a 3D workspace. The neon comes from cyberpunk
+and a sci-fi engineer's holographic workshop. Near-black glass, glowing cyan, green or amber lines,
+a soft glow on borders and buttons, a faint grid. Glow sits around text and never replaces its
+contrast. The grid stays out of the way of people's work: off in editors with grids of their own,
+dimmed in the others, and gone behind any window that draws its own.
 
 - [x] **Engine** (`soul-mark/v2/src/neon.ts`), on top of Solid Tones and Gradients, which it never
       changes: a near-black page (or a top-to-bottom fade), a glow color, its strength, and a grid.
