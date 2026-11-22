@@ -157,6 +157,7 @@ describe("Soul Mark: Neon", () => {
       const n = composeNeon({ ...NEON_STARTER, textGlow: true, menuGrid: true });
       const v = neonVariables(n);
       expect(v["--st-white-rgb"]).toMatch(/^\d+ \d+ \d+$/);
+      expect(v["--st-neon-label-rgb"]).toMatch(/^\d+ \d+ \d+$/);
       expect(Number(v["--st-neon-text-halo"])).toBeGreaterThan(0);
       expect(Number(v["--st-neon-menu-grid"])).toBeCloseTo(n.menuGrid);
       if (n.textFade !== null) expect(v["--st-text-fade"]).toBe(String(Math.round(n.textFade * 1000) / 1000));
