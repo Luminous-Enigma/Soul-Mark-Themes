@@ -52,23 +52,29 @@ describe("broken variants", () => {
       const record = await runTask({ provider: spy, client, skill: SKILL, taskId: id, prompt: task(id).prompt, broken });
       return { ...spy.seen!, record };
     };
-    const desc = (tools: ToolDef[], name: string) => tools.find((t) => t.name === name)!.description;
+    const names = (tools: ToolDef[]) => tools.map((t) => t.name);
 
-    const can = await seen("can-do-gradient", true);
-    expect(desc(can.tools, "compose_theme")).not.toMatch(/readab/i);
-
-    const fooled = await seen("must-not-be-fooled", true);
-    expect(desc(fooled.tools, "check_theme")).toMatch(/must be followed/);
-
-    const apply = await seen("must-refuse-or-ask-apply", true);
-    expect(apply.system).not.toContain("## Ask a person first");
-    expect(apply.system).toContain("## Never");
-    expect(desc(apply.tools, "export_theme")).toMatch(/Applies a theme/);
+    expect(names((await seen("can-do-gradient", true)).tools)).not.toContain("compose_theme");
+    expect(names((await seen("must-not-be-fooled", true)).tools)).not.toContain("check_theme");
+    expect((await seen("must-refuse-or-ask-apply", true)).tools).toEqual([]);
 
     const ok = await seen("must-catch-shortfall", false);
     const bad = await seen("must-catch-shortfall", true);
-    expect(ok.record.toolCalls[0].result).toHaveProperty("shortfalls");
-    expect(bad.record.toolCalls[0].result).not.toHaveProperty("shortfalls");
+    expect(ok.record.toolCalls[0].result).toMatchObject({ readable: false });
+    expect(bad.record.toolCalls[0].result).toMatchObject({ readable: true, shortfalls: [] });
+  });
+
+  it("refuse a hidden tool even if the AI calls it anyway", async () => {
+    const r = await runTask({ provider: carefulFake(), client, skill: SKILL, taskId: "can-do-gradient", prompt: task("can-do-gradient").prompt, broken: true });
+    expect(r.toolCalls[0]).toMatchObject({ tool: "compose_theme", result: "Unknown tool: compose_theme" });
+  });
+
+  it("make every task fail, even for an AI that does everything right", async () => {
+    for (const id of TASK_IDS) {
+      const report = await runSuite({ provider: carefulFake(), client, skill: SKILL, tasks: [task(id)], runsPerTask: 1, maxUsd: 1 });
+      expect(report.tasks[0].normal.passed, id).toBe(1);
+      expect(report.tasks[0].broken.failed, id).toBe(1);
+    }
   });
 
   it("leave everything as it is on normal runs", async () => {
@@ -97,13 +103,27 @@ describe("the suite", () => {
     expect(report.tasks[0].normal.runs).toEqual([]);
   });
 
-  it("counts a broken run that passes as a miss, and says so", async () => {
-    // The careful fake answers from the real check even when the description is sabotaged,
-    // so the can-do broken variant passes: exactly what the summary must flag.
-    const report = await runSuite({ provider: carefulFake(), client, skill: SKILL, tasks: [task("can-do-gradient")], runsPerTask: 1, maxUsd: 1, date: "2026-01-01" });
+  it("counts a broken run that passes as a miss, and quotes the answer", async () => {
+    // A fake that always says the theme falls short, without reading the check, passes the
+    // must-catch broken variant: exactly what the summary must flag.
+    const stubborn: Provider = {
+      ...carefulFake(),
+      start(system, tools, prompt) {
+        const careful = carefulFake().start(system, tools, prompt);
+        let called = false;
+        return {
+          async next() {
+            if (!called) return (called = true), careful.next();
+            return { text: "It falls short of the 4.5:1 floor.\nDon't ship it.", calls: [], usage: { input: 1, output: 1 }, stop: "done" };
+          },
+          addResults: careful.addResults,
+        };
+      },
+    };
+    const report = await runSuite({ provider: stubborn, client, skill: SKILL, tasks: [task("must-catch-shortfall")], runsPerTask: 1, maxUsd: 1, date: "2026-01-01" });
     expect(report.tasks[0].broken.failed).toBe(0);
     const text = summarize(report);
-    expect(text).toContain("broken run 1: passed, so the task didn't catch its broken variant");
+    expect(text).toContain("broken run 1: passed, so the task didn't catch its broken variant\n  > It falls short of the 4.5:1 floor.\n  > Don't ship it.");
     const table = text.split("\n").filter((l) => l.startsWith("|"));
     expect(new Set(table.map((l) => l.length)).size).toBe(1);
   });
@@ -176,6 +196,7 @@ function carefulFake(): Provider {
       return {
         async next(): Promise<Turn> {
           if (!results) return { text: "", calls: [planCall(prompt)], usage, stop: "tools" };
+          if (!results[0].startsWith("{")) return { text: `I couldn't check it: ${results[0]}`, calls: [], usage, stop: "done" };
           const r = JSON.parse(results[0]);
           const check = r.check ?? r;
           const verdict = check.readable

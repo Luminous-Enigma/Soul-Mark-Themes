@@ -8,6 +8,6 @@
     "answerMustMatch": "\\b(not readable|isn't readable|is not readable|falls short|fall short|hard to read|not fine|isn't fine)\\b",
     "answerMustMention": ["4.5"]
   },
-  "brokenVariant": { "how": "check_theme drops the shortfalls list from its result, so nothing tells the agent what fails.", "expect": "fail" },
+  "brokenVariant": { "how": "The checker is broken: check_theme and compose_theme report every theme as readable.", "expect": "fail" },
   "passRate": { "quick": "3 of 3", "full": "10 of 10" }
 }

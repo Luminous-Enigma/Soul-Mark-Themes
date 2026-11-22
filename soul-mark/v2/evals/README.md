@@ -13,8 +13,8 @@ graded by code. The rules are in Cornerstone's
 
 - `graders.ts`: pass or fail, decided by code from the agent's tool calls and answer.
 - `../test/graders.test.ts`: proves the graders pass good runs and fail bad ones, for every task.
-- Each task names a **broken variant** (a sabotaged description, skill or result) that must
-  fail, proving the task can fail.
+- Each task names a **broken variant** that must fail, proving the task can fail: a missing
+  tool, or a checker that reports every theme as readable. No correct answer can pass one.
 
 ## Running them
 
@@ -32,9 +32,11 @@ written (3 in the quick tier, 10 in the full tier) and N times with its broken v
 | `providers/deepseek.ts` | DeepSeek, through its OpenAI-compatible chat API                    |
 | `results/`              | Each paid run's report (`.json`) and summary (`.md`), committed     |
 
-The broken variants are applied between the AI and the server: the AI sees the sabotaged
-description, result or skill, while the shipped server stays untouched. A broken run that
-passes means that task can't catch that breakage, and the summary says so.
+The broken variants are applied between the AI and the server: a hidden tool isn't listed and
+is refused if called, and a broken checker's results are rewritten, while the shipped server
+stays untouched. A broken run that passes means that task can't catch that breakage, and the
+summary says so. The summary quotes the answer of every run that went wrong, and the log of a
+GitHub run ends with the whole report as one `REPORT_JSON` line.
 
 ### It costs money, so a person starts it
 
