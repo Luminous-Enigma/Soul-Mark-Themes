@@ -46,11 +46,13 @@ npm run eval -- --provider claude --max-usd 5
 ```
 
 ```bash
-npm run eval -- --provider deepseek --max-usd 1 --price-in 0.28 --price-out 0.42
+npm run eval -- --provider deepseek --max-usd 1 --price-in 0.3 --price-out 1.2
 ```
 
-DeepSeek has no default prices: take them from DeepSeek's official pricing page on the day
-(the numbers above are only an example). Claude's list prices are in `providers/claude.ts`.
+DeepSeek has no default prices: take them from DeepSeek's official pricing page on the day,
+using the cache-miss input price and the peak rates, so the cap holds at any hour. The default
+model is `deepseek-flash`; `--model deepseek-v4-pro` runs the larger one. (On 22 Nov 2026 the
+page gave $0.30 / $1.20 for Flash and $1.32 / $3.96 for V4 Pro; check again before a run.) Claude's list prices are in `providers/claude.ts`.
 Other options: `--tier full`, `--runs <n>`, `--task <id>`, `--model <id>`, `--effort` (Claude).
 Exit codes: 0 every run as expected, 1 not, 2 bad usage or nothing ran.
 
