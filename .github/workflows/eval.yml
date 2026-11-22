@@ -21,8 +21,12 @@ on:
         description: "The most this run may spend, in US dollars"
         required: true
         type: string
+      model:
+        description: "Model id; empty for the default (claude-opus-5-5 or deepseek-flash)"
+        required: false
+        type: string
       deepseek_prices:
-        description: "DeepSeek only: input and output dollars per million tokens, e.g. 0.28 0.42"
+        description: "DeepSeek only: input (cache miss) and output dollars per million tokens, at peak, e.g. 0.3 1.2"
         required: false
         type: string
 
@@ -54,15 +58,17 @@ jobs:
           PROVIDER: ${{ inputs.provider }}
           TIER: ${{ inputs.tier }}
           MAX_USD: ${{ inputs.max_usd }}
+          MODEL: ${{ inputs.model }}
           DEEPSEEK_PRICES: ${{ inputs.deepseek_prices }}
           ANTHROPIC_API_KEY: ${{ inputs.provider == 'claude' && secrets.ANTHROPIC_API_KEY || '' }}
           DEEPSEEK_API_KEY: ${{ inputs.provider == 'deepseek' && secrets.DEEPSEEK_API_KEY || '' }}
         run: |
           set -o pipefail
           extra=()
+          if [ -n "$MODEL" ]; then extra+=(--model "$MODEL"); fi
           if [ "$PROVIDER" = deepseek ]; then
             read -r price_in price_out <<< "$DEEPSEEK_PRICES"
-            extra=(--price-in "$price_in" --price-out "$price_out")
+            extra+=(--price-in "$price_in" --price-out "$price_out")
           fi
           npm run --silent eval -- --provider "$PROVIDER" --tier "$TIER" --max-usd "$MAX_USD" "${extra[@]}" \
             | tee -a "$GITHUB_STEP_SUMMARY"
