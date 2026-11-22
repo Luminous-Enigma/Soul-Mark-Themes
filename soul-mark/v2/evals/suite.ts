@@ -125,12 +125,23 @@ export function summarize(r: Report): string {
   const misses: string[] = [];
   for (const t of r.tasks) {
     t.normal.runs.forEach((run, i) => {
-      if (run.reasons.length) misses.push(`- ${t.id}, run ${i + 1}: ${run.reasons.join("; ")}`);
+      if (run.reasons.length) misses.push(`- ${t.id}, run ${i + 1}: ${run.reasons.join("; ")}`, quote(run.answer));
     });
     t.broken.runs.forEach((run, i) => {
-      if (!run.reasons.length) misses.push(`- ${t.id}, broken run ${i + 1}: passed, so the task didn't catch its broken variant`);
+      if (!run.reasons.length) {
+        misses.push(`- ${t.id}, broken run ${i + 1}: passed, so the task didn't catch its broken variant`, quote(run.answer));
+      }
     });
   }
   if (misses.length) out.push("", "## What went wrong", "", ...misses);
   return out.join("\n") + "\n";
+}
+
+/** A run's final answer, quoted under its line in the summary, so a miss can be read. */
+function quote(answer: string): string {
+  const text = answer.trim() || "(no answer)";
+  return text
+    .split("\n")
+    .map((line) => `  > ${line}`)
+    .join("\n");
 }
