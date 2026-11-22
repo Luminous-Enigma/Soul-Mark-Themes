@@ -91,7 +91,8 @@ export async function runTask(opts: {
     record.turns = turn;
     record.usage.input += t.usage.input;
     record.usage.output += t.usage.output;
-    if (t.text.trim()) record.answer = t.text;
+    // Everything the AI wrote, in order: a person in a chat reads every message, not only the last.
+    if (t.text.trim()) record.answer = record.answer ? `${record.answer}\n\n${t.text}` : t.text;
     if (t.stop !== "tools") {
       record.stop = t.stop;
       break;
