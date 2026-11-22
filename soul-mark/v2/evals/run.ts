@@ -95,6 +95,9 @@ function save(r: Report, text: string, outDir?: string) {
   writeFileSync(new URL(`${base}.json`, dir), JSON.stringify(r, null, 2) + "\n");
   writeFileSync(new URL(`${base}.md`, dir), text);
   process.stderr.write(`Saved ${base}.json and ${base}.md\n`);
+  // The whole report, every answer included, as one line of the log, so a run on GitHub can be
+  // read back without an artifact. It holds no keys: only prompts, tool calls and answers.
+  process.stderr.write(`REPORT_JSON ${JSON.stringify(r)}\n`);
 }
 
 function parseArgs(argv: string[]) {
