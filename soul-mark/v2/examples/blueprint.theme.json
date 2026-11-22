@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema/theme.schema.json",
+  "name": "Blueprint",
+  "theme": "neon",
+  "seeds": {
+    "background": "#162F56",
+    "color2": "#03060C",
+    "accent": "#00E5FF",
+    "glow": "#00E5FF",
+    "strength": 0.6,
+    "grid": true,
+    "tint": 0.5,
+    "character": "cool"
+  }
+}

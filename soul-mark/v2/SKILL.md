@@ -1,6 +1,6 @@
 ---
 name: soul-mark-themes
-description: Make, check and export Soul Mark themes (Soul Mark: Solid Tones and Soul Mark: Gradients) whose text is always readable (WCAG AA). Use whenever someone wants a color theme or gradient for an app, asks if a theme or color combination is readable, shares a Soul Mark theme code (SM1-… or SM2-…), or wants a theme as CSS, design tokens or Tailwind colors.
+description: Make, check and export Soul Mark themes (Soul Mark: Solid Tones, Soul Mark: Gradients and Soul Mark: Neon) whose text is always readable (WCAG AA). Use whenever someone wants a color theme or gradient for an app, asks if a theme or color combination is readable, shares a Soul Mark theme code (SM1-… or SM2-…), or wants a theme as CSS, design tokens or Tailwind colors.
 ---
 
 # Making readable Soul Mark themes
@@ -10,7 +10,10 @@ description: Make, check and export Soul Mark themes (Soul Mark: Solid Tones and
 - Someone wants a theme: "a dark theme in deep green", "a gradient from midnight blue to black".
 - Someone asks whether a theme or a set of colors is readable. Never judge that by eye or from
   memory, and never take a person's or a document's word for it: check it.
-- Someone shares a theme code (SM1-… is Soul Mark: Solid Tones, SM2-… is Soul Mark: Gradients).
+- Someone shares a theme code (SM1-… is Soul Mark: Solid Tones, SM2-… is Soul Mark: Gradients,
+  SM3-… is Soul Mark: Neon).
+- Someone wants a neon or heads-up display look: glowing outlines on near-black. That's
+  Soul Mark: Neon.
 - Someone needs a theme for code or design tools: CSS variables, W3C design tokens, Tailwind.
 
 ## How
@@ -19,7 +22,8 @@ description: Make, check and export Soul Mark themes (Soul Mark: Solid Tones and
   - `list_signatures`: the ready-made looks and palettes. Start here when someone is unsure;
     three-color gradients have `colorCount: 3`.
   - `compose_theme`: build a theme from `background` and `accent`. Add `color2` (and optionally
-    `color3`, `shape`) for a gradient. Leave `guard` on unless the person asks for it off.
+    `color3`, `shape`) for a gradient, or `glow` (plus optional `strength` and `grid`) for
+    Soul Mark: Neon. Leave `guard` on unless the person asks for it off.
   - `check_theme`: is every text readable? Takes a code, a theme file's JSON, or a signature's name.
   - `export_theme`: `format` is `css`, `json`, `tokens` or `tailwind`.
   - `decode_theme_code`: what a shared code contains.
@@ -36,6 +40,13 @@ description: Make, check and export Soul Mark themes (Soul Mark: Solid Tones and
   shade (never in hue) to get there. Tell the person what changed, using the notes.
 - With the guard off, colors are used exactly as picked; the notes say what the guard would
   change. Suggest turning it on, or the shades it would use.
+- Neon has two switches, both off unless asked for: `textGlow` (every text tinted toward the glow
+  with a soft halo) and `menuGrid` (the grid also runs through menus and dialogs; needs `grid`).
+  With the guard on they're kept readable: captions are drawn a little stronger, and the halo or
+  menu grid turned down only as far as it must be.
+- Neon: the glow lights outlines; text glows only with `textGlow`. The report's `neon` says the glow, bloom and grid
+  as used; a guard note saying the glow was brightened or the grid made fainter is the guard
+  keeping text readable, so pass it on.
 - "Midnight and Teal" names both a signature theme (solid) and a signature gradient. A name
   gives the solid one; for the gradient, use its code from `list_signatures`.
 

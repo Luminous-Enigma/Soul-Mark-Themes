@@ -2,61 +2,214 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/Luminous-Enigma/Soul-Mark-Themes/main/soul-mark/v2/schema/check-result.schema.json",
   "title": "Soul Mark readability report",
-  "description": "What `soul-mark check` and the check_theme tool return: whether every text meets WCAG AA, at every point of a gradient.",
+  "description": "What `soul-mark check` and the check_theme tool return: whether every text meets WCAG AA, at every point of a gradient (and, for Soul Mark: Neon, beside the glow and on its grid).",
   "type": "object",
-  "required": ["theme", "code", "guard", "readable", "shortfalls", "notes", "colors"],
+  "required": [
+    "theme",
+    "code",
+    "guard",
+    "readable",
+    "shortfalls",
+    "notes",
+    "colors"
+  ],
   "additionalProperties": false,
   "properties": {
-    "theme": { "enum": ["Soul Mark: Solid Tones", "Soul Mark: Gradients"] },
-    "name": { "type": "string" },
-    "code": { "type": "string", "pattern": "^SM[12]-" },
-    "guard": { "type": "boolean" },
-    "readable": { "type": "boolean", "description": "True when no text falls short." },
+    "theme": {
+      "enum": [
+        "Soul Mark: Solid Tones",
+        "Soul Mark: Gradients",
+        "Soul Mark: Neon"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^SM[123]-"
+    },
+    "guard": {
+      "type": "boolean"
+    },
+    "readable": {
+      "type": "boolean",
+      "description": "True when no text falls short."
+    },
     "shortfalls": {
       "type": "array",
       "description": "Each kind of text that falls short, at its worst. Ratios are rounded down, never up.",
       "items": {
         "type": "object",
-        "required": ["label", "ratio", "floor"],
+        "required": [
+          "label",
+          "ratio",
+          "floor"
+        ],
         "additionalProperties": false,
-        "properties": { "label": { "type": "string" }, "ratio": { "type": "number" }, "floor": { "type": "number" } }
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "ratio": {
+            "type": "number"
+          },
+          "floor": {
+            "type": "number"
+          }
+        }
       }
     },
     "notes": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["kind", "seed", "chosen", "used", "message"],
+        "required": [
+          "kind",
+          "seed",
+          "chosen",
+          "used",
+          "message"
+        ],
         "additionalProperties": false,
         "properties": {
-          "kind": { "enum": ["adjusted", "info", "warning"] },
-          "seed": { "enum": ["background", "accent", "text", "gradient"] },
-          "chosen": { "$ref": "#/$defs/hex" },
-          "used": { "$ref": "#/$defs/hex" },
-          "message": { "type": "string" }
+          "kind": {
+            "enum": [
+              "adjusted",
+              "info",
+              "warning"
+            ]
+          },
+          "seed": {
+            "enum": [
+              "background",
+              "accent",
+              "text",
+              "gradient",
+              "glow",
+              "strength",
+              "grid",
+              "textGlow",
+              "menuGrid"
+            ]
+          },
+          "chosen": {
+            "type": "string",
+            "description": "A hex color, or a percentage for a Neon strength."
+          },
+          "used": {
+            "type": "string",
+            "description": "A hex color, or a percentage for a Neon strength."
+          },
+          "message": {
+            "type": "string"
+          }
         }
       }
     },
     "colors": {
       "type": "object",
-      "required": ["background", "accent", "text", "panel"],
+      "required": [
+        "background",
+        "accent",
+        "text",
+        "panel"
+      ],
       "additionalProperties": false,
       "properties": {
-        "background": { "$ref": "#/$defs/hex" },
-        "accent": { "$ref": "#/$defs/hex" },
-        "text": { "$ref": "#/$defs/hex" },
-        "panel": { "$ref": "#/$defs/hex" }
+        "background": {
+          "$ref": "#/$defs/hex"
+        },
+        "accent": {
+          "$ref": "#/$defs/hex"
+        },
+        "text": {
+          "$ref": "#/$defs/hex"
+        },
+        "panel": {
+          "$ref": "#/$defs/hex"
+        }
       }
     },
     "gradient": {
       "type": "object",
-      "required": ["shape", "stops"],
+      "required": [
+        "shape",
+        "stops"
+      ],
       "additionalProperties": false,
       "properties": {
-        "shape": { "enum": ["vertical", "elliptical"] },
-        "stops": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "$ref": "#/$defs/hex" } }
+        "shape": {
+          "enum": [
+            "vertical",
+            "elliptical"
+          ]
+        },
+        "stops": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/hex"
+          }
+        }
+      }
+    },
+    "neon": {
+      "type": "object",
+      "required": [
+        "glow",
+        "bloom",
+        "grid"
+      ],
+      "additionalProperties": false,
+      "description": "Soul Mark: Neon only: the glow as used, and how strong its bloom and grid are (0 to 1).",
+      "properties": {
+        "glow": {
+          "$ref": "#/$defs/hex"
+        },
+        "bloom": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "grid": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "text": {
+          "type": "object",
+          "required": [
+            "tint",
+            "halo"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "tint": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "halo": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "menuGrid": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
       }
     }
   },
-  "$defs": { "hex": { "type": "string", "pattern": "^#[0-9A-F]{6}$" } }
+  "$defs": {
+    "hex": {
+      "type": "string",
+      "pattern": "^#[0-9A-F]{6}$"
+    }
+  }
 }

@@ -50,6 +50,23 @@ describe("the soul-mark command", () => {
     expect(JSON.parse(cli("export", "Aurora", "--format", "tokens").out)["soul-mark"].gradient.$type).toBe("gradient");
   });
 
+  it("composes, checks, lists and round-trips Soul Mark: Neon", () => {
+    const made = cli("compose", "#070B14", "#00E5FF", "--glow", "#00E5FF", "--grid", "off", "--json");
+    expect(made.code).toBe(0);
+    const { file, check } = JSON.parse(made.out);
+    expect([file.theme, check.theme, check.code]).toEqual(["neon", "Soul Mark: Neon", "SM3-070B14-x-00E5FF-00E5FF-60-n-50-soft"]);
+    expect(cli("decode", check.code, "--json").out).toContain('"glow":"#00E5FF"');
+    expect(cli("encode", "Blueprint").out.trim()).toMatch(/^SM3-162F56-03060C-/);
+    expect(cli("check", "Green terminal").code).toBe(0);
+    expect(cli("list", "neon").out).toContain("Blueprint");
+    expect(cli("compose", "#070B14", "#00E5FF", "--glow", "#00E5FF", "--grid", "maybe").code).toBe(2);
+    expect(cli("compose", "#070B14", "#00E5FF", "--strength", "0.5").code).toBe(2);
+    const glowing = cli("compose", "#000000", "#39FF88", "--glow", "#39FF88", "--text-glow", "on", "--menu-grid", "on", "--json");
+    expect(glowing.code).toBe(0);
+    expect(JSON.parse(glowing.out).check.code).toMatch(/-t-m$/);
+    expect(cli("compose", "#000000", "#39FF88", "--glow", "#39FF88", "--text-glow", "bright").code).toBe(2);
+  });
+
   it("list gradients marks the three-color ones", () => {
     expect(cli("list", "gradients").out).toMatch(/Ember .*3 colors/);
   });
