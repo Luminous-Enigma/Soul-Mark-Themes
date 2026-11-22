@@ -85,6 +85,26 @@ describe("checking", () => {
     }
   });
 
+  it("Neon's switches: glowing text and the grid on menus are checked, reported and schema-valid", () => {
+    const on = checkTheme(themeFile(seedsFrom({ background: "#000000", accent: "#39FF88", glow: "#39FF88", textGlow: true, menuGrid: true })));
+    expect(on.readable).toBe(true);
+    expect(on.code).toMatch(/-t-m$/);
+    expect(on.neon?.text?.halo).toBeGreaterThan(0);
+    expect(on.neon?.menuGrid).toBeGreaterThan(0);
+    expect(v.check(on), JSON.stringify(v.check.errors)).toBe(true);
+    const off = checkTheme(themeFile(seedsFrom({ background: "#000000", accent: "#39FF88", glow: "#39FF88", textGlow: true, guard: false })));
+    expect(off.readable).toBe(false);
+    expect(off.shortfalls.map((s) => s.label)).toContain("Glowing text");
+    expect(() => seedsFrom({ background: "#000000", accent: "#39FF88", textGlow: true })).toThrow(/only for Soul Mark: Neon/);
+    expect(() => seedsFrom({ background: "#000000", accent: "#39FF88", glow: "#39FF88", grid: false, menuGrid: true })).toThrow(/needs grid/);
+    const file = { theme: "neon", seeds: { background: "#000000", accent: "#39FF88", glow: "#39FF88", textGlow: true, menuGrid: true } };
+    expect(v.theme(file)).toBe(true);
+    expect(v.theme({ theme: "solid-tones", seeds: { background: "#000000", accent: "#39FF88", textGlow: true } })).toBe(false);
+    const json = JSON.parse(exportTheme(parseThemeFile(file), "json"));
+    expect(v.composed(json), JSON.stringify(v.composed.errors)).toBe(true);
+    expect(json.neon.css["--st-white-rgb"]).toBeDefined();
+  });
+
   it("a Neon glow too dim to see is reported with the guard off, and fixed in shade with it on", () => {
     const seeds = { background: "#000000", accent: "#00E5FF", glow: "#003A40" };
     const off = checkTheme(themeFile(seedsFrom({ ...seeds, guard: false })));

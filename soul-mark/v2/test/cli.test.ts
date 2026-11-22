@@ -61,6 +61,10 @@ describe("the soul-mark command", () => {
     expect(cli("list", "neon").out).toContain("Blueprint");
     expect(cli("compose", "#070B14", "#00E5FF", "--glow", "#00E5FF", "--grid", "maybe").code).toBe(2);
     expect(cli("compose", "#070B14", "#00E5FF", "--strength", "0.5").code).toBe(2);
+    const glowing = cli("compose", "#000000", "#39FF88", "--glow", "#39FF88", "--text-glow", "on", "--menu-grid", "on", "--json");
+    expect(glowing.code).toBe(0);
+    expect(JSON.parse(glowing.out).check.code).toMatch(/-t-m$/);
+    expect(cli("compose", "#000000", "#39FF88", "--glow", "#39FF88", "--text-glow", "bright").code).toBe(2);
   });
 
   it("list gradients marks the three-color ones", () => {

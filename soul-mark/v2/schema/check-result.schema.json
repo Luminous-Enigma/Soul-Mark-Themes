@@ -88,7 +88,9 @@
               "gradient",
               "glow",
               "strength",
-              "grid"
+              "grid",
+              "textGlow",
+              "menuGrid"
             ]
           },
           "chosen": {
@@ -172,6 +174,31 @@
           "maximum": 1
         },
         "grid": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "text": {
+          "type": "object",
+          "required": [
+            "tint",
+            "halo"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "tint": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "halo": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "menuGrid": {
           "type": "number",
           "minimum": 0,
           "maximum": 1

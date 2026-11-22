@@ -39,7 +39,12 @@ const seedsInput = {
     .optional()
     .describe("Makes it a Soul Mark: Neon theme: the glowing outline color on panels and buttons, as in a heads-up display."),
   strength: z.number().min(0).max(1).optional().describe("Neon only: how strong the glow and grid are, 0 to 1. Default 0.6."),
-  grid: z.boolean().optional().describe("Neon only: a faint grid behind everything. Default true."),
+  grid: z.boolean().optional().describe("Neon only: a faint grid behind the page. Default true."),
+  textGlow: z
+    .boolean()
+    .optional()
+    .describe("Neon only: every text tinted toward the glow with a soft halo. The guard keeps it readable. Default false."),
+  menuGrid: z.boolean().optional().describe("Neon only: the grid also runs through menus and dialogs (needs grid). Default false."),
 };
 const themeInput = z
   .string()
@@ -60,9 +65,15 @@ const checkOutput = {
   colors: z.object({ background: z.string(), accent: z.string(), text: z.string(), panel: z.string() }),
   gradient: z.object({ shape: z.enum(["vertical", "elliptical"]), stops: z.array(z.string()) }).optional(),
   neon: z
-    .object({ glow: z.string(), bloom: z.number(), grid: z.number() })
+    .object({
+      glow: z.string(),
+      bloom: z.number(),
+      grid: z.number(),
+      text: z.object({ tint: z.number(), halo: z.number() }).optional(),
+      menuGrid: z.number().optional(),
+    })
     .optional()
-    .describe("Soul Mark: Neon only: the glow color as used, and its bloom and grid strengths as used (0 to 1)."),
+    .describe("Soul Mark: Neon only: the glow color as used, its bloom and grid strengths as used (0 to 1), and glowing text and the menu grid when on."),
 };
 
 function load(theme: string): ThemeFile {

@@ -7,6 +7,7 @@ import {
   BLOOM_MAX,
   composeNeon,
   decodeNeon,
+  glowMeasurements,
   encodeNeon,
   GRID_MAX,
   type NeonSeeds,
@@ -140,7 +141,7 @@ export function seedsFrom(raw: Record<string, unknown>): AnySeeds {
     seeds.shape = raw.shape as GradientShape;
   }
   if (raw.glow === undefined) {
-    for (const k of ["strength", "grid"]) {
+    for (const k of ["strength", "grid", "textGlow", "menuGrid"]) {
       if (raw[k] !== undefined) throw new InputError("NO_GLOW", `${k} is only for Soul Mark: Neon, which needs a glow.`);
     }
     return seeds;
@@ -163,6 +164,12 @@ function neonSeedsFrom(seeds: SoulMarkSeeds, raw: Record<string, unknown>): Neon
     if (typeof raw.grid !== "boolean") throw new InputError("BAD_GRID", "grid must be true or false.");
     neon.grid = raw.grid;
   }
+  for (const k of ["textGlow", "menuGrid"] as const) {
+    if (raw[k] === undefined) continue;
+    if (typeof raw[k] !== "boolean") throw new InputError("BAD_SWITCH", `${k} must be true or false.`);
+    if (raw[k]) neon[k] = true;
+  }
+  if (neon.menuGrid && !neon.grid) throw new InputError("NO_GRID", "menuGrid puts the grid on menus, so it needs grid on.");
   return neon;
 }
 
@@ -237,8 +244,8 @@ export interface CheckResult {
   notes: { kind: string; seed: string; chosen: string; used: string; message: string }[];
   colors: { background: string; accent: string; text: string; panel: string };
   gradient?: { shape: GradientShape; stops: string[] };
-  /** Soul Mark: Neon only: the glow as used, and how strong its bloom and grid are (0 to 1). */
-  neon?: { glow: string; bloom: number; grid: number };
+  /** Soul Mark: Neon only: the glow as used, how strong its bloom and grid are (0 to 1), glowing text and the grid on menus. */
+  neon?: { glow: string; bloom: number; grid: number; text?: { tint: number; halo: number }; menuGrid?: number };
 }
 
 /** Composes the theme and says, measured, whether every text reads (WCAG AA). */
@@ -274,7 +281,17 @@ export function checkTheme(file: ThemeFile): CheckResult {
       panel: mark.tokens.panel,
     },
     ...(mark.gradient ? { gradient: { shape: mark.gradient.shape, stops: mark.gradient.stops } } : {}),
-    ...(neon ? { neon: { glow: neon.glow, bloom: neon.bloom, grid: neon.grid } } : {}),
+    ...(neon ? { neon: neonReport(neon) } : {}),
+  };
+}
+
+function neonReport(n: SoulMarkNeon): NonNullable<CheckResult["neon"]> {
+  return {
+    glow: n.glow,
+    bloom: n.bloom,
+    grid: n.grid,
+    ...(n.text ? { text: { tint: n.text.tint, halo: n.text.halo } } : {}),
+    ...(n.menuGrid > 0 ? { menuGrid: n.menuGrid } : {}),
   };
 }
 
@@ -284,10 +301,19 @@ function neonMeasurements(n: SoulMarkNeon) {
   const outlines = pages.flatMap((t) =>
     [t.bg, t.panel].map((s) => ({ what: `glow on ${s}`, ratio: contrastRatio(n.glow, s), floor: NON_TEXT })),
   );
+  const glowing = n.text || n.menuGrid > 0
+    ? glowMeasurements(pages, n.glow, Math.max(n.bloom * BLOOM_MAX, n.grid * GRID_MAX), {
+        tint: n.text?.tint ?? 0,
+        halo: n.text?.halo ?? 0,
+        menu: n.menuGrid,
+        fade: n.textFade ?? 1,
+      })
+    : [];
   return [
     ...outlines,
     ...neonTextMeasurements(pages, n.glow, n.bloom * BLOOM_MAX),
     ...neonTextMeasurements(pages, n.glow, n.grid * GRID_MAX),
+    ...glowing,
   ];
 }
 
@@ -340,7 +366,7 @@ export function composed(file: ThemeFile, mark: SoulMark = composeSoulMark(file.
           },
         }
       : {}),
-    ...(neon ? { neon: { glow: neon.glow, bloom: neon.bloom, grid: neon.grid, css: neonVariables(neon) } } : {}),
+    ...(neon ? { neon: { ...neonReport(neon), css: neonVariables(neon) } } : {}),
   };
 }
 
