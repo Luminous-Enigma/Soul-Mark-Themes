@@ -29,14 +29,21 @@ screenshotted in the real app; `soul-mark/v2/scripts/compare-copy.mjs` fails if 
 
 - [x] **Core:** the color engine and readability guard as a framework-free TypeScript package
       (`soul-mark/v2`), with gradients, tests and CI.
-- [ ] **Data:** every theme and preset as a JSON file following the W3C Design Tokens format, with
-      a schema. (Started: status colors in `data/meaning-colors.json`.)
-- [ ] **CLI:** `compose`, `check`, `export` (CSS variables, JSON, Tailwind, Android), `list`,
-      `encode`/`decode` theme codes; `--help`, `--json`, exit codes.
-- [ ] **CI:** tests and the readability sweep on every pull request.
-- [ ] **MCP:** the same actions as tools for AI assistants.
-- [ ] **Skill:** `SKILL.md` on designing a good theme with the engine.
-- [ ] **Adapters:** web (CSS variables), Tailwind, Android/Compose (from VidScripter's port).
+- [x] **Data:** theme files with a JSON Schema (`schema/`), examples, every signature and palette
+      in `data/signatures.json`, status colors in `data/meaning-colors.json`. Export to the W3C
+      Design Tokens format with `soul-mark export --format tokens`.
+- [x] **CLI:** `soul-mark` with `compose`, `check`, `export` (CSS, JSON, design tokens, Tailwind),
+      `list`, `encode`/`decode`; `--help`, `--json`, exit codes 0/1/2.
+- [x] **CI:** typecheck, build, the CLI/MCP/schema/grader tests and the full readability sweep on
+      every pull request, plus Cornerstone's gates and OpenSSF Scorecard.
+- [x] **MCP:** five read-only tools (`list_signatures`, `compose_theme`, `check_theme`,
+      `export_theme`, `decode_theme_code`) with output schemas and true annotations.
+- [x] **Skill and agent docs:** `soul-mark/v2/SKILL.md` and `AGENTS.md`.
+- [x] **Agent tests:** four tasks (can do, must refuse or ask, must not be fooled, must catch),
+      graded by code. Not yet run against a real AI: the runner calls a paid model, so it waits
+      for the owner's approval of a budget.
+- [ ] **Adapters:** web (CSS variables) and Tailwind are done through `export`; Android/Compose
+      (from VidScripter's port) is still to come.
 
 ## 3. Soul Mark: Gradients
 
