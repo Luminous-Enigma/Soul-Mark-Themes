@@ -2,6 +2,12 @@
 
 Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
 
+## Unreleased
+
+- The agent test runner: `npm run eval` runs the agent tests against a real AI (Claude or
+  DeepSeek) through the MCP server, with each task's broken variant and a dollar cap. A
+  manual-only GitHub workflow runs it too.
+
 ## 2.0.0-alpha.2
 
 - New looks: signature theme Black and Blue; signature gradients Black to charcoal and
