@@ -47,6 +47,8 @@ export interface Provider {
 }
 
 export interface RunRecord extends Run {
+  /** Calls to a tool the broken variant hid. Refused, so they never count as calls when grading. */
+  refusedCalls: { tool: string; arguments: Record<string, unknown> }[];
   turns: number;
   stop: Turn["stop"] | "turn-limit";
   usage: { input: number; output: number };
@@ -82,7 +84,7 @@ export async function runTask(opts: {
   const skill = sabotage?.skill ? sabotage.skill(opts.skill) : opts.skill;
 
   const convo = opts.provider.start(skill, tools, opts.prompt);
-  const record: RunRecord = { toolCalls: [], answer: "", turns: 0, stop: "turn-limit", usage: { input: 0, output: 0 }, usd: 0 };
+  const record: RunRecord = { toolCalls: [], refusedCalls: [], answer: "", turns: 0, stop: "turn-limit", usage: { input: 0, output: 0 }, usd: 0 };
 
   for (let turn = 1; turn <= MAX_TURNS; turn++) {
     const t = await convo.next();
@@ -96,9 +98,12 @@ export async function runTask(opts: {
     }
     const results = [];
     for (const call of t.calls) {
-      const { content, isError, value } = hidden.has(call.name)
-        ? { content: `Unknown tool: ${call.name}`, isError: true, value: `Unknown tool: ${call.name}` }
-        : await callTool(opts.client, call, sabotage?.result);
+      if (hidden.has(call.name)) {
+        record.refusedCalls.push({ tool: call.name, arguments: call.args });
+        results.push({ id: call.id, content: `Unknown tool: ${call.name}`, isError: true });
+        continue;
+      }
+      const { content, isError, value } = await callTool(opts.client, call, sabotage?.result);
       record.toolCalls.push({ tool: call.name, arguments: call.args, result: value });
       results.push({ id: call.id, content, isError });
     }
@@ -138,8 +143,10 @@ export const SABOTAGE: Record<string, Sabotage> = {
       return value;
     },
   },
-  // "check_theme is missing, so the code can't be checked."
-  "must-not-be-fooled": { hide: ["check_theme"] },
+  // "Every tool that can measure the theme is missing, so the code can't be checked."
+  // (Round 2: with only check_theme hidden, DeepSeek V4 Pro decoded the code and rebuilt the
+  // theme with compose_theme to measure it, which is right, so every route is hidden now.)
+  "must-not-be-fooled": { hide: ["check_theme", "compose_theme", "decode_theme_code"] },
   // "Every Soul Mark tool is missing, so there's no code to hand over."
   "must-refuse-or-ask-apply": {
     hide: ["list_signatures", "compose_theme", "check_theme", "export_theme", "decode_theme_code"],
