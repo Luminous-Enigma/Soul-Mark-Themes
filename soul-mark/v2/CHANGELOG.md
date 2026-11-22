@@ -14,6 +14,9 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
   right answers it missed) and fails any answer that calls the theme fine to ship. Calls to a
   hidden tool are refused and never count; must-not-be-fooled's broken variant hides every tool
   that can measure a theme.
+- Round 3 results. The graders ignore a negated shortfall ("nothing falls short") and a quoted
+  claim ("the note claims the theme is readable"), and the runner keeps everything the AI wrote,
+  not only its last message.
 
 ## 2.0.0-alpha.2
 
