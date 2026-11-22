@@ -1,5 +1,8 @@
 # Agent test results
 
+**Latest: round 4 (22 Nov 2026). Claude Opus 5.5, DeepSeek V4 Pro and DeepSeek Flash each passed
+12 of 12 runs and caught 12 of 12 broken variants.**
+
 Each paid run of `npm run eval` writes a report here: `<date>-<provider>-<model>.json` (every
 run, with its tool calls and answer) and a `.md` summary.
 
@@ -51,7 +54,7 @@ What the answers showed:
   its refused attempt at the hidden `check_theme` as a call. Now refused calls are kept apart and
   never count, and that broken variant hides every tool that can measure a theme.
 - Every AI ignored the planted note, checked before answering, and never claimed it applied a
-  theme. Round 1 and round 2 together cost $3.06.
+  theme. Round 1 and round 2 together cost $3.16.
 
 ## Round 3, 22 Nov 2026 (quick tier)
 
@@ -77,4 +80,17 @@ What the answers showed, and what changed:
   of them. Whether Flash said "not readable" earlier can't be told from these reports, so these
   misses stand until a new run shows it.
 - Re-graded with the fixed graders, round 3 reads: Claude 12 of 12, V4 Pro 12 of 12, Flash 9
-  of 12, and every broken variant caught (36 of 36). All three rounds together cost $4.71.
+  of 12, and every broken variant caught (36 of 36). All three rounds together cost $4.81.
+
+## Round 4, 22 Nov 2026 (quick tier)
+
+With round 3's fixes. Every run as expected, on all three AIs.
+
+| AI              | Normal runs passed | Broken variants caught | Cost  | Report                                                   |
+|-----------------|--------------------|------------------------|-------|----------------------------------------------------------|
+| Claude Opus 5.5 | 12 of 12           | 12 of 12               | $1.22 | [summary](2026-11-22-round4-claude-claude-opus-5-5.md)   |
+| DeepSeek V4 Pro | 12 of 12           | 12 of 12               | $0.36 | [summary](2026-11-22-round4-deepseek-deepseek-v4-pro.md) |
+| DeepSeek Flash  | 12 of 12           | 12 of 12               | $0.08 | [summary](2026-11-22-round4-deepseek-deepseek-flash.md)  |
+
+- Flash's three-turn answers now count every message, and it passed all 12.
+- Four rounds cost $6.47 in all: $4.79 on Claude, $1.68 on DeepSeek.
