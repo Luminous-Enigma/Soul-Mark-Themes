@@ -318,6 +318,8 @@ export function neonVariables(n: SoulMarkNeon): Record<string, string> {
           "--st-white-rgb": triplet(n.text.ink),
           "--st-fg-rgb": triplet(n.text.fg),
           "--st-fg": `rgb(${triplet(n.text.fg)})`,
+          // Labels on filled buttons stay as the base theme made them.
+          "--st-neon-label-rgb": triplet(n.mark.tokens.white),
           // Three halo layers whose combined strongest point is exactly the measured halo.
           "--st-neon-text-halo": (1 - Math.pow(1 - n.text.halo, 1 / 3)).toFixed(3),
         }
