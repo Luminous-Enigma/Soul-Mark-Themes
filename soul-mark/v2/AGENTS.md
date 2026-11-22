@@ -12,6 +12,8 @@ CI checks, an MCP server, a skill and agent tests.
 | `src/contrast.ts`      | Contrast and color math                                                     |
 | `src/meaning.ts`       | Status colors, fitted without changing hue                                  |
 | `src/presets.ts`       | Every ready-made color, signature theme and signature gradient (the source) |
+| `src/neon.ts`          | Soul Mark: Neon: the glow, bloom and grid, checked; built on the engine     |
+| `src/neon-presets.ts`  | Neon's glows, near-black pages, fades and signature looks                   |
 | `src/tools.ts`         | Shared by the CLI and MCP: theme files, check, export, signature lookup     |
 | `src/cli.ts`           | The `soul-mark` command                                                     |
 | `src/mcp.ts`           | The MCP server; every tool is effect READ                                   |
