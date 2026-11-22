@@ -1,8 +1,21 @@
 // What the command line tool and the MCP server share: reading theme files and codes, checking
 // readability, exporting, and listing the ready-made looks. All of it calls the engine in
-// soul-mark.ts; nothing here decides a color on its own.
+// soul-mark.ts (and neon.ts for Soul Mark: Neon); nothing here decides a color on its own.
 
 import { contrastRatio, type Hex, isHex } from "./contrast";
+import {
+  BLOOM_MAX,
+  composeNeon,
+  decodeNeon,
+  encodeNeon,
+  GRID_MAX,
+  type NeonSeeds,
+  neonTextMeasurements,
+  neonVariables,
+  pageTokens,
+  type SoulMarkNeon,
+} from "./neon";
+import { NEON_BACKGROUNDS, NEON_FADES, NEON_GLOWS, NEON_SIGNATURES } from "./neon-presets";
 import {
   ACCENTS,
   BOLD_BACKGROUNDS,
@@ -25,6 +38,7 @@ import {
   type GradientShape,
   gradientCss,
   measureText,
+  NON_TEXT,
   type Shortfall,
   type SoulMark,
   type SoulMarkSeeds,
@@ -32,14 +46,26 @@ import {
   tokensAcrossGradient,
 } from "./soul-mark";
 
-/** The theme a file or code belongs to, as people see it: Soul Mark: Solid Tones or Soul Mark: Gradients. */
-export type ThemeKind = "solid-tones" | "gradients";
+/** The theme a file or code belongs to, as people see it: Solid Tones, Gradients or Neon. */
+export type ThemeKind = "solid-tones" | "gradients" | "neon";
+
+/** A theme's seeds: Solid Tones and Gradients share one shape; Neon adds the glow. */
+export type AnySeeds = SoulMarkSeeds | NeonSeeds;
 
 /** A theme file (schema/theme.schema.json). */
 export interface ThemeFile {
   name?: string;
   theme: ThemeKind;
-  seeds: SoulMarkSeeds;
+  seeds: AnySeeds;
+}
+
+export function isNeon(seeds: AnySeeds): seeds is NeonSeeds {
+  return "glow" in seeds && typeof (seeds as NeonSeeds).glow === "string";
+}
+
+/** The shareable code for any theme: SM1 (solid), SM2 (gradient) or SM3 (neon). */
+export function codeOf(seeds: AnySeeds): string {
+  return isNeon(seeds) ? encodeNeon(seeds) : encodeSeeds(seeds);
 }
 
 /** Bad input: a clear message and a stable code, never a crash. */
@@ -55,6 +81,7 @@ export class InputError extends Error {
 export const THEME_NAMES: Record<ThemeKind, string> = {
   "solid-tones": "Soul Mark: Solid Tones",
   gradients: "Soul Mark: Gradients",
+  neon: "Soul Mark: Neon",
 };
 
 /** "#abc", "abc", "#AABBCC" or "aabbcc" as "#AABBCC". */
@@ -71,7 +98,7 @@ export function normalizeHex(value: unknown, field: string): Hex {
  * Seeds from loose input (a theme file's seeds, CLI flags or MCP arguments), checked strictly:
  * anything that isn't a valid choice is an error, never silently replaced.
  */
-export function seedsFrom(raw: Record<string, unknown>): SoulMarkSeeds {
+export function seedsFrom(raw: Record<string, unknown>): AnySeeds {
   const seeds: SoulMarkSeeds = {
     background: normalizeHex(raw.background, "background"),
     accent: normalizeHex(raw.accent, "accent"),
@@ -112,10 +139,35 @@ export function seedsFrom(raw: Record<string, unknown>): SoulMarkSeeds {
     }
     seeds.shape = raw.shape as GradientShape;
   }
-  return seeds;
+  if (raw.glow === undefined) {
+    for (const k of ["strength", "grid"]) {
+      if (raw[k] !== undefined) throw new InputError("NO_GLOW", `${k} is only for Soul Mark: Neon, which needs a glow.`);
+    }
+    return seeds;
+  }
+  return neonSeedsFrom(seeds, raw);
 }
 
-export function kindOf(seeds: SoulMarkSeeds): ThemeKind {
+/** The Neon part of the seeds: the glow, its strength and the grid. A Neon fade has two colors. */
+function neonSeedsFrom(seeds: SoulMarkSeeds, raw: Record<string, unknown>): NeonSeeds {
+  if (seeds.color3 !== undefined || raw.shape === "elliptical") {
+    throw new InputError("NEON_FADE", "A Soul Mark: Neon fade runs top to bottom with two colors: no color3 or elliptical shape.");
+  }
+  const neon: NeonSeeds = { ...seeds, glow: normalizeHex(raw.glow, "glow"), strength: 0.6, grid: true };
+  if (raw.strength !== undefined) {
+    const v = Number(raw.strength);
+    if (!Number.isFinite(v) || v < 0 || v > 1) throw new InputError("BAD_STRENGTH", "strength must be a number from 0 to 1.");
+    neon.strength = v;
+  }
+  if (raw.grid !== undefined) {
+    if (typeof raw.grid !== "boolean") throw new InputError("BAD_GRID", "grid must be true or false.");
+    neon.grid = raw.grid;
+  }
+  return neon;
+}
+
+export function kindOf(seeds: AnySeeds): ThemeKind {
+  if (isNeon(seeds)) return "neon";
   return seeds.color2 ? "gradients" : "solid-tones";
 }
 
@@ -125,17 +177,21 @@ export function parseThemeFile(data: unknown): ThemeFile {
     throw new InputError("BAD_FILE", "A theme file is a JSON object with \"theme\" and \"seeds\".");
   }
   const d = data as Record<string, unknown>;
-  if (d.theme !== "solid-tones" && d.theme !== "gradients") {
-    throw new InputError("BAD_FILE", '"theme" must be "solid-tones" or "gradients".');
+  if (d.theme !== "solid-tones" && d.theme !== "gradients" && d.theme !== "neon") {
+    throw new InputError("BAD_FILE", '"theme" must be "solid-tones", "gradients" or "neon".');
   }
   if (!d.seeds || typeof d.seeds !== "object") throw new InputError("BAD_FILE", '"seeds" is missing.');
   const seeds = seedsFrom(d.seeds as Record<string, unknown>);
   if (kindOf(seeds) !== d.theme) {
     throw new InputError(
       "THEME_MISMATCH",
-      d.theme === "gradients"
-        ? 'A "gradients" theme needs a color2.'
-        : 'A "solid-tones" theme has no color2; use "gradients" for a gradient.',
+      d.theme === "neon"
+        ? 'A "neon" theme needs a glow.'
+        : kindOf(seeds) === "neon"
+          ? 'Only a "neon" theme has a glow.'
+          : d.theme === "gradients"
+            ? 'A "gradients" theme needs a color2.'
+            : 'A "solid-tones" theme has no color2; use "gradients" for a gradient.',
     );
   }
   if (d.name !== undefined && typeof d.name !== "string") throw new InputError("BAD_FILE", '"name" must be text.');
@@ -145,6 +201,11 @@ export function parseThemeFile(data: unknown): ThemeFile {
 /** A theme from text that is either a theme code (SM1-… or SM2-…) or a theme file's JSON. */
 export function themeFromText(text: string): ThemeFile {
   const t = text.trim();
+  if (/^SM3-/i.test(t)) {
+    const seeds = decodeNeon(t);
+    if (!seeds) throw new InputError("BAD_CODE", `${JSON.stringify(t)} is not a Soul Mark theme code.`);
+    return { theme: "neon", seeds };
+  }
   if (/^SM[12]-/i.test(t)) {
     const seeds = decodeSeeds(t);
     if (!seeds) throw new InputError("BAD_CODE", `${JSON.stringify(t)} is not a Soul Mark theme code.`);
@@ -154,12 +215,12 @@ export function themeFromText(text: string): ThemeFile {
   try {
     data = JSON.parse(t);
   } catch {
-    throw new InputError("BAD_INPUT", "Expected a theme code (SM1-… or SM2-…) or a theme file's JSON.");
+    throw new InputError("BAD_INPUT", "Expected a theme code (SM1-…, SM2-… or SM3-…) or a theme file's JSON.");
   }
   return parseThemeFile(data);
 }
 
-export function themeFile(seeds: SoulMarkSeeds, name?: string): ThemeFile {
+export function themeFile(seeds: AnySeeds, name?: string): ThemeFile {
   return { ...(name ? { name } : {}), theme: kindOf(seeds), seeds };
 }
 
@@ -176,28 +237,36 @@ export interface CheckResult {
   notes: { kind: string; seed: string; chosen: string; used: string; message: string }[];
   colors: { background: string; accent: string; text: string; panel: string };
   gradient?: { shape: GradientShape; stops: string[] };
+  /** Soul Mark: Neon only: the glow as used, and how strong its bloom and grid are (0 to 1). */
+  neon?: { glow: string; bloom: number; grid: number };
 }
 
 /** Composes the theme and says, measured, whether every text reads (WCAG AA). */
 export function checkTheme(file: ThemeFile): CheckResult {
-  const mark = composeSoulMark(file.seeds);
-  // Measured again here, at every point of a gradient, rather than trusted.
-  const failures = tokensAcrossGradient(mark).flatMap((t) =>
-    measureText(t).filter((m) => m.ratio < m.floor - 1e-9),
-  );
-  const shortfalls = mark.shortfalls.length
-    ? mark.shortfalls
-    : failures.length
-      ? [worst(failures)]
-      : [];
+  const neon = isNeon(file.seeds) ? composeNeon(file.seeds) : undefined;
+  const mark = neon ? neon.mark : composeSoulMark(file.seeds);
+  // Measured again here, at every point of a gradient (and beside Neon's glow and on its grid),
+  // rather than trusted.
+  const failures = [
+    ...tokensAcrossGradient(mark).flatMap((t) => measureText(t)),
+    ...(neon ? neonMeasurements(neon) : []),
+  ].filter((m) => m.ratio < m.floor - 1e-9);
+  const reported = neon ? neon.shortfalls : mark.shortfalls;
+  const shortfalls = reported.length ? reported : failures.length ? [worst(failures)] : [];
   return {
     theme: THEME_NAMES[file.theme],
     ...(file.name ? { name: file.name } : {}),
-    code: encodeSeeds(file.seeds),
+    code: codeOf(file.seeds),
     guard: file.seeds.guard !== false,
     readable: shortfalls.length === 0,
     shortfalls: shortfalls.map((s) => ({ ...s, ratio: round2(s.ratio) })),
-    notes: mark.notes.map((n) => ({ kind: n.kind, seed: n.seed, chosen: n.chosen, used: n.used, message: n.message })),
+    notes: [...mark.notes, ...(neon?.notes ?? [])].map((n) => ({
+      kind: n.kind,
+      seed: n.seed,
+      chosen: n.chosen,
+      used: n.used,
+      message: n.message,
+    })),
     colors: {
       background: mark.tokens.bg,
       accent: mark.tokens.accent,
@@ -205,7 +274,21 @@ export function checkTheme(file: ThemeFile): CheckResult {
       panel: mark.tokens.panel,
     },
     ...(mark.gradient ? { gradient: { shape: mark.gradient.shape, stops: mark.gradient.stops } } : {}),
+    ...(neon ? { neon: { glow: neon.glow, bloom: neon.bloom, grid: neon.grid } } : {}),
   };
+}
+
+/** Neon's own measurements: the glow against what it outlines, and text beside the bloom and on the grid. */
+function neonMeasurements(n: SoulMarkNeon) {
+  const pages = pageTokens(n.mark);
+  const outlines = pages.flatMap((t) =>
+    [t.bg, t.panel].map((s) => ({ what: `glow on ${s}`, ratio: contrastRatio(n.glow, s), floor: NON_TEXT })),
+  );
+  return [
+    ...outlines,
+    ...neonTextMeasurements(pages, n.glow, n.bloom * BLOOM_MAX),
+    ...neonTextMeasurements(pages, n.glow, n.grid * GRID_MAX),
+  ];
 }
 
 function worst(ms: { what: string; ratio: number; floor: number }[]): Shortfall {
@@ -220,16 +303,17 @@ export const EXPORT_FORMATS: ExportFormat[] = ["css", "json", "tokens", "tailwin
 
 /** The theme in a format an app or design tool can use. */
 export function exportTheme(file: ThemeFile, format: ExportFormat): string {
-  const mark = composeSoulMark(file.seeds);
+  const neon = isNeon(file.seeds) ? composeNeon(file.seeds) : undefined;
+  const mark = neon ? neon.mark : composeSoulMark(file.seeds);
   switch (format) {
     case "css":
-      return cssText(mark);
+      return cssText(mark, neon);
     case "json":
       return JSON.stringify(composed(file, mark), null, 2);
     case "tokens":
-      return JSON.stringify(designTokens(file, mark), null, 2);
+      return JSON.stringify(designTokens(file, mark, neon), null, 2);
     case "tailwind":
-      return JSON.stringify(tailwindColors(mark), null, 2);
+      return JSON.stringify(tailwindColors(mark, neon), null, 2);
     default:
       throw new InputError("BAD_FORMAT", `format must be one of ${EXPORT_FORMATS.join(", ")}.`);
   }
@@ -237,10 +321,11 @@ export function exportTheme(file: ThemeFile, format: ExportFormat): string {
 
 /** The composed theme (schema/composed.schema.json). */
 export function composed(file: ThemeFile, mark: SoulMark = composeSoulMark(file.seeds)) {
+  const neon = isNeon(file.seeds) ? composeNeon(file.seeds) : undefined;
   return {
     theme: THEME_NAMES[file.theme],
     ...(file.name ? { name: file.name } : {}),
-    code: encodeSeeds(file.seeds),
+    code: codeOf(file.seeds),
     seeds: file.seeds,
     tokens: tokenColors(mark.tokens),
     scheme: mark.tokens.scheme,
@@ -255,6 +340,7 @@ export function composed(file: ThemeFile, mark: SoulMark = composeSoulMark(file.
           },
         }
       : {}),
+    ...(neon ? { neon: { glow: neon.glow, bloom: neon.bloom, grid: neon.grid, css: neonVariables(neon) } } : {}),
   };
 }
 
@@ -282,22 +368,25 @@ function tokenColors(t: SoulMarkTokens): Record<string, string> {
   return Object.fromEntries(TOKEN_NAMES.map(([k, name]) => [name, t[k] as string]));
 }
 
-function cssText(mark: SoulMark): string {
-  const vars = cssVariables(mark);
+function cssText(mark: SoulMark, neon?: SoulMarkNeon): string {
+  const vars = { ...cssVariables(mark), ...(neon ? neonVariables(neon) : {}) };
   return `:root {\n${Object.entries(vars)
     .map(([k, v]) => `  ${k}: ${v};`)
     .join("\n")}\n}\n`;
 }
 
 /** W3C Design Tokens (Community Group format): colors, and the gradient as a gradient token. */
-function designTokens(file: ThemeFile, mark: SoulMark) {
+function designTokens(file: ThemeFile, mark: SoulMark, neon?: SoulMarkNeon) {
   const colors = Object.fromEntries(
-    Object.entries(tokenColors(mark.tokens)).map(([name, hex]) => [name, { $type: "color", $value: hex }]),
+    Object.entries({ ...tokenColors(mark.tokens), ...(neon ? { glow: neon.glow } : {}) }).map(([name, hex]) => [
+      name,
+      { $type: "color", $value: hex },
+    ]),
   );
   const g = mark.gradient;
   return {
     "soul-mark": {
-      $description: `${THEME_NAMES[file.theme]}${file.name ? `: ${file.name}` : ""}, theme code ${encodeSeeds(file.seeds)}`,
+      $description: `${THEME_NAMES[file.theme]}${file.name ? `: ${file.name}` : ""}, theme code ${codeOf(file.seeds)}`,
       ...colors,
       ...(g
         ? {
@@ -313,9 +402,9 @@ function designTokens(file: ThemeFile, mark: SoulMark) {
 }
 
 /** Colors for a Tailwind config's theme.extend (and the gradient as a background image). */
-function tailwindColors(mark: SoulMark) {
+function tailwindColors(mark: SoulMark, neon?: SoulMarkNeon) {
   return {
-    colors: { "soul-mark": tokenColors(mark.tokens) },
+    colors: { "soul-mark": { ...tokenColors(mark.tokens), ...(neon ? { glow: neon.glow } : {}) } },
     ...(mark.gradient
       ? { backgroundImage: { "soul-mark-gradient": gradientCss(mark.gradient.shape, mark.gradient.stops) } }
       : {}),
@@ -330,6 +419,7 @@ export function signaturesData() {
       "Generated from src/presets.ts by `npm run data`. Do not edit by hand; a test fails if this file is out of date.",
     signatureThemes: SIGNATURE_THEMES.map((t) => ({ theme: "solid-tones", ...t })),
     signatureGradients: SIGNATURE_GRADIENTS.map((g) => ({ theme: "gradients", ...g, colorCount: g.colors.length })),
+    signatureNeon: NEON_SIGNATURES.map(({ name, ...seeds }) => ({ theme: "neon", name, code: encodeNeon(seeds), ...seeds })),
     palettes: {
       backgrounds: {
         primaries: rows(PRIMARY_BACKGROUNDS),
@@ -339,6 +429,11 @@ export function signaturesData() {
       },
       accents: { classic: rows(ACCENTS), wheel: rows(WHEEL), light: rows(WHEEL_LIGHT), deep: rows(WHEEL_DEEP) },
       gradientFades: rows(GRADIENT_FADES),
+      neon: {
+        glows: rows(NEON_GLOWS),
+        backgrounds: rows(NEON_BACKGROUNDS),
+        fades: NEON_FADES.map(([name, top, bottom]) => ({ name, colors: [top, bottom] })),
+      },
     },
   };
 }
@@ -354,6 +449,11 @@ export function signatureByName(name: string): ThemeFile | null {
       seedsFrom({ background: g.colors[0], color2: g.colors[1], color3: g.colors[2], shape: g.shape, accent: g.accent }),
       g.name,
     );
+  }
+  const n = NEON_SIGNATURES.find((s) => s.name.toLowerCase() === key);
+  if (n) {
+    const { name: _name, shape: _shape, ...seeds } = n;
+    return themeFile(seedsFrom({ ...seeds, ...(seeds.color2 ? {} : { color2: undefined }) }), n.name);
   }
   return null;
 }

@@ -275,6 +275,126 @@
       "colorCount": 2
     }
   ],
+  "signatureNeon": [
+    {
+      "theme": "neon",
+      "name": "Watchers HUD",
+      "code": "SM3-162F56-03060C-00E5FF-00E5FF-60-g-50-cool",
+      "background": "#162F56",
+      "accent": "#00E5FF",
+      "glow": "#00E5FF",
+      "strength": 0.6,
+      "grid": true,
+      "tint": 0.5,
+      "character": "cool",
+      "guard": true,
+      "color2": "#03060C"
+    },
+    {
+      "theme": "neon",
+      "name": "Workshop",
+      "code": "SM3-03060C-x-FFB020-00E5FF-60-g-50-cool",
+      "background": "#03060C",
+      "accent": "#FFB020",
+      "glow": "#00E5FF",
+      "strength": 0.6,
+      "grid": true,
+      "tint": 0.5,
+      "character": "cool",
+      "guard": true
+    },
+    {
+      "theme": "neon",
+      "name": "Green terminal",
+      "code": "SM3-000000-x-39FF88-39FF88-60-g-50-cool",
+      "background": "#000000",
+      "accent": "#39FF88",
+      "glow": "#39FF88",
+      "strength": 0.6,
+      "grid": true,
+      "tint": 0.5,
+      "character": "cool",
+      "guard": true
+    },
+    {
+      "theme": "neon",
+      "name": "Amber console",
+      "code": "SM3-0B0E14-x-FFB020-FFB020-60-n-50-cool",
+      "background": "#0B0E14",
+      "accent": "#FFB020",
+      "glow": "#FFB020",
+      "strength": 0.6,
+      "grid": false,
+      "tint": 0.5,
+      "character": "cool",
+      "guard": true
+    },
+    {
+      "theme": "neon",
+      "name": "Synth",
+      "code": "SM3-0D1117-x-9B6BFF-FF2BD6-60-g-50-cool",
+      "background": "#0D1117",
+      "accent": "#9B6BFF",
+      "glow": "#FF2BD6",
+      "strength": 0.6,
+      "grid": true,
+      "tint": 0.5,
+      "character": "cool",
+      "guard": true
+    },
+    {
+      "theme": "neon",
+      "name": "Violet night",
+      "code": "SM3-101B44-x-FF2BD6-9B6BFF-60-g-50-cool",
+      "background": "#101B44",
+      "accent": "#FF2BD6",
+      "glow": "#9B6BFF",
+      "strength": 0.6,
+      "grid": true,
+      "tint": 0.5,
+      "character": "cool",
+      "guard": true
+    },
+    {
+      "theme": "neon",
+      "name": "Lime radar",
+      "code": "SM3-070B14-x-B6FF3B-B6FF3B-60-g-50-cool",
+      "background": "#070B14",
+      "accent": "#B6FF3B",
+      "glow": "#B6FF3B",
+      "strength": 0.6,
+      "grid": true,
+      "tint": 0.5,
+      "character": "cool",
+      "guard": true
+    },
+    {
+      "theme": "neon",
+      "name": "Red alert",
+      "code": "SM3-000000-x-FF4D6A-FF4D6A-60-n-50-cool",
+      "background": "#000000",
+      "accent": "#FF4D6A",
+      "glow": "#FF4D6A",
+      "strength": 0.6,
+      "grid": false,
+      "tint": 0.5,
+      "character": "cool",
+      "guard": true
+    },
+    {
+      "theme": "neon",
+      "name": "Quiet void",
+      "code": "SM3-000000-x-00E5FF-00E5FF-30-n-50-cool",
+      "background": "#000000",
+      "accent": "#00E5FF",
+      "glow": "#00E5FF",
+      "strength": 0.3,
+      "grid": false,
+      "tint": 0.5,
+      "character": "cool",
+      "guard": true
+    }
+  ],
   "palettes": {
     "backgrounds": {
       "primaries": [
@@ -689,6 +809,80 @@
         "name": "Silver",
         "hex": "#D2D2D2"
       }
-    ]
+    ],
+    "neon": {
+      "glows": [
+        {
+          "name": "Cyan",
+          "hex": "#00E5FF"
+        },
+        {
+          "name": "Green",
+          "hex": "#39FF88"
+        },
+        {
+          "name": "Amber",
+          "hex": "#FFB020"
+        },
+        {
+          "name": "Magenta",
+          "hex": "#FF2BD6"
+        },
+        {
+          "name": "Violet",
+          "hex": "#9B6BFF"
+        },
+        {
+          "name": "Lime",
+          "hex": "#B6FF3B"
+        },
+        {
+          "name": "Red",
+          "hex": "#FF4D6A"
+        }
+      ],
+      "backgrounds": [
+        {
+          "name": "Void",
+          "hex": "#000000"
+        },
+        {
+          "name": "Deep",
+          "hex": "#03060C"
+        },
+        {
+          "name": "Glass",
+          "hex": "#070B14"
+        },
+        {
+          "name": "Night",
+          "hex": "#0B0E14"
+        },
+        {
+          "name": "Deep space",
+          "hex": "#0D1117"
+        },
+        {
+          "name": "Midnight",
+          "hex": "#101B44"
+        }
+      ],
+      "fades": [
+        {
+          "name": "Watchers screen",
+          "colors": [
+            "#162F56",
+            "#03060C"
+          ]
+        },
+        {
+          "name": "Midnight to void",
+          "colors": [
+            "#101B44",
+            "#000000"
+          ]
+        }
+      ]
+    }
   }
 }

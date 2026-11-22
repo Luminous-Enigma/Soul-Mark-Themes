@@ -65,6 +65,17 @@ code says which one it belongs to (SM1 solid, SM2 gradient). Gradients starts fr
 A heads-up display in the style of the Watchers app: near-black glass, glowing cyan, green or amber lines, soft glow on borders
 and buttons, a faint grid. Glow sits around text and never replaces its contrast.
 
+- [x] **Engine** (`soul-mark/v2/src/neon.ts`), on top of Solid Tones and Gradients, which it never
+      changes: a near-black page (or a top-to-bottom fade), a glow color, its strength, and a grid.
+- [x] **Readability:** the glow must stand out from the page and panels (3:1); text is measured
+      beside the glow's bloom and on a grid line. The guard moves the glow only in shade and turns
+      the bloom and grid down; with it off, what falls short is said. 2,352 combinations tested.
+- [x] **Signature looks** from the Watchers palette, led by Watchers HUD; SM3 theme codes.
+- [x] **Agent-ready:** theme files, the CLI (`--glow`, `--strength`, `--grid`), the MCP tools and
+      the schemas all take Neon.
+- [ ] **In ArtCraft:** a fourth card, the glow on panels and buttons, and the grid; screenshots
+      for the owner's review.
+
 ## 5. Soul Mark: Glass
 
 Frosted, see-through backgrounds, windows and menus over a background, with clear text.
