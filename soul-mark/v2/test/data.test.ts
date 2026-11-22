@@ -8,6 +8,8 @@ import {
   signatureByName,
   signaturesData,
   themeFromText,
+  seedsFrom,
+  themeFile,
 } from "../src/tools";
 import { here, readJson, validators } from "./helpers";
 
@@ -74,6 +76,43 @@ describe("checking", () => {
     }
   });
 
+  it("every Soul Mark: Neon signature is readable, with its glow and grid as picked", () => {
+    for (const n of signaturesData().signatureNeon) {
+      const r = checkTheme(signatureByName(n.name)!);
+      expect([n.name, r.theme, r.readable, r.code]).toEqual([n.name, "Soul Mark: Neon", true, n.code]);
+      expect(r.neon).toEqual({ glow: n.glow, bloom: n.strength, grid: n.grid ? n.strength : 0 });
+      expect(v.check(r), JSON.stringify(v.check.errors)).toBe(true);
+    }
+  });
+
+  it("a Neon glow too dim to see is reported with the guard off, and fixed in shade with it on", () => {
+    const seeds = { background: "#000000", accent: "#00E5FF", glow: "#003A40" };
+    const off = checkTheme(themeFile(seedsFrom({ ...seeds, guard: false })));
+    expect(off.readable).toBe(false);
+    expect(off.shortfalls.map((s) => s.label)).toContain("Neon outlines");
+    const on = checkTheme(themeFile(seedsFrom(seeds)));
+    expect(on.readable).toBe(true);
+    expect(on.notes.map((n) => n.seed)).toContain("glow");
+    expect(v.check(on), JSON.stringify(v.check.errors)).toBe(true);
+  });
+
+  it("Neon theme files: the schema and the loader agree on what a Neon theme needs", () => {
+    const neon = { theme: "neon", seeds: { background: "#070B14", accent: "#00E5FF", glow: "#00E5FF" } };
+    expect(v.theme(neon)).toBe(true);
+    expect(parseThemeFile(neon).theme).toBe("neon");
+    const noGlow = { theme: "neon", seeds: { background: "#070B14", accent: "#00E5FF" } };
+    expect(v.theme(noGlow)).toBe(false);
+    expect(() => parseThemeFile(noGlow)).toThrow(/needs a glow/);
+    const glowOnSolid = { theme: "solid-tones", seeds: { background: "#070B14", accent: "#00E5FF", glow: "#00E5FF" } };
+    expect(v.theme(glowOnSolid)).toBe(false);
+    expect(() => parseThemeFile(glowOnSolid)).toThrow(/Only a "neon" theme/);
+    expect(() => seedsFrom({ background: "#070B14", accent: "#00E5FF", strength: 0.5 })).toThrow(/only for Soul Mark: Neon/);
+    expect(() => seedsFrom({ background: "#070B14", accent: "#00E5FF", glow: "#00E5FF", strength: 2 })).toThrow(/strength/);
+    expect(() =>
+      seedsFrom({ background: "#070B14", accent: "#00E5FF", glow: "#00E5FF", color2: "#000000", color3: "#101B44" }),
+    ).toThrow(/two colors/);
+  });
+
   it("a guard-off theme that falls short is reported, with ratios rounded down", () => {
     const r = checkTheme(parseThemeFile(readJson("examples/red-to-white-guard-off.theme.json")));
     expect(r.readable).toBe(false);
@@ -84,6 +123,8 @@ describe("checking", () => {
   it("reads theme codes, and rejects text that is neither a code nor a theme file", () => {
     expect(themeFromText("SM2-0E1A2E-070B14-v-00E5FF-50-soft").theme).toBe("gradients");
     expect(themeFromText("SM1-101B44-1CB6BE-50-soft").theme).toBe("solid-tones");
+    expect(themeFromText("SM3-070B14-x-00E5FF-00E5FF-60-g-50-cool").theme).toBe("neon");
+    expect(() => themeFromText("SM3-070B14-x-00E5FF")).toThrow(/theme code/);
     expect(() => themeFromText("SM2-nope")).toThrow(/theme code/);
     expect(() => themeFromText("make it pretty")).toThrow(/theme code/);
   });
@@ -92,6 +133,18 @@ describe("checking", () => {
 describe("exporting", () => {
   const aurora = signatureByName("Aurora")!;
   const starter = signatureByName("Midnight and Teal")!;
+
+  it("Neon exports carry the glow: css variables, json, tokens and tailwind", () => {
+    const hud = signatureByName("Watchers HUD")!;
+    const css = exportTheme(hud, "css");
+    expect(css).toContain("--st-neon-glow-rgb: 0 229 255;");
+    expect(css).toContain("--st-gradient-page:");
+    const json = JSON.parse(exportTheme(hud, "json"));
+    expect(v.composed(json), JSON.stringify(v.composed.errors)).toBe(true);
+    expect(json.neon.glow).toBe("#00E5FF");
+    expect(JSON.parse(exportTheme(hud, "tokens"))["soul-mark"].glow).toEqual({ $type: "color", $value: "#00E5FF" });
+    expect(JSON.parse(exportTheme(hud, "tailwind")).colors["soul-mark"].glow).toBe("#00E5FF");
+  });
 
   it("json matches the composed schema", () => {
     expect(v.composed(composed(aurora)), JSON.stringify(v.composed.errors)).toBe(true);

@@ -58,6 +58,10 @@ describe("Soul Mark: Neon", () => {
       for (const s of NEON_SIGNATURES) {
         const n = composeNeon(s);
         expect(n.notes, s.name).toEqual([]);
+        // The base theme keeps the page and fade exactly too. Like any accent, a bright neon button
+        // fill may be deepened so its label reads; the glow keeps the neon color itself.
+        const moved = n.mark.notes.filter((x) => x.kind === "adjusted" && (x.seed === "background" || x.seed === "gradient"));
+        expect(moved, s.name).toEqual([]);
         expect(n.glow, s.name).toBe(s.glow);
         expect(n.bloom, s.name).toBe(s.strength);
         expect(n.grid, s.name).toBe(s.grid ? s.strength : 0);

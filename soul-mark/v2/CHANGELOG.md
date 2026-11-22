@@ -4,6 +4,10 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
 
 ## Unreleased
 
+- Soul Mark: Neon (in review): a heads-up display look in the style of the Watchers app. A glow
+  color on outlines, its bloom and an optional grid over a near-black page or fade; the glow must
+  stand out (3:1) and text is checked beside the bloom and on the grid. Nine signature looks,
+  SM3 theme codes, and Neon in theme files, the CLI, the MCP tools and the schemas.
 - The agent test runner: `npm run eval` runs the agent tests against a real AI (Claude or
   DeepSeek) through the MCP server, with each task's broken variant and a dollar cap. A
   manual-only GitHub workflow runs it too.
