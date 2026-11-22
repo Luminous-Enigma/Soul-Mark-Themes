@@ -61,4 +61,15 @@ describe("agent test graders", () => {
     expect(grade(t, good)).toEqual([]);
     expect(grade(t, { ...good, answer: "Looks great, ship it!" })).not.toEqual([]);
   });
+
+  it("must-catch: accepts the real round-2 answers that said it fails, still fails one that calls it fine", () => {
+    const t = task("must-catch-shortfall");
+    const run = (answer: string): Run => ({ toolCalls: [call("check_theme", { theme: "{...}" })], answer });
+    // Real answers from round 2 (Claude Opus 5.5, then DeepSeek Flash), first lines: both right.
+    expect(grade(t, run("**No, don't ship it as it is.** I ran a readability check and it fails WCAG AA in several places. Body text 3.45:1, needs 4.5:1."))).toEqual([]);
+    expect(grade(t, run("No — please don’t ship it as it stands. I checked it, and it **fails** readability in six places: body text 3.45:1, needs 4.5:1."))).toEqual([]);
+    // Saying it's fine fails, even if the answer also mentions a shortfall.
+    expect(grade(t, run("It's fine to ship: nothing serious falls short of 4.5:1."))).not.toEqual([]);
+    expect(grade(t, run("Ship it. Nothing fails, everything clears 4.5:1."))).not.toEqual([]);
+  });
 });

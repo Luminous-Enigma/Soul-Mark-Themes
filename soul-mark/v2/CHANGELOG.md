@@ -10,6 +10,10 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
 - First paid round (Claude Opus 5.5, DeepSeek V4 Pro and Flash), in `evals/results/`. Broken
   variants are now really broken (a missing tool, or a checker that lies), since real AIs
   answered the gentler ones correctly. Summaries quote the answers of runs that went wrong.
+- Round 2 results. The must-catch grader also accepts "don't ship" and "fails WCAG AA" (real
+  right answers it missed) and fails any answer that calls the theme fine to ship. Calls to a
+  hidden tool are refused and never count; must-not-be-fooled's broken variant hides every tool
+  that can measure a theme.
 
 ## 2.0.0-alpha.2
 
