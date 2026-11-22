@@ -14,7 +14,7 @@ const HELP = `Usage: npm run eval -- --provider claude|deepseek --max-usd <dolla
   --tier quick|full       quick: 3 runs per task (default); full: 10
   --runs <n>              runs per task, instead of the tier's
   --task <id>             only this task (repeatable)
-  --model <id>            claude: claude-opus-5-5 (default); deepseek: deepseek-chat (default)
+  --model <id>            claude: claude-opus-5-5 (default); deepseek: deepseek-flash (default)
   --effort <level>        claude only: low, medium (default), high, xhigh, max
   --price-in <dollars>    deepseek only, required: dollars per million input tokens
   --price-out <dollars>   deepseek only, required: dollars per million output tokens
@@ -46,7 +46,7 @@ function main(): Promise<number> | number {
     const input = Number(args["price-in"]);
     const output = Number(args["price-out"]);
     if (!(input > 0) || !(output > 0)) return usage("deepseek needs --price-in and --price-out, from DeepSeek's official pricing page.");
-    provider = deepseekProvider({ model: args.model ?? "deepseek-chat", price: { input, output } });
+    provider = deepseekProvider({ model: args.model ?? "deepseek-flash", price: { input, output } });
   } else {
     return usage("--provider is claude or deepseek.");
   }
