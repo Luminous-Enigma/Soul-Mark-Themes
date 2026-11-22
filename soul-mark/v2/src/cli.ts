@@ -25,7 +25,8 @@ and Soul Mark: Neon (a glowing outline color, with an optional fade and grid).
 Usage:
   soul-mark compose <background> <accent> [--color2 <hex>] [--color3 <hex>] [--shape vertical|elliptical]
                     [--tint 0-1] [--tone soft|warm|cool] [--guard off] [--name <text>] [--json]
-                    [--glow <hex> [--strength 0-1] [--grid on|off]]     (Soul Mark: Neon)
+                    [--glow <hex> [--strength 0-1] [--grid on|off]      (Soul Mark: Neon)
+                     [--text-glow on|off] [--menu-grid on|off]]
   soul-mark check <theme>                 Is every text readable? Exit 0 yes, 1 no.
   soul-mark export <theme> --format css|json|tokens|tailwind
   soul-mark list [signatures|gradients|neon|palettes|all]
@@ -61,6 +62,8 @@ const VALUE_FLAGS = new Set([
   "--glow",
   "--strength",
   "--grid",
+  "--text-glow",
+  "--menu-grid",
 ]);
 
 function parse(args: string[]) {
@@ -119,8 +122,8 @@ function main(): number {
       if (flags.guard && flags.guard !== "off" && flags.guard !== "on") {
         throw new InputError("USAGE", '--guard is "on" or "off".');
       }
-      if (flags.grid && flags.grid !== "off" && flags.grid !== "on") {
-        throw new InputError("USAGE", '--grid is "on" or "off".');
+      for (const k of ["grid", "text-glow", "menu-grid"]) {
+        if (flags[k] && flags[k] !== "off" && flags[k] !== "on") throw new InputError("USAGE", `--${k} is "on" or "off".`);
       }
       const seeds = seedsFrom({
         background: rest[0],
@@ -134,6 +137,8 @@ function main(): number {
         ...(flags.glow ? { glow: flags.glow } : {}),
         ...(flags.strength ? { strength: flags.strength } : {}),
         ...(flags.grid ? { grid: flags.grid !== "off" } : {}),
+        ...(flags["text-glow"] ? { textGlow: flags["text-glow"] !== "off" } : {}),
+        ...(flags["menu-grid"] ? { menuGrid: flags["menu-grid"] !== "off" } : {}),
       });
       const file = themeFile(seeds, flags.name);
       const result = checkTheme(file);

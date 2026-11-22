@@ -92,6 +92,16 @@
           "type": "boolean",
           "default": true,
           "description": "Neon only: a faint grid behind everything."
+        },
+        "textGlow": {
+          "type": "boolean",
+          "default": false,
+          "description": "Neon only: every text tinted toward the glow with a soft halo, kept readable by the guard."
+        },
+        "menuGrid": {
+          "type": "boolean",
+          "default": false,
+          "description": "Neon only: the grid also runs through menus and dialogs. Needs grid."
         }
       }
     }
@@ -203,6 +213,16 @@
                 {
                   "required": [
                     "grid"
+                  ]
+                },
+                {
+                  "required": [
+                    "textGlow"
+                  ]
+                },
+                {
+                  "required": [
+                    "menuGrid"
                   ]
                 }
               ]

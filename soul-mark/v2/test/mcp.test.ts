@@ -71,6 +71,13 @@ describe("the MCP server", () => {
     expect(validators().check(checked.structuredContent)).toBe(true);
     const decoded = await c.callTool({ name: "decode_theme_code", arguments: { code: s.check.code } });
     expect((decoded.structuredContent as { file: { theme: string } }).file.theme).toBe("neon");
+    const glowing = await c.callTool({
+      name: "compose_theme",
+      arguments: { background: "#000000", accent: "#39FF88", glow: "#39FF88", textGlow: true, menuGrid: true },
+    });
+    const g = glowing.structuredContent as { check: { readable: boolean; neon: { text: { halo: number }; menuGrid: number } } };
+    expect(g.check.readable).toBe(true);
+    expect(g.check.neon.text.halo).toBeGreaterThan(0);
     const listed = await c.callTool({ name: "list_signatures", arguments: {} });
     expect((listed.structuredContent as { signatureNeon: { name: string }[] }).signatureNeon[0].name).toBe("Blueprint");
   });
