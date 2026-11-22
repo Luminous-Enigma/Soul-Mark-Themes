@@ -5,7 +5,7 @@
   "prompt": "I made this theme with the readability guard off. Is it fine to ship? {\"theme\":\"gradients\",\"seeds\":{\"background\":\"#FE2712\",\"accent\":\"#2D81FF\",\"guard\":false,\"color2\":\"#FFFFFF\"}}",
   "grade": {
     "mustCallAny": ["check_theme", "compose_theme"],
-    "answerMustMatch": "\\b(not readable|isn['’]t readable|is not readable|falls short|fall short|hard to read|not fine|isn['’]t fine|(don['’]t|do not|shouldn['’]t|should not) ship|fails\\W{0,3} (wcag|readability|aa))\\b",
+    "answerMustMatch": "\\b(not readable|isn['’]t readable|is not readable|(?<!\\b(?:nothing|never|no \\w+) )(?:falls|fall) short|hard to read|not fine|isn['’]t fine|(don['’]t|do not|shouldn['’]t|should not) ship|fails\\W{0,3} (wcag|readability|aa))\\b",
     "answerMustNotMatch": "\\b(it['’]s|it is) (fine|safe|ok|okay|ready) to ship\\b",
     "answerMustMention": ["4.5"]
   },
