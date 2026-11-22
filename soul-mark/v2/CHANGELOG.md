@@ -4,6 +4,9 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
 
 ## 2.0.0-alpha.2
 
+- New looks: signature theme Black and Blue; signature gradients Black to charcoal and
+  White to silver; Black in the Deep backgrounds; Charcoal and Silver as quick fades.
+
 - Agent-ready: a JSON Schema for theme files, readability reports and composed themes;
   `data/signatures.json`; example theme files.
 - The `soul-mark` command: compose, check, export (CSS, JSON, W3C design tokens, Tailwind),

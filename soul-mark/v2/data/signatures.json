@@ -51,6 +51,12 @@
     },
     {
       "theme": "solid-tones",
+      "name": "Black and Blue",
+      "background": "#000000",
+      "accent": "#2D81FF"
+    },
+    {
+      "theme": "solid-tones",
       "name": "Deep blue and Light blue",
       "background": "#0D2661",
       "accent": "#749AFE"
@@ -107,6 +113,28 @@
       ],
       "shape": "vertical",
       "accent": "#1CB6BE",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "Black to charcoal",
+      "colors": [
+        "#000000",
+        "#2C2C2C"
+      ],
+      "shape": "vertical",
+      "accent": "#2D81FF",
+      "colorCount": 2
+    },
+    {
+      "theme": "gradients",
+      "name": "White to silver",
+      "colors": [
+        "#FFFFFF",
+        "#D2D2D2"
+      ],
+      "shape": "vertical",
+      "accent": "#0969DA",
       "colorCount": 2
     },
     {
@@ -338,6 +366,10 @@
         }
       ],
       "deep": [
+        {
+          "name": "Black",
+          "hex": "#000000"
+        },
         {
           "name": "ArtCraft",
           "hex": "#121316"
@@ -648,6 +680,14 @@
       {
         "name": "Midnight",
         "hex": "#101B44"
+      },
+      {
+        "name": "Charcoal",
+        "hex": "#2C2C2C"
+      },
+      {
+        "name": "Silver",
+        "hex": "#D2D2D2"
       }
     ]
   }
