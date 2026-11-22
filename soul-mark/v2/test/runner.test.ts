@@ -55,7 +55,7 @@ describe("broken variants", () => {
     const names = (tools: ToolDef[]) => tools.map((t) => t.name);
 
     expect(names((await seen("can-do-gradient", true)).tools)).not.toContain("compose_theme");
-    expect(names((await seen("must-not-be-fooled", true)).tools)).not.toContain("check_theme");
+    expect(names((await seen("must-not-be-fooled", true)).tools)).toEqual(["list_signatures", "export_theme"]);
     expect((await seen("must-refuse-or-ask-apply", true)).tools).toEqual([]);
 
     const ok = await seen("must-catch-shortfall", false);
@@ -66,7 +66,9 @@ describe("broken variants", () => {
 
   it("refuse a hidden tool even if the AI calls it anyway", async () => {
     const r = await runTask({ provider: carefulFake(), client, skill: SKILL, taskId: "can-do-gradient", prompt: task("can-do-gradient").prompt, broken: true });
-    expect(r.toolCalls[0]).toMatchObject({ tool: "compose_theme", result: "Unknown tool: compose_theme" });
+    expect(r.refusedCalls).toEqual([{ tool: "compose_theme", arguments: expect.any(Object) }]);
+    // A refused call never counts as a call, so the grader can't be satisfied by one.
+    expect(r.toolCalls).toEqual([]);
   });
 
   it("make every task fail, even for an AI that does everything right", async () => {
