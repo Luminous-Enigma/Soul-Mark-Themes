@@ -27,7 +27,7 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the order and what each one include
 
 ## See them
 
-Four signature looks from each theme, shown on the home page of
+Six signature looks from each theme, shown on the home page of
 [ArtCraft](https://github.com/storytold/artcraft-services), the app Soul Mark was first made for.
 Every text in every picture meets WCAG AA; the readability guard checks it, and the tests prove it.
 
@@ -41,6 +41,10 @@ Every text in every picture meets WCAG AA; the readability guard checks it, and 
   <tr>
     <td width="50%"><img src="docs/images/solid-deep-red-and-red.webp" alt="ArtCraft's home page in Deep red and Red"><br><b>Deep red and Red</b><br>A deep red background with a bright red accent.</td>
     <td width="50%"><img src="docs/images/solid-deep-purple-and-pink.webp" alt="ArtCraft's home page in Deep purple and Pink"><br><b>Deep purple and Pink</b><br>Deep purple with a pink accent.</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/solid-deep-blue-and-light-blue.webp" alt="ArtCraft's home page in Deep blue and Light blue"><br><b>Deep blue and Light blue</b><br>Deep blue with a light blue accent.</td>
+    <td width="50%"><img src="docs/images/solid-reddish-brown-and-amber.webp" alt="ArtCraft's home page in Reddish brown and Amber"><br><b>Reddish brown and Amber</b><br>A deep reddish brown with an amber accent.</td>
   </tr>
 </table>
 
@@ -57,6 +61,10 @@ point of the gradient, not just at its colors.
   <tr>
     <td width="50%"><img src="docs/images/gradient-synthwave.webp" alt="ArtCraft's home page in Synthwave &nbsp;<sub>3 COLORS</sub>"><br><b>Synthwave &nbsp;<sub>3 COLORS</sub></b><br>Deep purple, deep rose, then night.</td>
     <td width="50%"><img src="docs/images/gradient-ember.webp" alt="ArtCraft's home page in Ember &nbsp;<sub>3 COLORS</sub>"><br><b>Ember &nbsp;<sub>3 COLORS</sub></b><br>Deep red, reddish brown, then night, with an amber accent.</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/gradient-midnight-and-teal.webp" alt="ArtCraft's home page in Midnight and Teal"><br><b>Midnight and Teal</b><br>Midnight blue fading to black, with a teal accent.</td>
+    <td width="50%"><img src="docs/images/gradient-deep-violet-to-black.webp" alt="ArtCraft's home page in Deep violet to black"><br><b>Deep violet to black</b><br>Deep violet fading to black, with a pink accent.</td>
   </tr>
 </table>
 
