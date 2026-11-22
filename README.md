@@ -69,8 +69,8 @@ Soul Mark: Solid Tones (v1) is the theme contributed to
 | Theme                      | What it is                                                                | Status                   |
 |----------------------------|---------------------------------------------------------------------------|--------------------------|
 | Soul Mark: Solid Tones, v1 | Solid colors with a readability guard, exactly as contributed to ArtCraft | After ArtCraft merges it |
-| Soul Mark: Solid Tones, v2 | The same theme, agent-ready: files, CLI, CI and MCP                       | In progress              |
-| Soul Mark: Gradients       | Two or three colors flowing into each other, still readable               | Built, in review         |
+| Soul Mark: Solid Tones, v2 | The same theme, agent-ready: files, CLI, CI and MCP                       | Agent-ready              |
+| Soul Mark: Gradients       | Two or three colors flowing into each other, still readable               | Agent-ready; in preview  |
 | Soul Mark: Neon            | Heads-up display: glowing lines on near-black                             | Next                     |
 | Soul Mark: Glass           | Frosted, see-through backgrounds, windows and menus, with clear text      | Planned                  |
 | Soul Mark: High Contrast   | Strong, clear colors for anyone who wants them                            | Planned                  |
@@ -84,6 +84,19 @@ Everything here follows [Cornerstone](https://github.com/Luminous-Enigma/Corners
 ships as plain theme files with a schema, a command line tool, automatic CI checks, an MCP server
 so AI assistants can make and check themes, and a skill that teaches them how. A person, a script
 and an AI can all use it, and agent tests prove an AI uses it correctly and safely.
+
+To use it yourself, in [`soul-mark/v2`](soul-mark/v2):
+
+```bash
+npm ci && npm run build
+```
+
+```bash
+node dist/cli.js check "Aurora"
+```
+
+AI assistants connect to the MCP server with `node dist/mcp.js` (stdio); `SKILL.md` there teaches
+them to use it well. Details: [`soul-mark/v2/README.md`](soul-mark/v2/README.md).
 
 Every pull request runs Cornerstone's safety gates and their self-test
 ([what they check](https://github.com/Luminous-Enigma/Cornerstone/blob/main/docs/GATES.md)):
