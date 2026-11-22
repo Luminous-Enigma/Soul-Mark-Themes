@@ -58,7 +58,44 @@ point of the gradient, not just at its colors.
   </tr>
 </table>
 
-All 15 signature themes and 16 signature gradients are listed in
+### Soul Mark: Neon
+
+The futuristic digital craftsman: neon lines and glow, with the grid of an architect's blueprint
+behind the page. The glow always stands out, and no text loses its contrast to it.
+
+<table>
+  <tr>
+    <td width="50%"><img src="visual-previews/neon-blueprint.webp" alt="ArtCraft in Neon: Blueprint"><br><b>Blueprint</b><br>Deep blue fading to near-black, cyan lines and a blueprint grid. The starter.</td>
+    <td width="50%"><img src="visual-previews/neon-workshop.webp" alt="ArtCraft in Neon: Workshop"><br><b>Workshop</b><br>Near-black with an amber accent and cyan glow.</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="visual-previews/neon-green-terminal.webp" alt="ArtCraft in Neon: Green terminal"><br><b>Green terminal</b><br>True black with green glow, like an old terminal.</td>
+    <td width="50%"><img src="visual-previews/neon-synth.webp" alt="ArtCraft in Neon: Synth"><br><b>Synth</b><br>Deep space with a violet accent and magenta glow.</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="visual-previews/neon-violet-night.webp" alt="ArtCraft in Neon: Violet night"><br><b>Violet night</b><br>Midnight blue with a magenta accent and violet glow.</td>
+    <td width="50%"><img src="visual-previews/neon-lime-radar.webp" alt="ArtCraft in Neon: Lime radar"><br><b>Lime radar</b><br>Dark glass with lime glow, like a radar screen.</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="visual-previews/neon-amber-console.webp" alt="ArtCraft in Neon: Amber console"><br><b>Amber console</b><br>Night with amber glow and no grid.</td>
+    <td width="50%"><img src="visual-previews/neon-red-alert.webp" alt="ArtCraft in Neon: Red alert"><br><b>Red alert</b><br>True black with red glow and no grid.</td>
+  </tr>
+</table>
+
+Two switches, for Neon only, and how the grid keeps out of the way of real work:
+
+<table>
+  <tr>
+    <td width="50%"><img src="visual-previews/neon-glowing-text.webp" alt="ArtCraft in Neon: Glowing text switch"><br><b>Glowing text switch</b><br>Text glows in the neon color and stays readable.</td>
+    <td width="50%"><img src="visual-previews/neon-grid-on-menus.webp" alt="ArtCraft in Neon: Grid on menus switch"><br><b>Grid on menus switch</b><br>The grid runs through menus, submenus and the theme picker.</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="visual-previews/neon-edit-3d.webp" alt="ArtCraft in Neon: In a 3D editor"><br><b>In a 3D editor</b><br>Editors with their own grid get no page grid, so nothing gets in the way.</td>
+    <td width="50%"><img src="visual-previews/neon-video-editor.webp" alt="ArtCraft in Neon: In the video editor"><br><b>In the video editor</b><br>The grid is dimmed, and gone behind any window that draws its own.</td>
+  </tr>
+</table>
+
+All 15 signature themes, 16 signature gradients and 9 Neon looks are listed in
 [`soul-mark/v2/data/signatures.json`](soul-mark/v2/data/signatures.json).
 
 ## The themes
@@ -71,7 +108,7 @@ Soul Mark: Solid Tones (v1) is the theme contributed to
 | Soul Mark: Solid Tones, v1 | Solid colors with a readability guard, exactly as contributed to ArtCraft | After ArtCraft merges it |
 | Soul Mark: Solid Tones, v2 | The same theme, agent-ready: files, CLI, CI and MCP                       | Agent-ready              |
 | Soul Mark: Gradients       | Two or three colors flowing into each other, still readable               | Agent-ready; in preview  |
-| Soul Mark: Neon            | Futuristic craftsman: neon lines and a blueprint grid on near-black       | Engine built; in review  |
+| Soul Mark: Neon            | Futuristic craftsman: neon lines and a blueprint grid on near-black       | Agent-ready; in preview  |
 | Soul Mark: Glass           | Frosted, see-through backgrounds, windows and menus, with clear text      | Planned                  |
 | Soul Mark: High Contrast   | Strong, clear colors for anyone who wants them                            | Planned                  |
 | Soul Mark: Patterns        | Textures and patterns behind the interface                                | Planned                  |
