@@ -135,7 +135,7 @@ describe("exporting", () => {
   const starter = signatureByName("Midnight and Teal")!;
 
   it("Neon exports carry the glow: css variables, json, tokens and tailwind", () => {
-    const hud = signatureByName("Watchers HUD")!;
+    const hud = signatureByName("Blueprint")!;
     const css = exportTheme(hud, "css");
     expect(css).toContain("--st-neon-glow-rgb: 0 229 255;");
     expect(css).toContain("--st-gradient-page:");
