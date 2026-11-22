@@ -43,7 +43,7 @@ const seedsInput = {
 };
 const themeInput = z
   .string()
-  .describe('A theme code (SM1-…, SM2-… or SM3-…), a theme file\'s JSON, or a signature\'s name such as "Neon Deep" or "Watchers HUD".');
+  .describe('A theme code (SM1-…, SM2-… or SM3-…), a theme file\'s JSON, or a signature\'s name such as "Neon Deep" or "Blueprint".');
 
 const checkOutput = {
   theme: z.string().describe('"Soul Mark: Solid Tones", "Soul Mark: Gradients" or "Soul Mark: Neon".'),
