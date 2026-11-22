@@ -78,8 +78,8 @@ dimmed in the others, and gone behind any window that draws its own.
 - [x] **Agent-ready:** theme files, the CLI (`--glow`, `--strength`, `--grid`), the MCP tools and
       the schemas all take Neon.
 - [x] **Switches (Neon only):** glowing text and the grid on menus, measured like everything else.
-- [ ] **In ArtCraft:** a fourth card, the glow on panels and buttons, and the grid; screenshots
-      for the owner's review.
+- [x] **In ArtCraft:** a fourth card, the glow on panels and buttons, the grid, and the two
+      switches, on the fork's preview branch; approved by the owner on 22 Nov 2026.
 
 ## 5. Soul Mark: Glass
 
