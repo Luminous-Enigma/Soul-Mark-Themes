@@ -3,8 +3,7 @@
 Most apps give you black, white or dark blue. These themes put every color back in your hands.
 Free and open for any app.
 
-We're in the age of AI, and the choice of how your software looks is still yours: a mark of your
-own taste, your own soul. Soul Mark Themes gives everyday users and creators alike the freedom to
+We are in the age of AI now. This puts the choice of how your software looks back in your hands: a mark, a feel, a vibe...all your own. Soul. Soul Mark Themes gives everyday users and creators alike the freedom to
 personalize the software they use, and gives developers a drop-in way to offer it. Every theme
 keeps text readable, so you can be as bold as you like without losing anything.
 
