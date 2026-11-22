@@ -3,6 +3,7 @@
 import { readFileSync } from "node:fs";
 import {
   checkTheme,
+  codeOf,
   EXPORT_FORMATS,
   type ExportFormat,
   exportTheme,
@@ -14,29 +15,31 @@ import {
   type ThemeFile,
   themeFromText,
 } from "./tools";
-import { encodeSeeds } from "./soul-mark";
 
 const VERSION = "2.0.0-alpha.2";
 
 const HELP = `soul-mark ${VERSION}: themes people compose from a few colors, with every text readable (WCAG AA).
-Two themes: Soul Mark: Solid Tones (one background color) and Soul Mark: Gradients (two or three).
+Three themes: Soul Mark: Solid Tones (one background color), Soul Mark: Gradients (two or three)
+and Soul Mark: Neon (a glowing outline color, with an optional fade and grid).
 
 Usage:
   soul-mark compose <background> <accent> [--color2 <hex>] [--color3 <hex>] [--shape vertical|elliptical]
                     [--tint 0-1] [--tone soft|warm|cool] [--guard off] [--name <text>] [--json]
+                    [--glow <hex> [--strength 0-1] [--grid on|off]]     (Soul Mark: Neon)
   soul-mark check <theme>                 Is every text readable? Exit 0 yes, 1 no.
   soul-mark export <theme> --format css|json|tokens|tailwind
-  soul-mark list [signatures|gradients|palettes|all]
-  soul-mark encode <theme>                The short theme code (SM1-… solid, SM2-… gradient).
+  soul-mark list [signatures|gradients|neon|palettes|all]
+  soul-mark encode <theme>                The short theme code (SM1-… solid, SM2-… gradient, SM3-… neon).
   soul-mark decode <code>                 The theme file for a code.
   soul-mark --help | --version
 
-<theme> is a theme file (path to .json), a theme code (SM1-… or SM2-…), or a signature's
-name in quotes (for example "Neon Deep").
+<theme> is a theme file (path to .json), a theme code (SM1-…, SM2-… or SM3-…), or a signature's
+name in quotes (for example "Neon Deep" or "Watchers HUD").
 
 Examples:
   soul-mark compose "#0C2F1C" "#10B981" --color2 "#000000" --json
   soul-mark check "Aurora"
+  soul-mark compose "#070B14" "#00E5FF" --glow "#00E5FF" --grid on --json
   soul-mark export examples/neon-deep.theme.json --format css
 
 Exit codes:
@@ -46,7 +49,19 @@ Exit codes:
 
 const argv = process.argv.slice(2);
 const json = argv.includes("--json");
-const VALUE_FLAGS = new Set(["--color2", "--color3", "--shape", "--tint", "--tone", "--guard", "--name", "--format"]);
+const VALUE_FLAGS = new Set([
+  "--color2",
+  "--color3",
+  "--shape",
+  "--tint",
+  "--tone",
+  "--guard",
+  "--name",
+  "--format",
+  "--glow",
+  "--strength",
+  "--grid",
+]);
 
 function parse(args: string[]) {
   const words: string[] = [];
@@ -104,6 +119,9 @@ function main(): number {
       if (flags.guard && flags.guard !== "off" && flags.guard !== "on") {
         throw new InputError("USAGE", '--guard is "on" or "off".');
       }
+      if (flags.grid && flags.grid !== "off" && flags.grid !== "on") {
+        throw new InputError("USAGE", '--grid is "on" or "off".');
+      }
       const seeds = seedsFrom({
         background: rest[0],
         accent: rest[1],
@@ -113,6 +131,9 @@ function main(): number {
         ...(flags.tint ? { tint: flags.tint } : {}),
         ...(flags.tone ? { character: flags.tone } : {}),
         ...(flags.guard ? { guard: flags.guard !== "off" } : {}),
+        ...(flags.glow ? { glow: flags.glow } : {}),
+        ...(flags.strength ? { strength: flags.strength } : {}),
+        ...(flags.grid ? { grid: flags.grid !== "off" } : {}),
       });
       const file = themeFile(seeds, flags.name);
       const result = checkTheme(file);
@@ -139,10 +160,11 @@ function main(): number {
       const pick: Record<string, unknown> = {
         signatures: data.signatureThemes,
         gradients: data.signatureGradients,
+        neon: data.signatureNeon,
         palettes: data.palettes,
         all: data,
       };
-      if (!(what in pick)) throw new InputError("USAGE", "list takes signatures, gradients, palettes or all.");
+      if (!(what in pick)) throw new InputError("USAGE", "list takes signatures, gradients, neon, palettes or all.");
       const text =
         what === "signatures"
           ? data.signatureThemes.map((t) => `${t.name}  ${t.background} + ${t.accent}`).join("\n")
@@ -150,12 +172,16 @@ function main(): number {
             ? data.signatureGradients
                 .map((g) => `${g.name}  ${g.colors.join(" → ")} (${g.shape}) + ${g.accent}${g.colors.length === 3 ? "  3 colors" : ""}`)
                 .join("\n")
-            : JSON.stringify(pick[what], null, 2);
+            : what === "neon"
+              ? data.signatureNeon
+                  .map((n) => `${n.name}  ${n.color2 ? `${n.background} → ${n.color2}` : n.background} + glow ${n.glow}${n.grid ? ", grid" : ""}`)
+                  .join("\n")
+              : JSON.stringify(pick[what], null, 2);
       out(pick[what], text);
       return 0;
     }
     case "encode": {
-      const code = encodeSeeds(loadTheme(rest[0]).seeds);
+      const code = codeOf(loadTheme(rest[0]).seeds);
       out({ code }, code);
       return 0;
     }

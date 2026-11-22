@@ -2,42 +2,220 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/Luminous-Enigma/Soul-Mark-Themes/main/soul-mark/v2/schema/theme.schema.json",
   "title": "Soul Mark theme file",
-  "description": "A theme as its few chosen colors (its seeds). Every other color is derived from these and checked for readability (WCAG AA) by the engine. \"solid-tones\" is Soul Mark: Solid Tones; \"gradients\" is Soul Mark: Gradients.",
+  "description": "A theme as its few chosen colors (its seeds). Every other color is derived from these and checked for readability (WCAG AA) by the engine. \"solid-tones\" is Soul Mark: Solid Tones; \"gradients\" is Soul Mark: Gradients; \"neon\" is Soul Mark: Neon.",
   "type": "object",
-  "required": ["theme", "seeds"],
+  "required": [
+    "theme",
+    "seeds"
+  ],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
-    "name": { "type": "string", "description": "A name for the theme." },
-    "theme": { "enum": ["solid-tones", "gradients"] },
+    "$schema": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "A name for the theme."
+    },
+    "theme": {
+      "enum": [
+        "solid-tones",
+        "gradients",
+        "neon"
+      ]
+    },
     "seeds": {
       "type": "object",
-      "required": ["background", "accent"],
+      "required": [
+        "background",
+        "accent"
+      ],
       "additionalProperties": false,
       "properties": {
-        "background": { "$ref": "#/$defs/hex", "description": "The background; for a gradient, color 1, at the top." },
-        "accent": { "$ref": "#/$defs/hex", "description": "Buttons, selections and highlights." },
-        "tint": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.5, "description": "How strongly panels step off the background." },
-        "character": { "enum": ["soft", "warm", "cool"], "default": "soft", "description": "The tone of the text, which is always chosen for readability." },
-        "guard": { "type": "boolean", "default": true, "description": "The readability guard. False uses the colors exactly as picked." },
-        "color2": { "$ref": "#/$defs/hex", "description": "Gradients only: what color 1 fades to. Never the same as the background." },
-        "color3": { "$ref": "#/$defs/hex", "description": "Gradients only: an optional third color after color 2." },
-        "shape": { "enum": ["vertical", "elliptical"], "default": "vertical", "description": "Gradients only: top to bottom, or an elliptical glow from the top." }
+        "background": {
+          "$ref": "#/$defs/hex",
+          "description": "The background; for a gradient, color 1, at the top."
+        },
+        "accent": {
+          "$ref": "#/$defs/hex",
+          "description": "Buttons, selections and highlights."
+        },
+        "tint": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5,
+          "description": "How strongly panels step off the background."
+        },
+        "character": {
+          "enum": [
+            "soft",
+            "warm",
+            "cool"
+          ],
+          "default": "soft",
+          "description": "The tone of the text, which is always chosen for readability."
+        },
+        "guard": {
+          "type": "boolean",
+          "default": true,
+          "description": "The readability guard. False uses the colors exactly as picked."
+        },
+        "color2": {
+          "$ref": "#/$defs/hex",
+          "description": "Gradients: what color 1 fades to. Neon: an optional fade, top to bottom. Never the same as the background."
+        },
+        "color3": {
+          "$ref": "#/$defs/hex",
+          "description": "Gradients only: an optional third color after color 2."
+        },
+        "shape": {
+          "enum": [
+            "vertical",
+            "elliptical"
+          ],
+          "default": "vertical",
+          "description": "Gradients only: top to bottom, or an elliptical glow from the top."
+        },
+        "glow": {
+          "$ref": "#/$defs/hex",
+          "description": "Neon only: the glowing outline color on panels and buttons."
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.6,
+          "description": "Neon only: how strong the glow and grid are."
+        },
+        "grid": {
+          "type": "boolean",
+          "default": true,
+          "description": "Neon only: a faint grid behind everything."
+        }
       }
     }
   },
   "allOf": [
     {
-      "if": { "properties": { "theme": { "const": "gradients" } } },
-      "then": { "properties": { "seeds": { "required": ["color2"] } } },
+      "if": {
+        "properties": {
+          "theme": {
+            "const": "gradients"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "seeds": {
+            "required": [
+              "color2"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "theme": {
+            "const": "solid-tones"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "seeds": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "color2"
+                  ]
+                },
+                {
+                  "required": [
+                    "color3"
+                  ]
+                },
+                {
+                  "required": [
+                    "shape"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "theme": {
+            "const": "neon"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "seeds": {
+            "required": [
+              "glow"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "color3"
+                  ]
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "const": "elliptical"
+                    }
+                  },
+                  "required": [
+                    "shape"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
       "else": {
         "properties": {
-          "seeds": { "not": { "anyOf": [{ "required": ["color2"] }, { "required": ["color3"] }, { "required": ["shape"] }] } }
+          "seeds": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "glow"
+                  ]
+                },
+                {
+                  "required": [
+                    "strength"
+                  ]
+                },
+                {
+                  "required": [
+                    "grid"
+                  ]
+                }
+              ]
+            }
+          }
         }
       }
     }
   ],
   "$defs": {
-    "hex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+    "hex": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$"
+    }
   }
 }

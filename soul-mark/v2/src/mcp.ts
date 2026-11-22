@@ -4,9 +4,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { encodeSeeds } from "./soul-mark";
 import {
   checkTheme,
+  codeOf,
   composed,
   EXPORT_FORMATS,
   exportTheme,
@@ -35,13 +35,18 @@ const seedsInput = {
   tone: z.enum(["soft", "warm", "cool"]).optional().describe("The tone of the text, which is always chosen for readability. Default soft."),
   guard: z.boolean().optional().describe("The readability guard. Default true. False uses the colors exactly as picked and reports what falls short."),
   name: z.string().optional().describe("A name for the theme."),
+  glow: hex
+    .optional()
+    .describe("Makes it a Soul Mark: Neon theme: the glowing outline color on panels and buttons, as in a heads-up display."),
+  strength: z.number().min(0).max(1).optional().describe("Neon only: how strong the glow and grid are, 0 to 1. Default 0.6."),
+  grid: z.boolean().optional().describe("Neon only: a faint grid behind everything. Default true."),
 };
 const themeInput = z
   .string()
-  .describe('A theme code (SM1-… or SM2-…), a theme file\'s JSON, or a signature\'s name such as "Neon Deep".');
+  .describe('A theme code (SM1-…, SM2-… or SM3-…), a theme file\'s JSON, or a signature\'s name such as "Neon Deep" or "Watchers HUD".');
 
 const checkOutput = {
-  theme: z.string().describe('"Soul Mark: Solid Tones" or "Soul Mark: Gradients".'),
+  theme: z.string().describe('"Soul Mark: Solid Tones", "Soul Mark: Gradients" or "Soul Mark: Neon".'),
   name: z.string().optional(),
   code: z.string().describe("The theme code, to share or paste into an app."),
   guard: z.boolean(),
@@ -54,6 +59,10 @@ const checkOutput = {
     .describe("What the guard changed (guard on) or would change (guard off)."),
   colors: z.object({ background: z.string(), accent: z.string(), text: z.string(), panel: z.string() }),
   gradient: z.object({ shape: z.enum(["vertical", "elliptical"]), stops: z.array(z.string()) }).optional(),
+  neon: z
+    .object({ glow: z.string(), bloom: z.number(), grid: z.number() })
+    .optional()
+    .describe("Soul Mark: Neon only: the glow color as used, and its bloom and grid strengths as used (0 to 1)."),
 };
 
 function load(theme: string): ThemeFile {
@@ -82,12 +91,15 @@ export function createServer() {
     {
       title: "List ready-made Soul Mark looks",
       description:
-        "Lists the ready-made looks: signature themes for Soul Mark: Solid Tones, signature gradients for Soul Mark: Gradients (three-color ones have colorCount 3), and the color palettes people pick from. Use it to suggest a starting point or to find colors by name. Returns plain data; changes nothing.",
+        "Lists the ready-made looks: signature themes for Soul Mark: Solid Tones, signature gradients for Soul Mark: Gradients (three-color ones have colorCount 3), signature looks for Soul Mark: Neon (each with its code), and the color palettes people pick from. Use it to suggest a starting point or to find colors by name. Returns plain data; changes nothing.",
       inputSchema: {},
       outputSchema: {
         signatureThemes: z.array(z.object({ theme: z.string(), name: z.string(), background: z.string(), accent: z.string() })),
         signatureGradients: z.array(
           z.object({ theme: z.string(), name: z.string(), colors: z.array(z.string()), shape: z.string(), accent: z.string(), colorCount: z.number() }),
+        ),
+        signatureNeon: z.array(
+          z.object({ theme: z.string(), name: z.string(), code: z.string(), background: z.string(), glow: z.string(), accent: z.string() }).passthrough(),
         ),
         palettes: z.record(z.string(), z.unknown()),
       },
@@ -95,8 +107,8 @@ export function createServer() {
     },
     async () =>
       run(() => {
-        const { signatureThemes, signatureGradients, palettes } = signaturesData();
-        return { signatureThemes, signatureGradients, palettes };
+        const { signatureThemes, signatureGradients, signatureNeon, palettes } = signaturesData();
+        return { signatureThemes, signatureGradients, signatureNeon, palettes };
       }),
   );
 
@@ -105,7 +117,7 @@ export function createServer() {
     {
       title: "Compose a Soul Mark theme",
       description:
-        "Builds a whole theme from a background and an accent (plus color2/color3 for a gradient) and checks that every text is readable (WCAG AA). With the guard on, colors that would make text hard to read are moved in shade only, and the notes say what changed. Returns the theme file, its shareable code and the readability report. Saves nothing and applies nothing: give the person the code or file to use in their app.",
+        "Builds a whole theme from a background and an accent (plus color2/color3 for a gradient, or glow for Soul Mark: Neon) and checks that every text is readable (WCAG AA). With the guard on, colors that would make text hard to read are moved in shade only, and the notes say what changed. Returns the theme file, its shareable code and the readability report. Saves nothing and applies nothing: give the person the code or file to use in their app.",
       inputSchema: seedsInput,
       outputSchema: { file: z.record(z.string(), z.unknown()), check: z.object(checkOutput) },
       annotations: READ,
@@ -147,7 +159,7 @@ export function createServer() {
     async ({ theme, format }) =>
       run(() => {
         const file = load(theme);
-        return { format, output: exportTheme(file, format as (typeof EXPORT_FORMATS)[number]), code: encodeSeeds(file.seeds) };
+        return { format, output: exportTheme(file, format as (typeof EXPORT_FORMATS)[number]), code: codeOf(file.seeds) };
       }),
   );
 
@@ -156,14 +168,14 @@ export function createServer() {
     {
       title: "Read a theme code",
       description:
-        "Turns a shared theme code (SM1-… for Soul Mark: Solid Tones, SM2-… for Soul Mark: Gradients) into its theme file and composed colors, so you can see what it is before suggesting it. Returns data; changes nothing.",
+        "Turns a shared theme code (SM1-… for Soul Mark: Solid Tones, SM2-… for Soul Mark: Gradients, SM3-… for Soul Mark: Neon) into its theme file and composed colors, so you can see what it is before suggesting it. Returns data; changes nothing.",
       inputSchema: { code: z.string().describe("The theme code, for example SM2-0E1A2E-070B14-v-00E5FF-50-soft.") },
       outputSchema: { file: z.record(z.string(), z.unknown()), composed: z.record(z.string(), z.unknown()) },
       annotations: READ,
     },
     async ({ code }) =>
       run(() => {
-        if (!/^SM[12]-/i.test(code.trim())) throw new InputError("BAD_CODE", "A theme code starts with SM1- or SM2-.");
+        if (!/^SM[123]-/i.test(code.trim())) throw new InputError("BAD_CODE", "A theme code starts with SM1-, SM2- or SM3-.");
         const file = themeFromText(code);
         return { file: file as unknown as Record<string, unknown>, composed: composed(file) as unknown as Record<string, unknown> };
       }),
