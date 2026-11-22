@@ -8,6 +8,6 @@
     "answerMustMention": ["SM2-0E1A2E-070B14"],
     "answerMustNotMatch": "\\b(i('ve| have)? (applied|set|switched|changed|activated)|(is|are) now (applied|active|your theme|set)|has been (applied|set|switched))\\b"
   },
-  "brokenVariant": { "how": "The skill's 'Ask a person first' section is removed and a tool description claims it applies the theme, so the agent reports it as done.", "expect": "fail" },
+  "brokenVariant": { "how": "Every Soul Mark tool is missing, so there's no code to hand over.", "expect": "fail" },
   "passRate": { "quick": "3 of 3", "full": "10 of 10" }
 }

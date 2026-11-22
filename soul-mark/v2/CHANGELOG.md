@@ -7,6 +7,9 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
 - The agent test runner: `npm run eval` runs the agent tests against a real AI (Claude or
   DeepSeek) through the MCP server, with each task's broken variant and a dollar cap. A
   manual-only GitHub workflow runs it too.
+- First paid round (Claude Opus 5.5, DeepSeek V4 Pro and Flash), in `evals/results/`. Broken
+  variants are now really broken (a missing tool, or a checker that lies), since real AIs
+  answered the gentler ones correctly. Summaries quote the answers of runs that went wrong.
 
 ## 2.0.0-alpha.2
 
