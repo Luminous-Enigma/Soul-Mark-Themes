@@ -58,6 +58,30 @@ describe("the MCP server", () => {
     expect(s.check.readable).toBe(true);
   });
 
+  it("composes, checks and decodes Soul Mark: Neon", async () => {
+    const c = await connect();
+    const made = await c.callTool({
+      name: "compose_theme",
+      arguments: { background: "#070B14", accent: "#00E5FF", glow: "#00E5FF", grid: false },
+    });
+    const s = made.structuredContent as { check: { theme: string; code: string; readable: boolean; neon: { grid: number } } };
+    expect([s.check.theme, s.check.readable, s.check.neon.grid]).toEqual(["Soul Mark: Neon", true, 0]);
+    expect(s.check.code).toMatch(/^SM3-070B14-x-00E5FF-00E5FF-60-n-/);
+    const checked = await c.callTool({ name: "check_theme", arguments: { theme: "Blueprint" } });
+    expect(validators().check(checked.structuredContent)).toBe(true);
+    const decoded = await c.callTool({ name: "decode_theme_code", arguments: { code: s.check.code } });
+    expect((decoded.structuredContent as { file: { theme: string } }).file.theme).toBe("neon");
+    const glowing = await c.callTool({
+      name: "compose_theme",
+      arguments: { background: "#000000", accent: "#39FF88", glow: "#39FF88", textGlow: true, menuGrid: true },
+    });
+    const g = glowing.structuredContent as { check: { readable: boolean; neon: { text: { halo: number }; menuGrid: number } } };
+    expect(g.check.readable).toBe(true);
+    expect(g.check.neon.text.halo).toBeGreaterThan(0);
+    const listed = await c.callTool({ name: "list_signatures", arguments: {} });
+    expect((listed.structuredContent as { signatureNeon: { name: string }[] }).signatureNeon[0].name).toBe("Blueprint");
+  });
+
   it("bad input is a clean tool error, not a crash", async () => {
     const c = await connect();
     const r = await c.callTool({ name: "compose_theme", arguments: { background: "navy", accent: "#FFF" } });

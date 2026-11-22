@@ -11,7 +11,16 @@ if (!host) {
   process.exit(2);
 }
 const here = path.join(path.dirname(new URL(import.meta.url).pathname), "..", "src");
-const FILES = ["contrast.ts", "soul-mark.ts", "presets.ts", "meaning.ts", "soul-mark.spec.ts"];
+const FILES = [
+  "contrast.ts",
+  "soul-mark.ts",
+  "presets.ts",
+  "meaning.ts",
+  "soul-mark.spec.ts",
+  "neon.ts",
+  "neon-presets.ts",
+  "neon.spec.ts",
+];
 const normalize = (name, text) =>
   name !== "meaning.ts"
     ? text
