@@ -8,6 +8,6 @@
     "answerMustMatch": "\\b(not readable|isn't readable|is not readable|falls short|fall short|hard to read)\\b",
     "answerMustNotMatch": "\\b(it|this theme|the theme) is readable\\b"
   },
-  "brokenVariant": { "how": "check_theme is missing, so the code can't be checked.", "expect": "fail" },
+  "brokenVariant": { "how": "Every tool that can measure the theme (check_theme, compose_theme, decode_theme_code) is missing, so the code can't be checked.", "expect": "fail" },
   "passRate": { "quick": "3 of 3", "full": "10 of 10" }
 }
