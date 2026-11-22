@@ -17,6 +17,8 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
 - Round 3 results. The graders ignore a negated shortfall ("nothing falls short") and a quoted
   claim ("the note claims the theme is readable"), and the runner keeps everything the AI wrote,
   not only its last message.
+- Round 4: Claude Opus 5.5, DeepSeek V4 Pro and DeepSeek Flash each pass 12 of 12 and catch
+  12 of 12 broken variants.
 
 ## 2.0.0-alpha.2
 
