@@ -77,6 +77,7 @@ dimmed in the others, and gone behind any window that draws its own.
 - [x] **Signature looks** from classic heads-up display colors, led by Blueprint; SM3 theme codes.
 - [x] **Agent-ready:** theme files, the CLI (`--glow`, `--strength`, `--grid`), the MCP tools and
       the schemas all take Neon.
+- [x] **Switches (Neon only):** glowing text and the grid on menus, measured like everything else.
 - [ ] **In ArtCraft:** a fourth card, the glow on panels and buttons, and the grid; screenshots
       for the owner's review.
 

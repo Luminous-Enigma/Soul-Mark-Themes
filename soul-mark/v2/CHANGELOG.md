@@ -8,6 +8,9 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
   color on outlines, its bloom and an optional grid over a near-black page or fade; the glow must
   stand out (3:1) and text is checked beside the bloom and on the grid. Nine signature looks,
   SM3 theme codes, and Neon in theme files, the CLI, the MCP tools and the schemas.
+- Neon switches: glowing text (text tinted toward the glow with a soft halo) and the grid on
+  menus. The guard draws captions stronger to make room and keeps every text readable; with it
+  off, a full movie-style glow is used as picked and what falls short is said. Codes add -t / -m.
 - The agent test runner: `npm run eval` runs the agent tests against a real AI (Claude or
   DeepSeek) through the MCP server, with each task's broken variant and a dollar cap. A
   manual-only GitHub workflow runs it too.

@@ -40,7 +40,11 @@ description: Make, check and export Soul Mark themes (Soul Mark: Solid Tones, So
   shade (never in hue) to get there. Tell the person what changed, using the notes.
 - With the guard off, colors are used exactly as picked; the notes say what the guard would
   change. Suggest turning it on, or the shades it would use.
-- Neon: the glow lights outlines, never text. The report's `neon` says the glow, bloom and grid
+- Neon has two switches, both off unless asked for: `textGlow` (every text tinted toward the glow
+  with a soft halo) and `menuGrid` (the grid also runs through menus and dialogs; needs `grid`).
+  With the guard on they're kept readable: captions are drawn a little stronger, and the halo or
+  menu grid turned down only as far as it must be.
+- Neon: the glow lights outlines; text glows only with `textGlow`. The report's `neon` says the glow, bloom and grid
   as used; a guard note saying the glow was brightened or the grid made fainter is the guard
   keeping text readable, so pass it on.
 - "Midnight and Teal" names both a signature theme (solid) and a signature gradient. A name
