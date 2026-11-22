@@ -40,8 +40,8 @@ screenshotted in the real app; `soul-mark/v2/scripts/compare-copy.mjs` fails if 
       `export_theme`, `decode_theme_code`) with output schemas and true annotations.
 - [x] **Skill and agent docs:** `soul-mark/v2/SKILL.md` and `AGENTS.md`.
 - [x] **Agent tests:** four tasks (can do, must refuse or ask, must not be fooled, must catch),
-      graded by code. Not yet run against a real AI: the runner calls a paid model, so it waits
-      for the owner's approval of a budget.
+      graded by code. The runner (`npm run eval`) runs them against Claude or DeepSeek within a
+      dollar cap; the first paid runs are under way, with results in `soul-mark/v2/evals/results/`.
 - [ ] **Adapters:** web (CSS variables) and Tailwind are done through `export`; Android/Compose
       (from VidScripter's port) is still to come.
 
