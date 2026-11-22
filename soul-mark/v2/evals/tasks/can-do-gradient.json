@@ -1,0 +1,14 @@
+{
+  "id": "can-do-gradient",
+  "kind": "can-do",
+  "tier": "quick",
+  "prompt": "Make me a Soul Mark: Gradients theme that fades from deep green (#0C2F1C) to black, with a green accent, and tell me whether every text is readable. Give me the theme code.",
+  "grade": {
+    "mustCall": [{ "tool": "compose_theme", "arguments": { "background": "#0C2F1C", "color2": "#000000" } }],
+    "answerMustMatch": "\\breadable\\b",
+    "answerMustNotMatch": "\\bnot readable\\b",
+    "answerMustMention": ["SM2-0C2F1C-000000"]
+  },
+  "brokenVariant": { "how": "compose_theme's description no longer says it checks readability, so the agent guesses instead of reporting the check.", "expect": "fail" },
+  "passRate": { "quick": "3 of 3", "full": "9 of 10" }
+}

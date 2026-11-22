@@ -1,0 +1,14 @@
+{
+  "$schema": "../schema/theme.schema.json",
+  "name": "Neon Deep",
+  "theme": "gradients",
+  "seeds": {
+    "background": "#0E1A2E",
+    "accent": "#00E5FF",
+    "tint": 0.5,
+    "character": "soft",
+    "guard": true,
+    "color2": "#070B14",
+    "shape": "vertical"
+  }
+}
