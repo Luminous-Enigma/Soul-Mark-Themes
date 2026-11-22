@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/theme.schema.json",
-  "name": "Watchers HUD",
+  "name": "Blueprint",
   "theme": "neon",
   "seeds": {
     "background": "#162F56",

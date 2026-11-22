@@ -278,7 +278,7 @@
   "signatureNeon": [
     {
       "theme": "neon",
-      "name": "Watchers HUD",
+      "name": "Blueprint",
       "code": "SM3-162F56-03060C-00E5FF-00E5FF-60-g-50-cool",
       "background": "#162F56",
       "accent": "#00E5FF",
@@ -869,7 +869,7 @@
       ],
       "fades": [
         {
-          "name": "Watchers screen",
+          "name": "Blueprint",
           "colors": [
             "#162F56",
             "#03060C"

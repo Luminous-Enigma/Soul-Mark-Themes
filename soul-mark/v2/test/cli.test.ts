@@ -56,9 +56,9 @@ describe("the soul-mark command", () => {
     const { file, check } = JSON.parse(made.out);
     expect([file.theme, check.theme, check.code]).toEqual(["neon", "Soul Mark: Neon", "SM3-070B14-x-00E5FF-00E5FF-60-n-50-soft"]);
     expect(cli("decode", check.code, "--json").out).toContain('"glow":"#00E5FF"');
-    expect(cli("encode", "Watchers HUD").out.trim()).toMatch(/^SM3-162F56-03060C-/);
+    expect(cli("encode", "Blueprint").out.trim()).toMatch(/^SM3-162F56-03060C-/);
     expect(cli("check", "Green terminal").code).toBe(0);
-    expect(cli("list", "neon").out).toContain("Watchers HUD");
+    expect(cli("list", "neon").out).toContain("Blueprint");
     expect(cli("compose", "#070B14", "#00E5FF", "--glow", "#00E5FF", "--grid", "maybe").code).toBe(2);
     expect(cli("compose", "#070B14", "#00E5FF", "--strength", "0.5").code).toBe(2);
   });

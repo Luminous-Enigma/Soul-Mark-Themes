@@ -34,7 +34,7 @@ Usage:
   soul-mark --help | --version
 
 <theme> is a theme file (path to .json), a theme code (SM1-…, SM2-… or SM3-…), or a signature's
-name in quotes (for example "Neon Deep" or "Watchers HUD").
+name in quotes (for example "Neon Deep" or "Blueprint").
 
 Examples:
   soul-mark compose "#0C2F1C" "#10B981" --color2 "#000000" --json
