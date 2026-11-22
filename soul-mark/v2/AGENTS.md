@@ -18,7 +18,7 @@ CI checks, an MCP server, a skill and agent tests.
 | `schema/`              | JSON Schemas: theme file, readability report, composed theme                |
 | `data/signatures.json` | Generated from `presets.ts` by `npm run data`; never edit by hand           |
 | `examples/`            | Example theme files, checked against the schema in the tests                |
-| `evals/`               | Agent tests: tasks and graders written in code                              |
+| `evals/`               | Agent tests: tasks, graders, and the paid runner (`npm run eval`)           |
 | `SKILL.md`             | Teaches an AI agent to use this well                                        |
 
 ## Build and test
@@ -46,6 +46,8 @@ npm test
 - A new MCP tool needs an entry in `test/mcp.test.ts`'s EXPECTED, with annotations that match
   its effect. Tools that change, spend, send or delete need a person's confirmation in the app.
 - Never weaken a test to make it pass. Readability is the promise.
+- `npm run eval` calls a paid AI. Run it only with the owner's approval of a budget, always with
+  `--max-usd`, and commit the report it writes to `evals/results/`.
 - After changing dependencies, rebuild the lock file from scratch with npm 11
   (`rm -rf node_modules package-lock.json && npx npm@11.6.2 install`), then confirm
   `npm ci` works with Node 22's own npm 10, which CI uses. npm 10 itself fails to resolve
