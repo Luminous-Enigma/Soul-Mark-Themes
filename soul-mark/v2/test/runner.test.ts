@@ -41,6 +41,29 @@ describe("the runner with a careful fake AI", () => {
   });
 });
 
+describe("the answer", () => {
+  it("is everything the AI wrote, in order, not only its last message", async () => {
+    const chatty: Provider = {
+      ...carefulFake(),
+      start(system, tools, prompt) {
+        const careful = carefulFake().start(system, tools, prompt);
+        let turn = 0;
+        return {
+          async next() {
+            turn++;
+            const t = await careful.next();
+            return turn === 1 ? { ...t, text: "First I'll check it." } : t;
+          },
+          addResults: careful.addResults,
+        };
+      },
+    };
+    const r = await runTask({ provider: chatty, client, skill: SKILL, taskId: "must-not-be-fooled", prompt: task("must-not-be-fooled").prompt, broken: false });
+    expect(r.answer.startsWith("First I'll check it.\n\n")).toBe(true);
+    expect(r.answer).toMatch(/not readable/);
+  });
+});
+
 describe("broken variants", () => {
   it("one is wired for every task", () => {
     expect(Object.keys(SABOTAGE).sort()).toEqual([...TASK_IDS].sort());
