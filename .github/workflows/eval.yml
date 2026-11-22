@@ -1,0 +1,68 @@
+name: agent tests (paid)
+
+# Runs the agent tests against a real AI. It spends money, so it only ever runs when a person
+# starts it by hand (Actions > agent tests (paid) > Run workflow), never on a pull request.
+# Needs the ANTHROPIC_API_KEY or DEEPSEEK_API_KEY repository secret. The summary appears on
+# the run's page.
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "claude or deepseek"
+        required: true
+        type: choice
+        options: [claude, deepseek]
+      tier:
+        description: "quick (3 runs per task) or full (10)"
+        required: true
+        type: choice
+        options: [quick, full]
+      max_usd:
+        description: "The most this run may spend, in US dollars"
+        required: true
+        type: string
+      deepseek_prices:
+        description: "DeepSeek only: input and output dollars per million tokens, e.g. 0.28 0.42"
+        required: false
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: eval
+  cancel-in-progress: false
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: soul-mark/v2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      - run: npm ci --no-audit --no-fund
+      - name: Run the agent tests
+        env:
+          PROVIDER: ${{ inputs.provider }}
+          TIER: ${{ inputs.tier }}
+          MAX_USD: ${{ inputs.max_usd }}
+          DEEPSEEK_PRICES: ${{ inputs.deepseek_prices }}
+          ANTHROPIC_API_KEY: ${{ inputs.provider == 'claude' && secrets.ANTHROPIC_API_KEY || '' }}
+          DEEPSEEK_API_KEY: ${{ inputs.provider == 'deepseek' && secrets.DEEPSEEK_API_KEY || '' }}
+        run: |
+          set -o pipefail
+          extra=()
+          if [ "$PROVIDER" = deepseek ]; then
+            read -r price_in price_out <<< "$DEEPSEEK_PRICES"
+            extra=(--price-in "$price_in" --price-out "$price_out")
+          fi
+          npm run --silent eval -- --provider "$PROVIDER" --tier "$TIER" --max-usd "$MAX_USD" "${extra[@]}" \
+            | tee -a "$GITHUB_STEP_SUMMARY"

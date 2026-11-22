@@ -18,10 +18,45 @@ graded by code. The rules are in Cornerstone's
 
 ## Running them
 
-A runner gives each task to an AI agent connected to `dist/mcp.js` with `SKILL.md` loaded,
-records its tool calls and final answer, and calls `grade(task, run)`: 3 times per task in the
-quick tier and 10 in the full tier, then runs each broken variant the same way.
+The runner (`run.ts`) gives each task to a real AI connected to `dist/mcp.js` over stdio, with
+`SKILL.md` as its instructions. It runs the tool calls through the MCP server until the AI gives
+a final answer (at most 8 turns), then calls `grade(task, run)`. Each task runs N times as
+written (3 in the quick tier, 10 in the full tier) and N times with its broken variant.
 
-The runner calls a paid AI model, so it isn't run automatically: running it spends money, which
-the safety rule says a person approves first. Wire it up when the owner approves a model and its
-cost, with the API key kept in GitHub Actions secrets, and write the cost per run here.
+| File                    | What it does                                                        |
+|-------------------------|---------------------------------------------------------------------|
+| `agent.ts`              | One run: the tool loop, and each task's broken variant (`SABOTAGE`) |
+| `suite.ts`              | Every task, the dollar cap, the report and its summary              |
+| `run.ts`                | The command line (`npm run eval`)                                   |
+| `providers/claude.ts`   | Claude, through the official Anthropic SDK                          |
+| `providers/deepseek.ts` | DeepSeek, through its OpenAI-compatible chat API                    |
+| `results/`              | Each paid run's report (`.json`) and summary (`.md`), committed     |
+
+The broken variants are applied between the AI and the server: the AI sees the sabotaged
+description, result or skill, while the shipped server stays untouched. A broken run that
+passes means that task can't catch that breakage, and the summary says so.
+
+### It costs money, so a person starts it
+
+Running it calls a paid AI, so it never runs on its own. `--max-usd` is required; the runner
+adds up the tokens each reply reports and stops before a run could take it over the cap.
+
+```bash
+npm run eval -- --provider claude --max-usd 5
+```
+
+```bash
+npm run eval -- --provider deepseek --max-usd 1 --price-in 0.28 --price-out 0.42
+```
+
+DeepSeek has no default prices: take them from DeepSeek's official pricing page on the day
+(the numbers above are only an example). Claude's list prices are in `providers/claude.ts`.
+Other options: `--tier full`, `--runs <n>`, `--task <id>`, `--model <id>`, `--effort` (Claude).
+Exit codes: 0 every run as expected, 1 not, 2 bad usage or nothing ran.
+
+Keys come from `ANTHROPIC_API_KEY` or `DEEPSEEK_API_KEY`, or from a proxy that adds them. Never
+paste a key into a chat or a file. On GitHub, the "agent tests (paid)" workflow runs it by hand
+only, with the keys as repository secrets.
+
+`test/runner.test.ts` proves the runner with a scripted fake AI against the real MCP server,
+for free, on every pull request.
