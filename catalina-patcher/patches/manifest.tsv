@@ -1,0 +1,3 @@
+# One line per patch: <file in this folder> TAB <ArtCraft release tags it fits, a regex> TAB <why>.
+# A patch is applied only to the releases it was written and checked against; a new release
+# gets a patch only after it is checked again. None yet: the first build on a Mac shows what's needed.

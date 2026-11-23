@@ -32,3 +32,17 @@ jobs:
       - run: npm run typecheck
       - name: Tests, including the full readability sweep
         run: npm test
+
+  # The Catalina patcher: its tests run the script against stand-in Mac tools, so every command's
+  # path is checked here without a Mac. A real build is only proven on a Mac.
+  patcher:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: shellcheck -S warning catalina-patcher/artcraft-catalina.sh catalina-patcher/tests/run.sh
+      - run: bash catalina-patcher/tests/run.sh
