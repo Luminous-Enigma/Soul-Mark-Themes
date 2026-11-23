@@ -19,29 +19,35 @@ import {
 const VERSION = "2.0.0-alpha.2";
 
 const HELP = `soul-mark ${VERSION}: themes people compose from a few colors, with every text readable (WCAG AA).
-Three themes: Soul Mark: Solid Tones (one background color), Soul Mark: Gradients (two or three)
-and Soul Mark: Neon (a glowing outline color, with an optional fade and grid).
+Four themes: Soul Mark: Solid Tones (one background color), Soul Mark: Gradients (two or three),
+Soul Mark: Neon (a glowing outline color, with an optional fade and grid) and Soul Mark: Glass
+(see-through glass over a picture, light or dark, with frost and smoke).
 
 Usage:
   soul-mark compose <background> <accent> [--color2 <hex>] [--color3 <hex>] [--shape vertical|elliptical]
                     [--tint 0-1] [--tone soft|warm|cool] [--guard off] [--name <text>] [--json]
                     [--glow <hex> [--strength 0-1] [--grid on|off]      (Soul Mark: Neon)
                      [--text-glow on|off] [--menu-grid on|off]]
+  soul-mark compose <accent> --glass light|dark [--picture <id>] [--frost 0-100|off]   (Soul Mark: Glass)
+                    [--transparency 0-1] [--linked on|off] [--darkened 0-100|off] [--lines light|dark]
+                    [--guard off] [--name <text>] [--json]
   soul-mark check <theme>                 Is every text readable? Exit 0 yes, 1 no.
   soul-mark export <theme> --format css|json|tokens|tailwind
-  soul-mark list [signatures|gradients|neon|palettes|all]
-  soul-mark encode <theme>                The short theme code (SM1-… solid, SM2-… gradient, SM3-… neon).
+  soul-mark list [signatures|gradients|neon|glass|palettes|all]
+  soul-mark encode <theme>                The short theme code (SM1-… solid, SM2-… gradient, SM3-… neon,
+                                          SM4-… glass).
   soul-mark decode <code>                 The theme file for a code.
   soul-mark --help | --version
 
-<theme> is a theme file (path to .json), a theme code (SM1-…, SM2-… or SM3-…), or a signature's
-name in quotes (for example "Neon Deep" or "Blueprint").
+<theme> is a theme file (path to .json), a theme code (SM1-… to SM4-…), or a signature's name in
+quotes (for example "Neon Deep", "Blueprint" or "Quartz"; "Glass: Aurora" for Glass's Aurora).
 
 Examples:
   soul-mark compose "#0C2F1C" "#10B981" --color2 "#000000" --json
   soul-mark check "Aurora"
   soul-mark compose "#070B14" "#00E5FF" --glow "#00E5FF" --grid on --json
   soul-mark export examples/neon-deep.theme.json --format css
+  soul-mark compose "#2D81FF" --glass light --picture quartz --frost 30 --transparency 0.09 --json
 
 Exit codes:
   0  readable, or the command did what was asked
@@ -64,6 +70,13 @@ const VALUE_FLAGS = new Set([
   "--grid",
   "--text-glow",
   "--menu-grid",
+  "--glass",
+  "--picture",
+  "--frost",
+  "--transparency",
+  "--linked",
+  "--darkened",
+  "--lines",
 ]);
 
 function parse(args: string[]) {
@@ -118,6 +131,7 @@ function main(): number {
   const [command, ...rest] = words;
   switch (command) {
     case "compose": {
+      if (flags.glass) return composeGlassCommand(rest, flags);
       if (rest.length !== 2) throw new InputError("USAGE", "compose needs a background and an accent.");
       if (flags.guard && flags.guard !== "off" && flags.guard !== "on") {
         throw new InputError("USAGE", '--guard is "on" or "off".');
@@ -166,10 +180,11 @@ function main(): number {
         signatures: data.signatureThemes,
         gradients: data.signatureGradients,
         neon: data.signatureNeon,
+        glass: data.signatureGlass,
         palettes: data.palettes,
         all: data,
       };
-      if (!(what in pick)) throw new InputError("USAGE", "list takes signatures, gradients, neon, palettes or all.");
+      if (!(what in pick)) throw new InputError("USAGE", "list takes signatures, gradients, neon, glass, palettes or all.");
       const text =
         what === "signatures"
           ? data.signatureThemes.map((t) => `${t.name}  ${t.background} + ${t.accent}`).join("\n")
@@ -181,7 +196,11 @@ function main(): number {
               ? data.signatureNeon
                   .map((n) => `${n.name}  ${n.color2 ? `${n.background} → ${n.color2}` : n.background} + glow ${n.glow}${n.grid ? ", grid" : ""}`)
                   .join("\n")
-              : JSON.stringify(pick[what], null, 2);
+              : what === "glass"
+                ? data.signatureGlass
+                    .map((g) => `${g.name}  ${g.kind} glass over ${g.picture} + ${g.accent}${g.darkOn ? `, darkened ${g.darkened}` : ""}`)
+                    .join("\n")
+                : JSON.stringify(pick[what], null, 2);
       out(pick[what], text);
       return 0;
     }
@@ -200,6 +219,37 @@ function main(): number {
   }
 }
 
+/** compose for Soul Mark: Glass: one word (the accent) and --glass light|dark. */
+function composeGlassCommand(rest: string[], flags: Record<string, string>): number {
+  if (rest.length !== 1) throw new InputError("USAGE", "compose with --glass needs only an accent: the glass is the background.");
+  for (const k of ["guard", "linked"]) {
+    if (flags[k] && flags[k] !== "off" && flags[k] !== "on") throw new InputError("USAGE", `--${k} is "on" or "off".`);
+  }
+  for (const k of ["color2", "color3", "shape", "tint", "tone", "glow", "strength", "grid", "text-glow", "menu-grid"]) {
+    if (flags[k]) throw new InputError("USAGE", `--${k} isn't part of Soul Mark: Glass.`);
+  }
+  const number = (k: string) => {
+    const v = Number(flags[k]);
+    if (!Number.isFinite(v)) throw new InputError("USAGE", `--${k} needs a number.`);
+    return v;
+  };
+  const seeds = seedsFrom({
+    glass: flags.glass,
+    accent: rest[0],
+    ...(flags.picture ? { picture: flags.picture } : {}),
+    ...(flags.frost === "off" ? { frostOn: false } : flags.frost ? { frost: number("frost"), frostOn: true } : {}),
+    ...(flags.transparency ? { transparency: number("transparency") } : {}),
+    ...(flags.linked ? { linked: flags.linked !== "off" } : {}),
+    ...(flags.darkened === "off" ? { darkOn: false } : flags.darkened ? { darkened: number("darkened"), darkOn: true } : {}),
+    ...(flags.lines ? { lines: flags.lines } : {}),
+    ...(flags.guard ? { guard: flags.guard !== "off" } : {}),
+  });
+  const file = themeFile(seeds, flags.name);
+  const result = checkTheme(file);
+  out({ file, check: result }, describe(result) + `\n\nTheme file:\n${JSON.stringify(file, null, 2)}`);
+  return result.readable ? 0 : 1;
+}
+
 function describe(r: ReturnType<typeof checkTheme>): string {
   const lines = [
     `${r.name ? `${r.name} (${r.theme})` : r.theme}, code ${r.code}`,
@@ -208,6 +258,13 @@ function describe(r: ReturnType<typeof checkTheme>): string {
       : "NOT readable everywhere. Falls short:",
     ...r.shortfalls.map((s) => `  ${s.label}: ${s.ratio.toFixed(2)}:1, needs ${s.floor}:1`),
   ];
+  if (r.glass) {
+    const g = r.glass;
+    const pc = (v: number) => `${Math.round(v * 100)}%`;
+    lines.push(
+      `Glass: ${g.kind}, page ${pc(g.fill)}, menus and panels ${pc(g.stackedFill)}${g.thin ? "" : " (a full layer: Transparency is linked to Frost, which is off)"}, over work ${pc(g.overWorkFill)}; blur ${g.blur}px.`,
+    );
+  }
   if (r.notes.length) lines.push(r.guard ? "What the readability guard did:" : "With the guard on:", ...r.notes.map((n) => `  ${n.message}`));
   return lines.join("\n");
 }

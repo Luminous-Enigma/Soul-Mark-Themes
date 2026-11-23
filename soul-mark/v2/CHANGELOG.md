@@ -4,6 +4,14 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
 
 ## Unreleased
 
+- Soul Mark: Glass (in review): true glass over a picture, for people who want to explore how far
+  the app's design and their workspace can go. Light or charcoal glass, Frost (blur), Darkened
+  (smoke), and Transparency for menus and panels, linked to Frost by default (9% at Frost 30).
+  Every text, faded captions and accent text included, is measured on every glass layer over pure
+  black and pure white behind it, so it holds over any picture; frost and smoke never count.
+  Buttons and fields stay solid. Fourteen signature looks led by Quartz, SM4 theme codes, and
+  Glass in theme files, the CLI (`compose <accent> --glass light|dark`), the MCP tools and the
+  schemas. The sweep checks 6,768 combinations.
 - Soul Mark: Neon (in review): for the futuristic digital craftsman: a blueprint grid and cyberpunk neon lines on near-black. A glow
   color on outlines, its bloom and an optional grid over a near-black page or fade; the glow must
   stand out (3:1) and text is checked beside the bloom and on the grid. Nine signature looks,

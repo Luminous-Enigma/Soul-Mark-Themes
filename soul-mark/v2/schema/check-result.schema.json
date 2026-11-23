@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/Luminous-Enigma/Soul-Mark-Themes/main/soul-mark/v2/schema/check-result.schema.json",
   "title": "Soul Mark readability report",
-  "description": "What `soul-mark check` and the check_theme tool return: whether every text meets WCAG AA, at every point of a gradient (and, for Soul Mark: Neon, beside the glow and on its grid).",
+  "description": "What `soul-mark check` and the check_theme tool return: whether every text meets WCAG AA, at every point of a gradient (and, for Soul Mark: Neon, beside the glow and on its grid; for Soul Mark: Glass, on every glass layer over black and over white behind it).",
   "type": "object",
   "required": [
     "theme",
@@ -19,7 +19,8 @@
       "enum": [
         "Soul Mark: Solid Tones",
         "Soul Mark: Gradients",
-        "Soul Mark: Neon"
+        "Soul Mark: Neon",
+        "Soul Mark: Glass"
       ]
     },
     "name": {
@@ -27,7 +28,7 @@
     },
     "code": {
       "type": "string",
-      "pattern": "^SM[123]-"
+      "pattern": "^SM[1234]-"
     },
     "guard": {
       "type": "boolean"
@@ -202,6 +203,73 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1
+        }
+      }
+    },
+    "glass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "glass",
+        "picture",
+        "fill",
+        "stackedFill",
+        "overWorkFill",
+        "thin",
+        "blur",
+        "smoke",
+        "textFade",
+        "lines"
+      ],
+      "description": "Soul Mark: Glass only: how much of the picture each layer covers (the page, menus and panels, glass over work), whether Transparency applies now, the blur in pixels, the smoke, and the 3D line color.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "light",
+            "dark"
+          ]
+        },
+        "glass": {
+          "$ref": "#/$defs/hex"
+        },
+        "picture": {
+          "type": "string"
+        },
+        "fill": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "stackedFill": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "overWorkFill": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "thin": {
+          "type": "boolean"
+        },
+        "blur": {
+          "type": "number",
+          "minimum": 0
+        },
+        "smoke": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "textFade": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "lines": {
+          "$ref": "#/$defs/hex"
         }
       }
     }

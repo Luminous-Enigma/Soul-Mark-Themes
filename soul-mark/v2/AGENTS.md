@@ -6,22 +6,24 @@ CI checks, an MCP server, a skill and agent tests.
 
 ## Layout
 
-| Path                   | What it is                                                                  |
-|------------------------|-----------------------------------------------------------------------------|
-| `src/soul-mark.ts`     | The engine: composes a theme from its seeds, with the readability guard     |
-| `src/contrast.ts`      | Contrast and color math                                                     |
-| `src/meaning.ts`       | Status colors, fitted without changing hue                                  |
-| `src/presets.ts`       | Every ready-made color, signature theme and signature gradient (the source) |
-| `src/neon.ts`          | Soul Mark: Neon: the glow, bloom and grid, checked; built on the engine     |
-| `src/neon-presets.ts`  | Neon's glows, near-black pages, fades and signature looks                   |
-| `src/tools.ts`         | Shared by the CLI and MCP: theme files, check, export, signature lookup     |
-| `src/cli.ts`           | The `soul-mark` command                                                     |
-| `src/mcp.ts`           | The MCP server; every tool is effect READ                                   |
-| `schema/`              | JSON Schemas: theme file, readability report, composed theme                |
-| `data/signatures.json` | Generated from `presets.ts` by `npm run data`; never edit by hand           |
-| `examples/`            | Example theme files, checked against the schema in the tests                |
-| `evals/`               | Agent tests: tasks, graders, and the paid runner (`npm run eval`)           |
-| `SKILL.md`             | Teaches an AI agent to use this well                                        |
+| Path                   | What it is                                                                    |
+|------------------------|-------------------------------------------------------------------------------|
+| `src/soul-mark.ts`     | The engine: composes a theme from its seeds, with the readability guard       |
+| `src/contrast.ts`      | Contrast and color math                                                       |
+| `src/meaning.ts`       | Status colors, fitted without changing hue                                    |
+| `src/presets.ts`       | Every ready-made color, signature theme and signature gradient (the source)   |
+| `src/neon.ts`          | Soul Mark: Neon: the glow, bloom and grid, checked; built on the engine       |
+| `src/neon-presets.ts`  | Neon's glows, near-black pages, fades and signature looks                     |
+| `src/glass.ts`         | Soul Mark: Glass: see-through layers, frost and smoke, checked; on the engine |
+| `src/glass-presets.ts` | Glass's pictures, fades and signature looks                                   |
+| `src/tools.ts`         | Shared by the CLI and MCP: theme files, check, export, signature lookup       |
+| `src/cli.ts`           | The `soul-mark` command                                                       |
+| `src/mcp.ts`           | The MCP server; every tool is effect READ                                     |
+| `schema/`              | JSON Schemas: theme file, readability report, composed theme                  |
+| `data/signatures.json` | Generated from `presets.ts` by `npm run data`; never edit by hand             |
+| `examples/`            | Example theme files, checked against the schema in the tests                  |
+| `evals/`               | Agent tests: tasks, graders, and the paid runner (`npm run eval`)             |
+| `SKILL.md`             | Teaches an AI agent to use this well                                          |
 
 ## Build and test
 

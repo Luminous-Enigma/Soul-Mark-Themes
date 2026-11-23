@@ -58,6 +58,18 @@ describe("the MCP server", () => {
     expect(s.check.readable).toBe(true);
   });
 
+  it("composes, checks and decodes Soul Mark: Glass", async () => {
+    const c = await connect();
+    const made = await c.callTool({ name: "compose_theme", arguments: { kind: "dark", accent: "#10B981", picture: "aurora", transparency: 0.09 } });
+    const s = made.structuredContent as { check: { theme: string; code: string; readable: boolean; glass: { stackedFill: number } } };
+    expect([s.check.theme, s.check.readable, s.check.glass.stackedFill]).toEqual(["Soul Mark: Glass", true, 0.09]);
+    expect(validators().check(s.check)).toBe(true);
+    const decoded = await c.callTool({ name: "decode_theme_code", arguments: { code: s.check.code } });
+    expect((decoded.structuredContent as { file: { theme: string } }).file.theme).toBe("glass");
+    const bad = await c.callTool({ name: "compose_theme", arguments: { kind: "dark", accent: "#10B981", background: "#000000" } });
+    expect(bad.isError).toBe(true);
+  });
+
   it("composes, checks and decodes Soul Mark: Neon", async () => {
     const c = await connect();
     const made = await c.callTool({

@@ -18,7 +18,8 @@
       "enum": [
         "Soul Mark: Solid Tones",
         "Soul Mark: Gradients",
-        "Soul Mark: Neon"
+        "Soul Mark: Neon",
+        "Soul Mark: Glass"
       ]
     },
     "name": {
@@ -26,7 +27,7 @@
     },
     "code": {
       "type": "string",
-      "pattern": "^SM[123]-"
+      "pattern": "^SM[1234]-"
     },
     "seeds": {
       "$ref": "theme.schema.json#/properties/seeds"
@@ -155,6 +156,87 @@
           "maximum": 1
         }
       }
+    },
+    "glass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "glass",
+        "picture",
+        "fill",
+        "stackedFill",
+        "overWorkFill",
+        "thin",
+        "blur",
+        "smoke",
+        "textFade",
+        "lines",
+        "css"
+      ],
+      "description": "Soul Mark: Glass only: how much of the picture each layer covers (the page, menus and panels, glass over work), whether Transparency applies now, the blur in pixels, the smoke, and the 3D line color.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "light",
+            "dark"
+          ]
+        },
+        "glass": {
+          "$ref": "#/$defs/hex"
+        },
+        "picture": {
+          "type": "string"
+        },
+        "fill": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "stackedFill": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "overWorkFill": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "thin": {
+          "type": "boolean"
+        },
+        "blur": {
+          "type": "number",
+          "minimum": 0
+        },
+        "smoke": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "textFade": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "lines": {
+          "$ref": "#/$defs/hex"
+        },
+        "css": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The CSS variables Glass adds to the base theme's."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hex": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$"
     }
   }
 }
