@@ -8,6 +8,9 @@
 #
 # Safe by design: no sudo, nothing downloaded and run unpinned, every change checked,
 # and it only ever deletes inside its own work folder.
+#
+# To build on another drive (an external SSD, say), put this before the command:
+#   ARTCRAFT_CATALINA_WORK=/Volumes/<drive name>/artcraft-catalina
 set -euo pipefail
 
 REPO_URL="https://github.com/storytold/artcraft.git"
@@ -86,11 +89,18 @@ cmd_build() {
   need node  "Install Node.js (an LTS version that supports macOS 10.15)"
   need npm   "npm comes with Node.js"
 
-  local free_gb
-  free_gb=$(df -g "$HOME" | awk 'NR==2 {print $4}')
-  (( free_gb >= 10 )) || stop "only ${free_gb} GB free; the build needs about 10 GB"
+  mkdir -p "$WORK" || stop "can't make $WORK. Is the drive plugged in?"
+  local free_gb device fs
+  free_gb=$(df -g "$WORK" | awk 'NR==2 {print $4}')
+  (( free_gb >= 10 )) || stop "only ${free_gb} GB free on the drive with $WORK; the build needs about 10 GB. Pick another drive with ARTCRAFT_CATALINA_WORK"
+  device=$(df "$WORK" | awk 'NR==2 {print $1}')
+  fs=$(mount | awk -v d="$device" '$1 == d {print $0}' | sed -n 's/.*(\([a-z]*\).*/\1/p')
+  [[ "$fs" == apfs || "$fs" == hfs ]] || stop "the drive with $WORK is formatted as '$fs'. Builds need APFS or Mac OS Extended (exFAT and FAT break them)"
+  say "Working in $WORK (${free_gb} GB free, $fs)"
 
-  mkdir -p "$WORK"
+  # Keep the big downloads on the same drive as the build.
+  export CARGO_TARGET_DIR="$WORK/target"
+  export npm_config_cache="$WORK/npm-cache"
   if [[ ! -d "$SRC/.git" ]]; then
     say "Getting ArtCraft's source at $tag..."
     git clone --branch "$tag" --depth 1 "$REPO_URL" "$SRC"
@@ -127,7 +137,7 @@ cmd_build() {
   [[ ${PIPESTATUS[0]} -eq 0 ]] || stop "the build failed; the last lines of $WORK/build.log say why"
 
   local app
-  app="$(find "$SRC" -path "*/$TARGET/release/bundle/macos/*.app" -maxdepth 8 -type d | head -1)"
+  app="$(find "$WORK/target" "$SRC" -maxdepth 8 -type d -path "*/$TARGET/release/bundle/macos/*.app" 2>/dev/null | head -1)"
   [[ -n "$app" ]] || stop "the build finished but no .app was found"
 
   say "Signing for this Mac only (ad hoc)..."
@@ -157,5 +167,5 @@ case "${1:-}" in
   tags)  cmd_tags ;;
   scan)  cmd_scan ;;
   build) shift; cmd_build "$@" ;;
-  *) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+  *) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
 esac

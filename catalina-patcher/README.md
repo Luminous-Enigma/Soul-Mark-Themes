@@ -18,7 +18,9 @@ No `sudo`. Nothing is downloaded and run unpinned. It only deletes inside `~/art
 - Xcode command line tools: `xcode-select --install`
 - Rust, from rustup.rs (installs in your home folder)
 - Node.js, a version that still supports macOS 10.15
-- About 10 GB free and 30 minutes or more
+- About 10 GB free and 30 minutes or more. The build can go on another drive, such as an external
+  SSD formatted APFS or Mac OS Extended (not exFAT). Rust itself still needs about 2 GB in your
+  home folder.
 
 ## Use it
 
@@ -32,6 +34,12 @@ bash artcraft-catalina.sh build artcraft-v0.41.1
 
 ```bash
 bash artcraft-catalina.sh scan
+```
+
+On an external drive, put the folder before the command (use your drive's name):
+
+```bash
+ARTCRAFT_CATALINA_WORK=/Volumes/SSD/artcraft-catalina bash artcraft-catalina.sh build artcraft-v0.41.1
 ```
 
 `check` reads any built app, the official one included:
