@@ -40,6 +40,9 @@ Pictures: the review page from the fork's `tools/glass-proto` (Luminous-Enigma/a
 | 3D             | The scene's background is see-through; grid and camera lines at full        |
 |                | strength with a thin outline; a choice of **light or dark lines**           |
 | Fades          | The five three-color Gradients fades become Glass backgrounds, unlabeled    |
+| Transparency   | Its own setting: the menu's own fill, default 9%; every surface follows it  |
+| Frost link     | A setting, on by default (9% and Frost 30): linked, Transparency applies    |
+|                | only while frosted; unlinked, Transparency and Frost are set apart          |
 
 Measured on every prototype picture: worst body text 4.51:1, nothing below AA. Still open:
 measuring each picture when it's picked, so the bottom layer can be thinner over dark pictures.
