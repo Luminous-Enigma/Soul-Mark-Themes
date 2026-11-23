@@ -7,10 +7,14 @@ ArtCraft's own source at a release you pick. Unofficial; not from the ArtCraft t
 
 1. Gets ArtCraft's source at one release tag and writes down the exact commit it built.
 2. Applies the patches written for that release (`patches/`), checking each one fits and took.
-3. Builds for Intel only, asking for macOS 10.15 instead of 11. The setting is passed to the
-   build on the command line; ArtCraft's files aren't edited for it.
+3. Builds it the way ArtCraft's own Mac release does: the frontend first (`npm ci`, then
+   `nx run artcraft:build`), then the app with Tauri's build tool (pinned to 2.11.5, in the work
+   folder) and `SQLX_OFFLINE=true`. Intel only, asking for macOS 10.15 instead of 11; those
+   settings go on the command line, so ArtCraft's files aren't edited for them.
 4. Signs the app for your Mac only (ad hoc), so the first open is right-click › Open.
-5. Checks the result: the macOS the app asks for, and any system framework your Mac lacks.
+5. Checks the result: the macOS the app asks for, then an audit of every system function and
+   class it links to against the macOS 10.15 SDK. One that 10.15 lacks would stop the app at
+   launch with "Symbol not found", so the build stops and names it instead.
 
 No `sudo`. Nothing is downloaded and run unpinned. It only deletes inside its own work folder.
 
@@ -59,6 +63,13 @@ ARTCRAFT_CATALINA_WORK=/Volumes/SSD/artcraft-catalina bash artcraft-catalina.sh 
 bash artcraft-catalina.sh check /Volumes/ArtCraft/ArtCraft.app
 ```
 
+`audit` checks any built app against macOS 10.15, one system symbol at a time (it reads the
+10.15 SDK's lists from a public mirror, pinned to one commit):
+
+```bash
+bash artcraft-catalina.sh audit ~/artcraft-catalina/ArtCraft-artcraft-v0.41.1-catalina.app
+```
+
 `scan` lists files in the source and its Rust dependencies that name a macOS 11+ function, and
 `patches <tag>` lists the patches for a release.
 
@@ -66,15 +77,18 @@ bash artcraft-catalina.sh check /Volumes/ArtCraft/ArtCraft.app
 
 - `--json` before any command prints one JSON object instead of text.
 - Exit codes: **0** done, **1** stopped (the message says why), **2** the command was typed wrong.
-- `build --dry-run` changes nothing; `doctor`, `tags`, `scan`, `patches` and `check` only read.
+- `build --dry-run` changes nothing; `doctor`, `tags`, `scan`, `patches`, `check` and `audit` only read.
 - A build changes only its work folder (`~/artcraft-catalina`, or `ARTCRAFT_CATALINA_WORK`). Run
   one only when a person says so: it takes 30 minutes or more and about 10 GB.
 
 ## Tests
 
 `bash tests/run.sh` runs the script against stand-in Mac tools, so every command's path is
-checked anywhere, Linux included. CI runs it with shellcheck on every pull request. A real build
-is only proven on a Mac.
+checked anywhere, Linux included; `python3 tests/test_audit.py` checks the audit, offline and
+against the real 10.15 SDK. CI runs both, with shellcheck, on every pull request.
+
+Test builds run on GitHub's Intel Macs (`ci/README.md`): they prove the build and the audit, not
+that the app runs. Only a Catalina Mac proves that.
 
 ## Honest limits
 
