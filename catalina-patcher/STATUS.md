@@ -16,7 +16,12 @@ Updated 23 Nov 2026.
   CoreGraphics and WebKit (through `tao`, `wry`, `muda`, `rfd` and `window-vibrancy`), all on
   10.15. The lockfile also has two 11+ frameworks (UniformTypeIdentifiers, Symbols), but only
   for other targets; neither is in the Intel Mac build.
-- Tests: 35 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
+- The frontend's native helpers, read from their binaries: esbuild 0.24 and newer are built for
+  macOS 11 and refuse to install on Catalina. ArtCraft installs one (Vite 6's esbuild 0.25.12)
+  but builds the app with Vite 5 and esbuild 0.21.5 (macOS 10.13), so the build skips only that
+  install step (`install-steps.js`). nx, rollup, swc, rspack, unrs-resolver and fsevents are all
+  built for 10.12 to 10.15.
+- Tests: 39 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
   zizmor clean, all in CI.
 - Test builds on GitHub's Intel Macs (`ci/README.md`), approved by the owner.
 
@@ -27,6 +32,18 @@ Updated 23 Nov 2026.
 | Run `doctor` on the Mac and send what it prints         | Shows what's installed and what's missing   |
 | Run `build` when ready, and send the end of `build.log` | The first real proof, and the next patches  |
 | Open the app (right-click › Open) and say what happens  | Only Catalina itself proves the app runs    |
+
+## Watch for on the Mac
+
+Things only Catalina itself can show:
+
+- **The app's screens** run in Catalina's own WebKit (from Safari 15.6). The frontend is compiled
+  for Safari 14 and up, so it should load; a feature newer than Safari 15 could still break one
+  part.
+- **The 3D splat viewer** (`@sparkjsdev/spark`) runs compiled WebAssembly code. If it needs a
+  WebAssembly feature Safari 15 lacks, 3D worlds fail while the rest of the app works.
+- **The older Xcode tools** Catalina allows (12.4) compile the app's C parts. The test builds use
+  newer ones, so a compile error that shows up only on the Mac is possible.
 
 ## First run on the Mac
 
