@@ -25,6 +25,13 @@ Updated 23 Nov 2026.
   zizmor clean, all in CI.
 - Test builds on GitHub's Intel Macs (`ci/README.md`), approved by the owner.
 
+## Owner's approvals (23 Nov 2026, before sleep)
+
+- Up to 10 test builds on GitHub's Intel Macs overnight.
+- Small patches to ArtCraft's code or libraries where a build needs them: pinned to 0.41.1, each
+  with its reason, in `patches/`; ArtCraft's repo itself is never touched.
+- No paid agent tests.
+
 ## Needs the owner
 
 | What                                                    | Why                                         |

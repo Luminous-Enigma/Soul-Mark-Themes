@@ -44,6 +44,11 @@ Pictures: the review page from the fork's `tools/glass-proto` (Luminous-Enigma/a
 | Frost link     | A setting, on by default (9% and Frost 30): linked, Transparency applies    |
 |                | only while frosted; unlinked, Transparency and Frost are set apart          |
 
+Picked by Claude with the owner's go-ahead (23 Nov 2026), easy to change later: Quartz uses the
+Quartz picture; Darkened on light glass turns its text light near 80; dark 3D lines are offered on
+light glass only; all five three-color fades become signature looks. The engine may be built
+overnight; no paid agent tests.
+
 Measured on every prototype picture: worst body text 4.51:1, nothing below AA. Still open:
 measuring each picture when it's picked, so the bottom layer can be thinner over dark pictures.
 
