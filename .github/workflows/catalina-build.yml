@@ -21,9 +21,10 @@ jobs:
     timeout-minutes: 150
     permissions:
       contents: read
-    env:
-      ARTCRAFT_CATALINA_WORK: ${{ runner.temp }}/artcraft-catalina
     steps:
+      # The runner's own temp folder ("runner" isn't available to a job's env, only to steps).
+      - name: Work folder
+        run: echo "ARTCRAFT_CATALINA_WORK=$RUNNER_TEMP/artcraft-catalina" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
