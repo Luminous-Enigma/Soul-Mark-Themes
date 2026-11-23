@@ -30,6 +30,12 @@ Updated 23 Nov 2026.
   10.15 SDK: nothing missing. About 67 minutes. It proves the build and that the app links to
   nothing Catalina lacks; only the Mac proves it runs. It also showed `check` calling every
   framework missing on macOS 11+ (they live in a shared cache there); fixed.
+- **Two more test builds passed** (23 Nov 2026, same Mac), the first with `install-steps.js`:
+  it skipped only Vite 6's esbuild 0.25.12 (8 install steps run, 1 skipped), the app built, and
+  the audit again checked 428 system functions and classes: nothing missing. The fixed `check`
+  reports no missing frameworks. Builds used: 5 of the 10 approved (3 passed, 1 cancelled,
+  1 never started because the workflow file was invalid). Two of them started by accident when
+  work was merged to main; merging to main no longer starts a build.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 

@@ -2,10 +2,14 @@ name: catalina-build
 
 # Builds ArtCraft desktop for macOS 10.15 with catalina-patcher on GitHub's Intel Mac, then
 # audits it against the 10.15 SDK. Never on every pull request: started by hand, or by a push
-# that changes catalina-patcher/ci/request.txt (the release tag to build). See ci/README.md.
+# to a work branch that changes catalina-patcher/ci/request.txt (the release tag to build).
+# Merging to main never starts one: each build counts against the owner's approved number.
+# See ci/README.md.
 on:
   workflow_dispatch:
   push:
+    branches-ignore:
+      - main
     paths:
       - catalina-patcher/ci/request.txt
 
