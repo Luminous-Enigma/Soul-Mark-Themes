@@ -20,6 +20,9 @@ const FILES = [
   "neon.ts",
   "neon-presets.ts",
   "neon.spec.ts",
+  "glass.ts",
+  "glass-presets.ts",
+  "glass.spec.ts",
 ];
 const normalize = (name, text) =>
   name !== "meaning.ts"

@@ -31,6 +31,8 @@ Updated 23 Nov 2026.
 - Small patches to ArtCraft's code or libraries where a build needs them: pinned to 0.41.1, each
   with its reason, in `patches/`; ArtCraft's repo itself is never touched.
 - No paid agent tests.
+- Merges: yes for the next 30, each double-checked first (full tests here and in CI). Given at
+  bedtime, 23 Nov 2026.
 
 ## Needs the owner
 
