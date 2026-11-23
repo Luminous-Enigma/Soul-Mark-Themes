@@ -147,6 +147,99 @@ building, with pictures where you can:
   by default. The owner had them all redacted.
 - Report honestly: say what was measured and what wasn't; never invent data.
 
+## Also planned: our own Catalina patcher for ArtCraft desktop
+
+Not part of Glass, but the next session should know it. The owner has an Intel Mac on macOS 10.15
+Catalina (10.15.7). The ArtCraft desktop app won't run there, so we will build our own patcher,
+after studying the one below and ArtCraft desktop's real minimum macOS. Nothing has been built
+yet. Plan it with the owner first, like a theme.
+
+### What the owner found: `sudo-mk-sandwich/craft-catalina`
+
+An unofficial patcher posted in ArtCraft's issue #2430 (macOS Catalina), by someone outside the
+ArtCraft team: https://github.com/sudo-mk-sandwich/craft-catalina. Reviewed in an earlier session
+at commit `af01d61` (18 Nov 2026); that was still its newest commit on 23 Nov 2026.
+
+**It does not build ArtCraft desktop.** It builds 19 *other* apps from the same team's "Craft"
+family: AniCraft, CADCraft, Craft Anything, DeckCraft, DesignCraft, EffectCraft, FigCraft,
+FilmCraft, GridCraft, LightCraft, MailCraft, MaterialCraft, PdfCraft, PhotoCraft, SolidCraft,
+SoundCraft, TextureCraft, VectorCraft and WordCraft. MailCraft and SolidCraft come from other
+organizations (`UCS-Care-Group/mailcraft`, `tangency-labs/solidcraft`); SolidCraft's name may
+not be redistributed.
+
+**What it is:**
+
+| Part                                    | What it does                                                           |
+|-----------------------------------------|------------------------------------------------------------------------|
+| `install.sh` (643 lines)                | Builds one app on the Mac from the latest stable tag, with the patches |
+| `app/` (Rust, "Craftalina")             | A small window around `install.sh`; English and German                 |
+| `patches/`                              | Per-app fixes (below)                                                  |
+| `.github/workflows/catalina-builds.yml` | Builds one app on GitHub (proves it compiles, not that it runs)        |
+
+**How it makes an app run on Catalina:**
+
+1. Lowers the minimum from 11.0 to 10.15: `MACOSX_DEPLOYMENT_TARGET` in the app's
+   `packaging/macos/package.sh` and `LSMinimumSystemVersion` in `Info.plist.in`, then checks the
+   edit took (it stops if upstream changed those lines).
+2. Builds Intel only (`x86_64-apple-darwin`); Apple silicon Macs don't need it.
+3. Per-app patches for system functions Catalina doesn't have:
+   - **PhotoCraft:** `CGPreflightScreenCaptureAccess` / `CGRequestScreenCaptureAccess` (macOS 11+)
+     crashed the screen color picker; the patch reads `sw_vers` and skips the check below 10.16.
+     (Big Sur reports 10.16 to apps built with an older SDK.) Catalina asks for the permission
+     itself.
+   - **Craft Anything:** a placeholder for the missing `AVFAudio` framework and a small C shim for
+     `CGPreflightScreenCaptureAccess` (calls the real one if it exists, otherwise says "allowed").
+     Experimental.
+   - **AniCraft and SoundCraft:** a linker flag (`-Wl,-U,_AudioHardwareDestroyProcessTap`) so a
+     macOS 14.2+ audio function is looked up only when used; system-audio recording doesn't work.
+4. Ad-hoc signed, not notarized: the first open needs right-click › Open or "Open Anyway".
+
+**The review's verdict:** careful work, no red flags in the code at `af01d61`.
+
+- Good: never uses `sudo`; Rust comes from the official installer into the home folder; builds
+  official tagged releases; deletes are guarded (`${WORK:?}`, app-name checks); patches are
+  small and explained.
+- The one real risk: **Craftalina downloads the author's newest `install.sh` and patches
+  (`archive/HEAD.tar.gz`) at every start and runs them**, unpinned and unverified. Today's code is
+  fine; future changes would run unchecked.
+- The safer way, if the owner ever uses it: Terminal, pinned to the reviewed commit:
+  `git clone https://github.com/sudo-mk-sandwich/craft-catalina.git`, then
+  `cd craft-catalina && git checkout af01d61 && bash install.sh`. Review any newer commit first.
+- Limits it states itself: needs Xcode command line tools, several GB free (it warns under 10 GB)
+  and 30+ minutes per app; the apps' own auto-updates don't work; only "basic tests" (starts,
+  opens, saves) were done; a newer-macOS function can still crash an app when used; the Craft apps
+  draw with Metal, so they don't start in most virtual machines.
+
+### ArtCraft desktop's minimum macOS (what we know)
+
+- The desktop app is `storytold/artcraft`, a Tauri 2 app (`tauri` 2.11.2, `tao` 0.35.3, `wry`
+  0.55.1), version 0.42.1, identifier `ai.artcraft.app`, config in
+  `crates/desktop/artcraft/tauri.conf.json`.
+- Issue #2430 says it needs macOS 11 or later. But its `tauri.conf.json` sets no
+  `bundle.macOS.minimumSystemVersion`, and it has no `packaging/macos` folder like the Craft apps.
+  Its macOS release (`.github/workflows/artcraft-macos-publish.yml`) is a **universal** build
+  (`--target universal-apple-darwin`) on GitHub's newest macOS runner, signed with the team's
+  Developer ID. So the 11.0 floor most likely comes from the build (the Apple silicon half starts
+  at 11.0; the newest SDK and Xcode set the rest), not from a setting. **Unverified: measure it.**
+- To measure: in a released `.app`, read `LSMinimumSystemVersion` from `Contents/Info.plist` and
+  each slice's `minos` (`otool -l <binary> | grep -A4 LC_BUILD_VERSION`, or `vtool -show`).
+- Then find what Catalina lacks: search the Rust code and dependencies for macOS 11+ APIs
+  (`ScreenCaptureKit`, `CGPreflightScreenCaptureAccess`, `AVFAudio`, process taps, and so on), and
+  try an Intel-only build with `bundle.macOS.minimumSystemVersion` "10.15" and
+  `MACOSX_DEPLOYMENT_TARGET=10.15`. Tauri 2 itself supports 10.15. A full-code search through a
+  partial clone was too slow from the cloud session; do it in a full clone.
+
+### What ours should do (owner, earlier in this work)
+
+- Build ArtCraft desktop from **ArtCraft's own source at a pinned version**, so we always know
+  exactly what is running and can patch it. Never download and run an unpinned script.
+- Keep what `craft-catalina` does well: no `sudo`, official toolchains, guarded deletes, checks
+  that each edit took, and clear stops when upstream changes.
+- Be honest about limits: a build for an old macOS can't bring back features that exist only in
+  newer versions, and may hit bugs those versions don't have.
+- Follow the Baseline Rule like everything else (data, CLI, CI, MCP, skill and agent docs).
+- It probably belongs in its own repo; ask the owner for a name.
+
 ## Tooling notes for this environment
 
 - GitHub GraphQL is blocked; `gh pr view` fails. Use `gh api repos/<owner>/<repo>/...` (REST).
