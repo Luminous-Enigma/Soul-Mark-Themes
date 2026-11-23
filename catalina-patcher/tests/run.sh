@@ -28,8 +28,10 @@ fake npm          'echo 10.8.2'
 fake df           'if [[ "$1" == -g ]]; then printf "Filesystem 1G-blocks Used Available\n/dev/disk2s1 500 100 %s\n" "${FAKE_FREE:-200}"; else printf "Filesystem 512-blocks Used Available\n/dev/disk2s1 1 1 1\n"; fi'
 fake mount        'echo "/dev/disk2s1 on /Volumes/SSD (${FAKE_FS:-apfs}, local, journaled)"'
 fake lipo         'echo x86_64 arm64'
-fake otool        'if [[ "$1" == -L ]]; then printf "%s:\n\t/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit (x)\n\t/System/Library/Frameworks/NoSuchKit.framework/NoSuchKit (x)\n" "$2";
+fake otool        'if [[ " $* " == *" -L "* ]]; then printf "%s:\n\t/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics (x)\n\t/usr/lib/libSystem.B.dylib (x)\n\t/System/Library/Frameworks/NoSuchKit.framework/NoSuchKit (x)\n" "${@: -1}";
   else printf "x (architecture x86_64):\nLoad command 9\n      cmd LC_BUILD_VERSION\n    minos 11.0\nx (architecture arm64):\n      cmd LC_BUILD_VERSION\n    minos 11.0\n"; fi'
+fake nm           'printf "                 (undefined) external _CGMainDisplayID (from CoreGraphics)\n                 (undefined) external _malloc (from libSystem)\n"
+  [[ -n "${FAKE_NEWER:-}" ]] && printf "                 (undefined) external _CGPreflightScreenCaptureAccess (from CoreGraphics)\n"; true'
 fake PlistBuddy   'case "$2" in *LSMinimumSystemVersion*) echo "11.0";; *CFBundleExecutable*) echo "artcraft";; esac'
 # Only frameworks the stand-in Mac "has" count as present: make AppKit exist under a fake root.
 export PATH="$FAKE:/usr/bin:/bin"
@@ -78,6 +80,13 @@ run check "$APP";          ok "check: reads what the app asks for"    '[[ $CODE 
 ok "check: lists a framework this Mac lacks" '[[ "$OUT" == *"MISSING /System/Library/Frameworks/NoSuchKit"* ]]'
 run --json check "$APP";   ok "check --json is valid JSON"            '[[ $CODE -eq 0 ]] && json && [[ "$OUT" == *"\"asks_for\":\"11.0\""* ]]'
 run check "$TMP";          ok "check on a folder that isn't an app: exit 1" '[[ $CODE -eq 1 ]]'
+
+export ARTCRAFT_SDK="$HERE/sdk"
+FAKE_NEWER='' run audit "$APP"; ok "audit: an app 10.15 can open passes, exit 0" '[[ $CODE -eq 0 && "$OUT" == *"Nothing missing."* ]]'
+FAKE_NEWER=1 run audit "$APP"; ok "audit: a macOS 11 function is caught, exit 1" '[[ $CODE -eq 1 && "$OUT" == *"_CGPreflightScreenCaptureAccess"* ]]'
+FAKE_NEWER=1 run --json audit "$APP"; ok "audit --json is valid JSON, ok false" 'json && [[ "$OUT" == *"\"ok\": false"* ]]'
+run audit;                 ok "audit without a path: exit 2" '[[ $CODE -eq 2 ]]'
+unset ARTCRAFT_SDK
 
 run scan;                  ok "scan before any source: exit 1, says what to run" '[[ $CODE -eq 1 && "$OUT" == *"build"* ]]'
 mkdir -p "$TMP/work/src/.git" "$TMP/work/src/crates/x"

@@ -1,0 +1,12 @@
+--- !tapi-tbd-v3
+archs:           [ x86_64 ]
+platform:        macosx
+install-name:    '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics'
+exports:
+  - archs:           [ x86_64 ]
+    symbols:         [ _CGMainDisplayID, _CGWindowListCopyWindowInfo ]
+    objc-classes:    [ CGStandIn ]
+undefineds:
+  - archs:           [ x86_64 ]
+    symbols:         [ _NotAnExportOfThisLibrary ]
+...

@@ -1,0 +1,48 @@
+name: catalina-build
+
+# Builds ArtCraft desktop for macOS 10.15 with catalina-patcher on GitHub's Intel Mac, then
+# audits it against the 10.15 SDK. Never on every pull request: started by hand, or by a push
+# that changes catalina-patcher/ci/request.txt (the release tag to build). See ci/README.md.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - catalina-patcher/ci/request.txt
+
+permissions: {}
+
+concurrency:
+  group: catalina-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-15-intel
+    timeout-minutes: 150
+    permissions:
+      contents: read
+    env:
+      ARTCRAFT_CATALINA_WORK: ${{ runner.temp }}/artcraft-catalina
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Node 20: the newest line that still runs on Catalina, so the build matches the owner's Mac.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "20"
+      - name: Doctor
+        run: bash catalina-patcher/artcraft-catalina.sh doctor
+      - name: Build
+        run: bash catalina-patcher/artcraft-catalina.sh build "$(head -1 catalina-patcher/ci/request.txt)"
+      - name: End of the build log
+        if: failure()
+        run: tail -n 200 "$ARTCRAFT_CATALINA_WORK/build.log" || true
+      - name: Report
+        if: always()
+        run: |
+          app="$(ls -d "$ARTCRAFT_CATALINA_WORK"/ArtCraft-*-catalina.app 2>/dev/null | head -1)"
+          if [ -z "$app" ]; then echo 'REPORT_JSON {"built":false}'; exit 0; fi
+          check="$(bash catalina-patcher/artcraft-catalina.sh --json check "$app")"
+          audit="$(bash catalina-patcher/artcraft-catalina.sh --json audit "$app" || true)"
+          echo "REPORT_JSON {\"built\":true,\"check\":$check,\"audit\":$audit}"

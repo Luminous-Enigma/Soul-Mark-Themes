@@ -8,6 +8,7 @@
 #   bash artcraft-catalina.sh scan                    look for macOS 11+ functions in the source
 #   bash artcraft-catalina.sh patches <tag>           list the patches that apply to a release
 #   bash artcraft-catalina.sh check <path to .app>    what macOS a built app asks for
+#   bash artcraft-catalina.sh audit <path to .app>    will it open on 10.15? (every system symbol)
 #
 # Add --json before the command for machine-readable output.
 # Exit codes: 0 done, 1 stopped (the message says why), 2 the command was typed wrong.
@@ -27,6 +28,8 @@ APP_DIR_REL="crates/desktop/artcraft"
 TARGET="x86_64-apple-darwin"
 MIN_MACOS="10.15"
 NEED_GB=10
+# The Tauri build tool, pinned to the same 2.11 line as ArtCraft's own Tauri (2.11.2).
+TAURI_CLI_VERSION="2.11.5"
 PATCHES="${ARTCRAFT_PATCHES:-$HERE/patches}"
 PLISTBUDDY="${ARTCRAFT_PLISTBUDDY:-/usr/libexec/PlistBuddy}"
 
@@ -50,7 +53,7 @@ stop() {
   else printf 'Stopped: %s\n' "$*" >&2; fi
   exit 1
 }
-usage() { sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+usage() { sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 
 # A JSON string, escaped.
 jstr() {
@@ -253,6 +256,22 @@ cmd_check() {
   fi
 }
 
+# ---- audit: will the app open on 10.15? -----------------------------------------------------
+# Every system function and class the app links to, checked against the macOS 10.15 SDK's lists
+# (audit.py). A required one 10.15 lacks stops the app at launch with "Symbol not found".
+
+cmd_audit() {
+  local app="${1:-}"
+  [[ -n "$app" ]] || usage
+  [[ -d "$app" && "$app" == *.app ]] || stop "give the path to an .app, for example $WORK/ArtCraft-<tag>-catalina.app"
+  need python3 "It comes with the Xcode command line tools."
+  local exe sdk_args=()
+  exe="$app/Contents/MacOS/$("$PLISTBUDDY" -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")"
+  [[ -n "${ARTCRAFT_SDK:-}" ]] && sdk_args=(--sdk "$ARTCRAFT_SDK")
+  if [[ $JSON -eq 1 ]]; then python3 "$HERE/audit.py" "$exe" "${sdk_args[@]+"${sdk_args[@]}"}" --json
+  else python3 "$HERE/audit.py" "$exe" "${sdk_args[@]+"${sdk_args[@]}"}"; fi
+}
+
 # ---- build: pinned clone, patches, Intel only, minimum 10.15, ad-hoc signed ----------------
 
 cmd_build() {
@@ -267,11 +286,12 @@ cmd_build() {
     say "  2. get ArtCraft's source at $tag into $SRC and record the exact commit"
     local list; list="$(patches_for "$tag")"
     say "  3. apply $(printf '%s' "$list" | grep -c . || true) patch(es) listed for $tag, checking each fits and took"
-    say "  4. add the Rust Intel target ($TARGET)"
-    say "  5. build with MACOSX_DEPLOYMENT_TARGET=$MIN_MACOS and bundle.macOS.minimumSystemVersion $MIN_MACOS"
-    say "     (passed on the command line; ArtCraft's files are not edited for this)"
-    say "  6. sign it for this Mac only (ad hoc), copy it to $WORK/ArtCraft-$tag-catalina.app"
-    say "  7. check the app asks for $MIN_MACOS, and list any system framework this Mac lacks"
+    say "  4. add the Rust Intel target ($TARGET) and the Tauri build tool $TAURI_CLI_VERSION (in the work folder)"
+    say "  5. build the frontend (npm ci, then nx run artcraft:build), the way ArtCraft's Mac release does"
+    say "  6. build the app with MACOSX_DEPLOYMENT_TARGET=$MIN_MACOS, SQLX_OFFLINE=true and"
+    say "     bundle.macOS.minimumSystemVersion $MIN_MACOS (on the command line; ArtCraft's files aren't edited)"
+    say "  7. sign it for this Mac only (ad hoc), copy it to $WORK/ArtCraft-$tag-catalina.app"
+    say "  8. check the app asks for $MIN_MACOS, and that every system function it needs is on $MIN_MACOS (audit)"
     return 0
   fi
 
@@ -313,23 +333,30 @@ cmd_build() {
   apply_patches "$tag"
   rustup target add "$TARGET" >/dev/null
 
-  # Tauri 2 takes extra settings on the command line, so ArtCraft's files stay untouched.
+  # The Tauri build tool, pinned and kept in the work folder (not the home folder).
+  local tauri="$WORK/tools/bin/cargo-tauri"
+  if ! "$tauri" --version 2>/dev/null | grep -q " $TAURI_CLI_VERSION\$"; then
+    say "Installing the Tauri build tool $TAURI_CLI_VERSION (once, about 5 minutes)..."
+    cargo install tauri-cli --version "=$TAURI_CLI_VERSION" --locked --root "$WORK/tools"
+  fi
+
+  # The same recipe as ArtCraft's own Mac release: the frontend is built first, then Tauri
+  # builds the app with its own frontend step turned off. The extra settings go on the command
+  # line, so ArtCraft's files stay untouched.
   local override
-  override="{\"bundle\":{\"macOS\":{\"minimumSystemVersion\":\"$MIN_MACOS\"}}}"
+  override="{\"build\":{\"beforeBuildCommand\":\"\"},\"bundle\":{\"macOS\":{\"minimumSystemVersion\":\"$MIN_MACOS\"}}}"
 
   say "Building (30 minutes or more)..."
   set +e
   (
     set -e
-    cd "$app_dir"
     export MACOSX_DEPLOYMENT_TARGET="$MIN_MACOS"
-    if [[ -f package.json ]] && grep -q '"@tauri-apps/cli"' package.json; then
-      npm install
-      npx tauri build --target "$TARGET" --bundles app --config "$override"
-    else
-      command -v cargo-tauri >/dev/null 2>&1 || cargo install tauri-cli --version '^2' --locked
-      cargo tauri build --target "$TARGET" --bundles app --config "$override"
-    fi
+    export SQLX_OFFLINE=true
+    cd "$SRC/frontend"
+    npm ci --no-audit --no-fund
+    NODE_OPTIONS="--max-old-space-size=${ARTCRAFT_NODE_MEMORY_MB:-8192}" npx --no-install nx run artcraft:build
+    cd "$app_dir"
+    "$tauri" build --target "$TARGET" --bundles app --config "$override"
   ) 2>&1 | tee "$WORK/build.log"
   local status=${PIPESTATUS[0]}
   set -e
@@ -355,6 +382,10 @@ cmd_build() {
   [[ "$asks" == "$MIN_MACOS" ]] || stop "the app still asks for macOS $asks, not $MIN_MACOS"
 
   say ""
+  say "Checking every system function the app needs is on macOS $MIN_MACOS..."
+  cmd_audit "$out" || stop "the app needs something macOS $MIN_MACOS lacks (listed above). Send the list over; it becomes a patch."
+
+  say ""
   say "Done: $out"
   say "First open: right-click it, then Open (it isn't notarized)."
   say "If it closes at once, run it from Terminal to see why:"
@@ -370,6 +401,7 @@ case "${1:-}" in
   scan)    cmd_scan ;;
   patches) shift; cmd_patches "$@" ;;
   check)   shift; cmd_check "$@" ;;
+  audit)   shift; cmd_audit "$@" ;;
   build)   shift; cmd_build "$@" ;;
   *) usage ;;
 esac

@@ -46,3 +46,4 @@ jobs:
           persist-credentials: false
       - run: shellcheck -S warning catalina-patcher/artcraft-catalina.sh catalina-patcher/tests/run.sh
       - run: bash catalina-patcher/tests/run.sh
+      - run: python3 catalina-patcher/tests/test_audit.py
