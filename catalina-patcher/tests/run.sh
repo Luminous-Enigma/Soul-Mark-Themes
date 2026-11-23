@@ -79,6 +79,7 @@ FAKE_FS=exfat run build artcraft-v0.41.1; ok "build on exFAT: stops before getti
 APP="$TMP/ArtCraft.app"; mkdir -p "$APP/Contents/MacOS"; touch "$APP/Contents/Info.plist" "$APP/Contents/MacOS/artcraft"
 run check "$APP";          ok "check: reads what the app asks for"    '[[ $CODE -eq 0 && "$OUT" == *"11.0"* && "$OUT" == *"x86_64 arm64"* ]]'
 ok "check: lists a framework this Mac lacks" '[[ "$OUT" == *"MISSING /System/Library/Frameworks/NoSuchKit"* ]]'
+FAKE_MACOS=15.1 run check "$APP"; ok "check on macOS 11+: says it can't tell, no false alarms" '[[ $CODE -eq 0 && "$OUT" == *"can"*"tell"* && "$OUT" != *MISSING* ]]'
 run --json check "$APP";   ok "check --json is valid JSON"            '[[ $CODE -eq 0 ]] && json && [[ "$OUT" == *"\"asks_for\":\"11.0\""* ]]'
 run check "$TMP";          ok "check on a folder that isn't an app: exit 1" '[[ $CODE -eq 1 ]]'
 

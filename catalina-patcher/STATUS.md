@@ -21,9 +21,15 @@ Updated 23 Nov 2026.
   but builds the app with Vite 5 and esbuild 0.21.5 (macOS 10.13), so the build skips only that
   install step (`install-steps.js`). nx, rollup, swc, rspack, unrs-resolver and fsevents are all
   built for 10.12 to 10.15.
-- Tests: 39 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
+- Tests: 40 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
   zizmor clean, all in CI.
 - Test builds on GitHub's Intel Macs (`ci/README.md`), approved by the owner.
+- **First test build passed** (23 Nov 2026, GitHub's Intel Mac, macOS 15, Node 20): ArtCraft
+  `artcraft-v0.41.1` (commit `07ebde1`) built for Intel, asking for macOS 10.15 with every part's
+  lowest macOS at 10.15, and the audit checked 428 system functions and classes against the
+  10.15 SDK: nothing missing. About 67 minutes. It proves the build and that the app links to
+  nothing Catalina lacks; only the Mac proves it runs. It also showed `check` calling every
+  framework missing on macOS 11+ (they live in a shared cache there); fixed.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 
