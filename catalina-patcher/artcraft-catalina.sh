@@ -235,16 +235,21 @@ cmd_check() {
   exe="$app/Contents/MacOS/$("$PLISTBUDDY" -c 'Print :CFBundleExecutable' "$plist")"
   archs="$(lipo -archs "$exe" 2>/dev/null || echo unknown)"
   minos="$(otool -arch all -l "$exe" 2>/dev/null | awk '/\(architecture/ {a=$NF; gsub(/[():]/,"",a)} /LC_BUILD_VERSION/ {f=1} f && /minos/ {print (a ? a : "single") " " $2; f=0}' || true)"
-  local fw
-  while read -r fw; do
-    [[ "$fw" == /System/* && ! -e "$fw" ]] && missing+=("$fw")
-  done < <(otool -L "$exe" 2>/dev/null | awk 'NR>1 {print $1}')
+  # Only macOS 10.x keeps system frameworks as files; from 11 on they live in a shared cache, so
+  # a file check there would call every framework missing. The audit covers that case instead.
+  local fw on_disk=0
+  [[ "$(sw_vers -productVersion 2>/dev/null)" == 10.* ]] && on_disk=1
+  if [[ $on_disk -eq 1 ]]; then
+    while read -r fw; do
+      [[ "$fw" == /System/* && ! -e "$fw" ]] && missing+=("$fw")
+    done < <(otool -L "$exe" 2>/dev/null | awk 'NR>1 {print $1}')
+  fi
   if [[ $JSON -eq 1 ]]; then
     local m="" mo="" x
     for x in "${missing[@]+"${missing[@]}"}"; do m+="${m:+,}$(jstr "$x")"; done
     while read -r x; do [[ -n "$x" ]] && mo+="${mo:+,}$(jstr "$x")"; done <<<"$minos"
-    printf '{"ok":true,"app":%s,"asks_for":%s,"archs":%s,"minos":[%s],"missing_frameworks":[%s]}\n' \
-      "$(jstr "$app")" "$(jstr "$asks")" "$(jstr "$archs")" "$mo" "$m"
+    printf '{"ok":true,"app":%s,"asks_for":%s,"archs":%s,"minos":[%s],"frameworks_checked":%s,"missing_frameworks":[%s]}\n' \
+      "$(jstr "$app")" "$(jstr "$asks")" "$(jstr "$archs")" "$mo" "$([[ $on_disk -eq 1 ]] && echo true || echo false)" "$m"
   else
     say "App:                $app"
     say "Asks for at least:  $asks"
@@ -252,7 +257,8 @@ cmd_check() {
     say "Lowest macOS per part (minos):"
     [[ -n "$minos" ]] && printf '  %s\n' "$minos" || say "  unknown"
     say "System frameworks it needs that this Mac lacks:"
-    if [[ ${#missing[@]} -eq 0 ]]; then say "  none"; else printf '  MISSING %s\n' "${missing[@]}"; fi
+    if [[ $on_disk -eq 0 ]]; then say "  can't tell on macOS 11 or later (frameworks live in a shared cache); see audit"
+    elif [[ ${#missing[@]} -eq 0 ]]; then say "  none"; else printf '  MISSING %s\n' "${missing[@]}"; fi
   fi
 }
 
