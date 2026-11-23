@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/Luminous-Enigma/Soul-Mark-Themes/main/soul-mark/v2/schema/theme.schema.json",
   "title": "Soul Mark theme file",
-  "description": "A theme as its few chosen colors (its seeds). Every other color is derived from these and checked for readability (WCAG AA) by the engine. \"solid-tones\" is Soul Mark: Solid Tones; \"gradients\" is Soul Mark: Gradients; \"neon\" is Soul Mark: Neon.",
+  "description": "A theme as its few chosen colors (its seeds). Every other color is derived from these and checked for readability (WCAG AA) by the engine. \"solid-tones\" is Soul Mark: Solid Tones; \"gradients\" is Soul Mark: Gradients; \"neon\" is Soul Mark: Neon; \"glass\" is Soul Mark: Glass (no background color: the glass is the background).",
   "type": "object",
   "required": [
     "theme",
@@ -21,20 +21,20 @@
       "enum": [
         "solid-tones",
         "gradients",
-        "neon"
+        "neon",
+        "glass"
       ]
     },
     "seeds": {
       "type": "object",
       "required": [
-        "background",
         "accent"
       ],
       "additionalProperties": false,
       "properties": {
         "background": {
           "$ref": "#/$defs/hex",
-          "description": "The background; for a gradient, color 1, at the top."
+          "description": "The background (every theme but Glass); for a gradient, color 1, at the top."
         },
         "accent": {
           "$ref": "#/$defs/hex",
@@ -102,6 +102,68 @@
           "type": "boolean",
           "default": false,
           "description": "Neon only: the grid also runs through menus and dialogs. Needs grid."
+        },
+        "kind": {
+          "enum": [
+            "light",
+            "dark"
+          ],
+          "description": "Glass: light (clear) or dark (charcoal) glass."
+        },
+        "picture": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,32}$",
+          "description": "Glass: the picture behind the glass, a starter's id or \"custom\". Readability never depends on it."
+        },
+        "frost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 30,
+          "description": "Glass: the frost (blur), 0 to 100."
+        },
+        "frostOn": {
+          "type": "boolean",
+          "default": true,
+          "description": "Glass: frost on or off."
+        },
+        "transparency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.09,
+          "description": "Glass: how much the menus' and panels' own glass covers. The guard raises it only as far as their text needs."
+        },
+        "linked": {
+          "type": "boolean",
+          "default": true,
+          "description": "Glass: Transparency applies only while frosted."
+        },
+        "darkened": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 50,
+          "description": "Glass: the smoky tint, 0 to 100, used when darkOn."
+        },
+        "darkOn": {
+          "type": "boolean",
+          "default": false,
+          "description": "Glass: Darkened on or off."
+        },
+        "lines": {
+          "enum": [
+            "light",
+            "dark"
+          ],
+          "default": "light",
+          "description": "Glass: the 3D editor's guide lines."
+        },
+        "fill": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Glass, guard off only: the page glass's fill as picked."
         }
       }
     }
@@ -223,6 +285,147 @@
                 {
                   "required": [
                     "menuGrid"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "theme": {
+            "const": "glass"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "seeds": {
+            "required": [
+              "kind",
+              "accent"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "background"
+                  ]
+                },
+                {
+                  "required": [
+                    "color2"
+                  ]
+                },
+                {
+                  "required": [
+                    "color3"
+                  ]
+                },
+                {
+                  "required": [
+                    "shape"
+                  ]
+                },
+                {
+                  "required": [
+                    "glow"
+                  ]
+                },
+                {
+                  "required": [
+                    "strength"
+                  ]
+                },
+                {
+                  "required": [
+                    "grid"
+                  ]
+                },
+                {
+                  "required": [
+                    "textGlow"
+                  ]
+                },
+                {
+                  "required": [
+                    "menuGrid"
+                  ]
+                },
+                {
+                  "required": [
+                    "tint"
+                  ]
+                },
+                {
+                  "required": [
+                    "character"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "seeds": {
+            "required": [
+              "background"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "kind"
+                  ]
+                },
+                {
+                  "required": [
+                    "picture"
+                  ]
+                },
+                {
+                  "required": [
+                    "frost"
+                  ]
+                },
+                {
+                  "required": [
+                    "frostOn"
+                  ]
+                },
+                {
+                  "required": [
+                    "transparency"
+                  ]
+                },
+                {
+                  "required": [
+                    "linked"
+                  ]
+                },
+                {
+                  "required": [
+                    "darkened"
+                  ]
+                },
+                {
+                  "required": [
+                    "darkOn"
+                  ]
+                },
+                {
+                  "required": [
+                    "lines"
+                  ]
+                },
+                {
+                  "required": [
+                    "fill"
                   ]
                 }
               ]

@@ -1,0 +1,18 @@
+{
+  "$schema": "../schema/theme.schema.json",
+  "name": "Quartz",
+  "theme": "glass",
+  "seeds": {
+    "kind": "light",
+    "accent": "#2D81FF",
+    "picture": "quartz",
+    "frost": 30,
+    "frostOn": true,
+    "transparency": 0.09,
+    "linked": true,
+    "darkened": 50,
+    "darkOn": false,
+    "lines": "light",
+    "guard": true
+  }
+}

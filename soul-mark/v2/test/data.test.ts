@@ -63,6 +63,42 @@ describe("theme files and the schema", () => {
   });
 });
 
+describe("Soul Mark: Glass files", () => {
+  it("the schema and the loader both reject a Glass theme with a background", () => {
+    const bad = { theme: "glass", seeds: { kind: "light", accent: "#2D81FF", background: "#000000" } };
+    expect(v.theme(bad)).toBe(false);
+    expect(() => parseThemeFile(bad)).toThrow(/background/);
+  });
+
+  it("the schema and the loader both reject Glass fields on another theme", () => {
+    const bad = { theme: "solid-tones", seeds: { background: "#101B44", accent: "#1CB6BE", frost: 30 } };
+    expect(v.theme(bad)).toBe(false);
+    expect(() => parseThemeFile(bad)).toThrow(/Glass/);
+  });
+
+  it("a saved Glass theme loads back the same", () => {
+    const file = themeFile(seedsFrom({ kind: "dark", accent: "#10B981", picture: "aurora", darkOn: true, darkened: 60, linked: false }), "Mine");
+    const again = parseThemeFile(JSON.parse(JSON.stringify(file)));
+    expect(again).toEqual(file);
+    expect(v.theme(file)).toBe(true);
+  });
+
+  it("every Glass signature is readable, and its report and composed theme match the schemas", () => {
+    for (const s of signaturesData().signatureGlass) {
+      const file = signatureByName(`Glass: ${s.name}`)!;
+      const r = checkTheme(file);
+      expect([s.name, r.readable, r.code]).toEqual([s.name, true, s.code]);
+      expect(v.check(r), JSON.stringify(v.check.errors)).toBe(true);
+      expect(v.composed(composed(file)), JSON.stringify(v.composed.errors)).toBe(true);
+    }
+  });
+
+  it("exports Glass's layers in CSS", () => {
+    const css = exportTheme(signatureByName("Quartz")!, "css");
+    for (const name of ["--glass-fill", "--glass-fill-stacked", "--glass-fill-total", "--glass-blur", "--glass-rgb"]) expect(css).toContain(name);
+  });
+});
+
 describe("checking", () => {
   it.each(EXAMPLES)("%s: the report matches the schema", (f) => {
     const r = checkTheme(parseThemeFile(readJson(`examples/${f}`)));

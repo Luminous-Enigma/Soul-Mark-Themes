@@ -6,3 +6,5 @@ export * from "./presets";
 export * from "./soul-mark";
 export * from "./neon";
 export * from "./neon-presets";
+export * from "./glass";
+export * from "./glass-presets";

@@ -67,6 +67,29 @@ describe("the soul-mark command", () => {
     expect(cli("compose", "#000000", "#39FF88", "--glow", "#39FF88", "--text-glow", "bright").code).toBe(2);
   });
 
+  it("composes, checks, lists and round-trips Soul Mark: Glass", () => {
+    const made = cli("compose", "#2D81FF", "--glass", "light", "--picture", "quartz", "--json");
+    expect(made.code).toBe(0);
+    const { file, check } = JSON.parse(made.out);
+    expect([file.theme, check.theme, check.code]).toEqual(["glass", "Soul Mark: Glass", "SM4-l-2D81FF-quartz-30-f-9-k-x-l"]);
+    expect(check.glass.stackedFill).toBe(0.09);
+    expect(check.glass.fill).toBeGreaterThan(check.glass.stackedFill);
+    expect(cli("decode", check.code, "--json").out).toContain('"kind":"light"');
+    expect(cli("encode", "Hearth").out.trim()).toBe("SM4-d-F59E0B-fade-hearth-30-f-9-k-x-l");
+    expect(cli("check", "Quartz").code).toBe(0);
+    expect(cli("check", "Glass: Aurora").out).toContain("Soul Mark: Glass");
+    expect(cli("check", "Aurora").out).toContain("Soul Mark: Gradients");
+    expect(cli("list", "glass").out).toContain("Smoked quartz");
+    const unlinked = JSON.parse(cli("compose", "#2D81FF", "--glass", "dark", "--frost", "off", "--linked", "off", "--darkened", "40", "--json").out);
+    expect(unlinked.check.glass.thin).toBe(true);
+    expect(unlinked.check.code).toMatch(/-n-9-u-40-l$/);
+    expect(cli("compose", "#2D81FF", "--glass", "light", "--glow", "#00E5FF").code).toBe(2);
+    expect(cli("compose", "#000000", "#2D81FF", "--glass", "light").code).toBe(2);
+    expect(cli("compose", "#2D81FF", "--glass", "grey").code).toBe(2);
+    expect(cli("compose", "#2D81FF", "--glass", "light", "--picture", "../secret").code).toBe(2);
+    expect(cli("compose", "#2D81FF", "--glass", "light", "--frost", "lots").code).toBe(2);
+  });
+
   it("list gradients marks the three-color ones", () => {
     expect(cli("list", "gradients").out).toMatch(/Ember .*3 colors/);
   });
