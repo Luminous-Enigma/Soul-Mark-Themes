@@ -287,7 +287,8 @@ cmd_build() {
     local list; list="$(patches_for "$tag")"
     say "  3. apply $(printf '%s' "$list" | grep -c . || true) patch(es) listed for $tag, checking each fits and took"
     say "  4. add the Rust Intel target ($TARGET) and the Tauri build tool $TAURI_CLI_VERSION (in the work folder)"
-    say "  5. build the frontend (npm ci, then nx run artcraft:build), the way ArtCraft's Mac release does"
+    say "  5. build the frontend the way ArtCraft's Mac release does (npm ci, then nx run artcraft:build),"
+    say "     running packages' install steps except esbuild 0.24+, which is built for macOS 11"
     say "  6. build the app with MACOSX_DEPLOYMENT_TARGET=$MIN_MACOS, SQLX_OFFLINE=true and"
     say "     bundle.macOS.minimumSystemVersion $MIN_MACOS (on the command line; ArtCraft's files aren't edited)"
     say "  7. sign it for this Mac only (ad hoc), copy it to $WORK/ArtCraft-$tag-catalina.app"
@@ -353,7 +354,9 @@ cmd_build() {
     export MACOSX_DEPLOYMENT_TARGET="$MIN_MACOS"
     export SQLX_OFFLINE=true
     cd "$SRC/frontend"
-    npm ci --no-audit --no-fund
+    # Install steps run by install-steps.js, which skips the one Catalina can't run (esbuild 0.24+).
+    npm ci --no-audit --no-fund --ignore-scripts
+    node "$HERE/install-steps.js" .
     NODE_OPTIONS="--max-old-space-size=${ARTCRAFT_NODE_MEMORY_MB:-8192}" npx --no-install nx run artcraft:build
     cd "$app_dir"
     "$tauri" build --target "$TARGET" --bundles app --config "$override"

@@ -8,6 +8,7 @@ SCRIPT="$HERE/../artcraft-catalina.sh"
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 FAKE="$TMP/bin"; mkdir -p "$FAKE"
 pass=0; fail=0
+REAL_PATH="$PATH"
 
 fake() { printf '#!/usr/bin/env bash\n%s\n' "$2" > "$FAKE/$1"; chmod +x "$FAKE/$1"; }
 
@@ -93,6 +94,20 @@ mkdir -p "$TMP/work/src/.git" "$TMP/work/src/crates/x"
 printf 'fn f() { CGPreflightScreenCaptureAccess(); }\n' > "$TMP/work/src/crates/x/a.rs"
 printf 'fn g() {}\n' > "$TMP/work/src/crates/x/b.rs"
 run --json scan;           ok "scan finds the file naming a macOS 11+ function" 'json && [[ "$OUT" == *a.rs* && "$OUT" != *b.rs* ]]'
+
+# install-steps.js: a made-up frontend whose esbuild 0.25.12 and ordinary package each leave a
+# marker when their install step runs. Only the ordinary one may run.
+FE="$TMP/frontend"; mkdir -p "$FE/node_modules/esbuild" "$FE/node_modules/plain" "$FE/node_modules/vite/node_modules/esbuild"
+mk() { printf '{"name":"%s","version":"%s","scripts":{"postinstall":"node -e \\"require(\x27fs\x27).writeFileSync(\x27ran\x27,\x27\x27)\\""}}' "$2" "$3" > "$FE/$1/package.json"; }
+mk node_modules/plain plain 1.0.0; mk node_modules/esbuild esbuild 0.21.5; mk node_modules/vite/node_modules/esbuild esbuild 0.25.12
+printf '{"lockfileVersion":3,"packages":{"":{},"node_modules/plain":{"hasInstallScript":true},"node_modules/esbuild":{"hasInstallScript":true},"node_modules/vite/node_modules/esbuild":{"hasInstallScript":true},"node_modules/other-platform":{"hasInstallScript":true}}}' > "$FE/package-lock.json"
+OUT="$(PATH="$REAL_PATH" node "$HERE/../install-steps.js" "$FE" 2>&1)"; CODE=$?
+ok "install steps: ordinary packages run, exit 0" '[[ $CODE -eq 0 && -f "$FE/node_modules/plain/ran" && -f "$FE/node_modules/esbuild/ran" ]]'
+ok "install steps: esbuild 0.25 is skipped and said"  '[[ ! -f "$FE/node_modules/vite/node_modules/esbuild/ran" && "$OUT" == *"skipped"*"0.25.12"*"macOS 11"* ]]'
+ok "install steps: a package for another platform is passed over" '[[ "$OUT" == *"2 run, 1 skipped"* ]]'
+printf '{"name":"broken","version":"1.0.0","scripts":{"postinstall":"node -e \\"process.exit(3)\\""}}' > "$FE/node_modules/plain/package.json"
+OUT="$(PATH="$REAL_PATH" node "$HERE/../install-steps.js" "$FE" 2>&1)"; CODE=$?
+ok "install steps: any other failure stops it" '[[ $CODE -ne 0 ]]'
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [[ $fail -eq 0 ]]
