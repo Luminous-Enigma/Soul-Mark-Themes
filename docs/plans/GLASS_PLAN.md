@@ -29,17 +29,17 @@ True, pure glass: the app's windows, panels and menus are glass, and you see wha
 
 Pictures: the review page from the fork's `tools/glass-proto` (Luminous-Enigma/artcraft-services#3).
 
-| Topic             | Decision                                                                       |
-|-------------------|--------------------------------------------------------------------------------|
-| Home              | One layer of glass over the picture, as in the prototype; unchanged            |
-| Menu, while frosted | Its own fill at **9%** on light and dark glass, over the page glass          |
-| Workspaces        | Every tool's surfaces matched to the menu (bottom layer at the page fill,      |
-|                   | stacked layers at 9%, glass over work at the menu's total coverage)           |
-| Stays solid       | Pictures, video, colored buttons, and fills in the opposite color (dark        |
-|                   | buttons on light glass, black video frames): thinning them broke their text    |
-| 3D                | The scene's background is see-through; grid and camera lines at full          |
-|                   | strength with a thin outline; a choice of **light or dark lines**             |
-| Fades             | The five three-color Gradients fades become Glass backgrounds, unlabeled       |
+| Topic          | Decision                                                                    |
+|----------------|-----------------------------------------------------------------------------|
+| Home           | One layer of glass over the picture, as in the prototype; unchanged         |
+| Menu (frosted) | Its own fill at **9%** on light and dark glass, over the page glass         |
+| Workspaces     | Every tool's surfaces matched to the menu (bottom layer at the page fill,   |
+|                | stacked layers at 9%, glass over work at the menu's total coverage)         |
+| Stays solid    | Pictures, video, colored buttons, and fills in the opposite color (dark     |
+|                | buttons on light glass, black video frames): thinning them broke their text |
+| 3D             | The scene's background is see-through; grid and camera lines at full        |
+|                | strength with a thin outline; a choice of **light or dark lines**           |
+| Fades          | The five three-color Gradients fades become Glass backgrounds, unlabeled    |
 
 Measured on every prototype picture: worst body text 4.51:1, nothing below AA. Still open:
 measuring each picture when it's picked, so the bottom layer can be thinner over dark pictures.
