@@ -19,6 +19,9 @@ Put the Baseline Rule checklist in every plan and pull request.
   changes go into v2.
 - **Readability is the promise.** Every theme keeps all text at WCAG AA; tests prove it over every
   ready-made combination. Never weaken a test to make it pass.
-- **Order of work** is in `docs/ROADMAP.md`.
+- **Order of work** is in `docs/ROADMAP.md`. Next is Soul Mark: Glass: start with
+  `docs/plans/GLASS_HANDOFF.md`.
+- **No session links:** no `claude.ai/code/session` link or `Claude-Session:` line in commit
+  messages or pull request descriptions (owner, 23 Nov 2026).
 - American English (color, gray). Plain words; the owner reads on a phone.
 - Markdown tables are space-padded so columns line up in plain text.
