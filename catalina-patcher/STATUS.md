@@ -21,7 +21,7 @@ Updated 23 Nov 2026.
   but builds the app with Vite 5 and esbuild 0.21.5 (macOS 10.13), so the build skips only that
   install step (`install-steps.js`). nx, rollup, swc, rspack, unrs-resolver and fsevents are all
   built for 10.12 to 10.15.
-- Tests: 40 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
+- Tests: 41 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
   zizmor clean, all in CI.
 - Test builds on GitHub's Intel Macs (`ci/README.md`), approved by the owner.
 - **First test build passed** (23 Nov 2026, GitHub's Intel Mac, macOS 15, Node 20): ArtCraft
@@ -36,6 +36,9 @@ Updated 23 Nov 2026.
   reports no missing frameworks. Builds used: 5 of the 10 approved (3 passed, 1 cancelled,
   1 never started because the workflow file was invalid). Two of them started by accident when
   work was merged to main; merging to main no longer starts a build.
+- **First run on the owner's Mac** (24 Nov 2026): `doctor` printed nothing. The Xcode tools were
+  installed without the receipt `pkgutil` reads, and that lookup ended the script silently.
+  Fixed, with a test; the script now also says so if any step ever stops it without a message.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 

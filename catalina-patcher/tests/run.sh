@@ -16,7 +16,7 @@ fake() { printf '#!/usr/bin/env bash\n%s\n' "$2" > "$FAKE/$1"; chmod +x "$FAKE/$
 fake uname        'case "$1" in -s) echo "${FAKE_OS:-Darwin}";; -m) echo "${FAKE_ARCH:-x86_64}";; *) echo Darwin;; esac'
 fake sw_vers      'echo "${FAKE_MACOS:-10.15.7}"'
 fake xcode-select '[[ -n "${FAKE_NO_CLT:-}" ]] && exit 2; echo /Library/Developer/CommandLineTools'
-fake pkgutil      'echo "version: 12.4.0.0.1.1610135815"'
+fake pkgutil      '[[ -n "${FAKE_NO_RECEIPT:-}" ]] && exit 1; echo "version: 12.4.0.0.1.1610135815"'
 fake git          'case "$1" in
   --version) echo "git version 2.24.3";;
   ls-remote) printf "a\trefs/tags/artcraft-v0.9.0\nb\trefs/tags/artcraft-windows-v0.5.0\nc\trefs/tags/artcraft-v0.41.1\nd\trefs/tags/artcraft-v0.41.0\ne\trefs/tags/superalpha1\n";;
@@ -56,6 +56,7 @@ FAKE_FS=exfat run doctor;  ok "doctor on an exFAT drive: exit 1"     '[[ $CODE -
 FAKE_FREE=4 run doctor;    ok "doctor with 4 GB free: exit 1"        '[[ $CODE -eq 1 && "$OUT" == *"4 GB"* ]]'
 FAKE_ARCH=arm64 run doctor; ok "doctor on Apple silicon: exit 1"     '[[ $CODE -eq 1 && "$OUT" == *"Intel"* ]]'
 FAKE_NO_CLT=1 run doctor;  ok "doctor without Xcode tools: exit 1"   '[[ $CODE -eq 1 && "$OUT" == *"xcode-select --install"* ]]'
+FAKE_NO_RECEIPT=1 run doctor; ok "doctor with Xcode tools but no install receipt: still ready" '[[ $CODE -eq 0 && "$OUT" == *"Ready to build."* ]]'
 FAKE_MACOS=12.6 run doctor; ok "doctor on macOS 12: warns, still ready" '[[ $CODE -eq 0 && "$OUT" == *"warn"* ]]'
 FAKE_OS=Linux run --json doctor; ok "doctor off a Mac: exit 1, valid JSON" '[[ $CODE -eq 1 ]] && json'
 

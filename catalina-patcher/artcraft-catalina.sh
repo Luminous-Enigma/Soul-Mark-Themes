@@ -44,16 +44,31 @@ NEWER_APIS=(
 )
 
 JSON=0
+# Set once the script has said why it is stopping, so the safety net below stays quiet.
+SAID=0
 
 # ---- output ---------------------------------------------------------------------------------
 
 say()  { [[ $JSON -eq 1 ]] || printf '%s\n' "$*"; }
 stop() {
+  SAID=1
   if [[ $JSON -eq 1 ]]; then printf '{"ok":false,"stopped":%s}\n' "$(jstr "$*")"
   else printf 'Stopped: %s\n' "$*" >&2; fi
   exit 1
 }
-usage() { sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+usage() { SAID=1; sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+
+# Safety net: if a step fails without a message (it never should), say so instead of ending
+# silently, and say how to see which step it was.
+on_exit() {
+  local status=$?
+  [[ $status -ne 0 && $SAID -eq 0 ]] || return 0
+  local why="a step failed without saying why (exit $status). Run the same command again with"
+  why+=" 'bash -x' in place of 'bash' and send the last 20 lines."
+  if [[ $JSON -eq 1 ]]; then printf '{"ok":false,"stopped":%s}\n' "$(jstr "$why")"
+  else printf 'Stopped: %s\n' "$why" >&2; fi
+}
+trap on_exit EXIT
 
 # A JSON string, escaped.
 jstr() {
@@ -90,7 +105,8 @@ cmd_doctor() {
 
   if xcode-select -p >/dev/null 2>&1; then
     local clt
-    clt="$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2>/dev/null | awk '/^version/ {print $2}')"
+    # Not every install leaves this receipt (Xcode itself doesn't), so a missing one is fine.
+    clt="$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2>/dev/null | awk '/^version/ {print $2}')" || clt=""
     row "Xcode command line tools" ok "${clt:-installed}"
   else row "Xcode command line tools" missing "run: xcode-select --install"; fi
 
@@ -116,7 +132,7 @@ cmd_doctor() {
 
   if mkdir -p "$WORK" 2>/dev/null; then
     local free fs
-    free="$(df -g "$WORK" | awk 'NR==2 {print $4}')"
+    free="$(df -g "$WORK" | awk 'NR==2 {print $4}')" || free=0
     fs="$(drive_format "$WORK")"
     if [[ "$fs" == apfs || "$fs" == hfs ]]; then row "Drive format" ok "$fs ($WORK)"
     else row "Drive format" missing "'$fs' at $WORK: needs APFS or Mac OS Extended (exFAT and FAT break builds)"; fi
@@ -139,13 +155,13 @@ cmd_doctor() {
     done
     if [[ $DOCTOR_BAD -eq 0 ]]; then say ""; say "Ready to build."; else say ""; say "Fix the 'missing' rows above, then run doctor again."; fi
   fi
-  [[ $DOCTOR_BAD -eq 0 ]] || exit 1
+  [[ $DOCTOR_BAD -eq 0 ]] || { SAID=1; exit 1; }
 }
 
 # The file system of the drive a folder is on (apfs, hfs, exfat, msdos ...).
 drive_format() {
   local device
-  device="$(df "$1" | awk 'NR==2 {print $1}')"
+  device="$(df "$1" | awk 'NR==2 {print $1}')" || device=""
   mount | awk -v d="$device" '$1 == d {print $0}' | sed -n 's/.*(\([a-z]*\).*/\1/p' | head -1
 }
 
@@ -274,6 +290,7 @@ cmd_audit() {
   local exe sdk_args=()
   exe="$app/Contents/MacOS/$("$PLISTBUDDY" -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")"
   [[ -n "${ARTCRAFT_SDK:-}" ]] && sdk_args=(--sdk "$ARTCRAFT_SDK")
+  SAID=1  # audit.py always reports, pass or fail
   if [[ $JSON -eq 1 ]]; then python3 "$HERE/audit.py" "$exe" "${sdk_args[@]+"${sdk_args[@]}"}" --json
   else python3 "$HERE/audit.py" "$exe" "${sdk_args[@]+"${sdk_args[@]}"}"; fi
 }
@@ -372,7 +389,7 @@ cmd_build() {
   [[ $status -eq 0 ]] || stop "the build failed; the last lines of $WORK/build.log say why. Send them over."
 
   local app
-  app="$(find "$WORK/target" "$SRC" -maxdepth 8 -type d -path "*/$TARGET/release/bundle/macos/*.app" 2>/dev/null | head -1)"
+  app="$(find "$WORK/target" "$SRC" -maxdepth 8 -type d -path "*/$TARGET/release/bundle/macos/*.app" 2>/dev/null | head -1)" || app=""
   [[ -n "$app" ]] || stop "the build finished but no .app was found"
 
   say "Signing for this Mac only (ad hoc)..."
