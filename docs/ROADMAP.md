@@ -97,8 +97,9 @@ the hardest problem here.
 ## Soul Mark in every Crafting App
 
 The owner's goal (24 Nov 2026): ship Soul Mark Themes to all 17 of ArtCraft's Crafting Apps, to
-help bring back the freedom to customize your own software. **Starts once ArtCraft desktop runs
-on the owner's Catalina Mac**, which is the test platform for it (`catalina-patcher/`).
+help bring back the freedom to customize the look of your own software applications. **Starts
+once ArtCraft desktop runs on the owner's Catalina Mac**, which is the test platform for it
+(`catalina-patcher/`).
 
 - The apps: PhotoCraft, VectorCraft, FilmCraft, LightCraft, PdfCraft, EffectCraft, AniCraft,
   DesignCraft, FigCraft, TextureCraft, MaterialCraft, SoundCraft, WordCraft, DeckCraft, CADCraft,
