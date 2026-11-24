@@ -94,6 +94,26 @@ Strong, clear color for people who need it and people who like it.
 Textures and patterns behind the interface. Last, because keeping text readable over a pattern is
 the hardest problem here.
 
+## Soul Mark in every Crafting App
+
+The owner's goal (24 Nov 2026): ship Soul Mark Themes to all 17 of ArtCraft's Crafting Apps, to
+help bring back the freedom to customize the look of your own software applications. **Starts
+once ArtCraft desktop runs on the owner's Catalina Mac**, which is the test platform for it
+(`catalina-patcher/`).
+
+- The apps: PhotoCraft, VectorCraft, FilmCraft, LightCraft, PdfCraft, EffectCraft, AniCraft,
+  DesignCraft, FigCraft, TextureCraft, MaterialCraft, SoundCraft, WordCraft, DeckCraft, CADCraft,
+  GridCraft and Craft Anything.
+- They are native Rust apps that draw on the graphics card (no web view), each in its own
+  `storytold/<name>` repo, so CSS doesn't reach them. Each needs a small adapter that reads a
+  Soul Mark theme (its JSON or design tokens) and gives its colors to the app's own drawing code.
+  If the apps share a UI toolkit, one adapter can serve all 17.
+- The readability promise comes along: the same engine and the same tests, in every app.
+- First step: run each app on the owner's Mac (their Mac downloads are universal, so they include
+  Intel; `artcraft-catalina.sh audit` checks one without installing it) and see how each handles
+  its colors today.
+- Nothing changes in those repos without the owner's say.
+
 ## Also on the list
 
 - Custom-idea themes.
