@@ -130,6 +130,12 @@ cmd_doctor() {
     command -v npm >/dev/null 2>&1 && row "npm" ok "$(npm -v)" || row "npm" missing "comes with Node.js"
   else row "Node.js" missing "install an LTS version that starts on this Mac (Node 20 if a newer one won't)"; fi
 
+  # BoringSSL (ArtCraft's secure-connection library) is C, compiled with CMake during the build.
+  local cv=""
+  cv="$(cmake --version 2>/dev/null | awk 'NR==1 {print $3}')" || cv=""
+  if [[ -n "$cv" ]]; then row "CMake" ok "$cv"
+  else row "CMake" missing "CMake 3.31.6 for macOS 10.10 and later, from cmake.org (README, "Before you start")"; fi
+
   if mkdir -p "$WORK" 2>/dev/null; then
     local free fs
     free="$(df -g "$WORK" | awk 'NR==2 {print $4}')" || free=0
@@ -325,6 +331,7 @@ cmd_build() {
   need cargo "Install Rust from https://rustup.rs (it installs into your home folder, no sudo)"
   need node  "Install Node.js (an LTS version that starts on this Mac)"
   need npm   "npm comes with Node.js"
+  need cmake "Install CMake 3.31.6 for macOS 10.10 and later, from cmake.org (README, "Before you start")"
 
   mkdir -p "$WORK" || stop "can't make $WORK. Is the drive plugged in?"
   local free_gb fs

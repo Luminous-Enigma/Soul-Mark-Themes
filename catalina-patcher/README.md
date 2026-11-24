@@ -23,9 +23,31 @@ No `sudo`. Nothing is downloaded and run unpinned. It only deletes inside its ow
 - Xcode command line tools: `xcode-select --install`
 - Rust, from rustup.rs (installs in your home folder)
 - Node.js, an LTS version that starts on Catalina (Node 20 if a newer one won't)
+- CMake, which compiles ArtCraft's secure-connection library (BoringSSL). Kitware's build for
+  macOS 10.10 and later needs no installer. Check the file against the SHA-256 on its release
+  page (`dc49fe67…6e6c` for this one), unpack it anywhere, and add its `bin` folder to `PATH`:
+
+  ```bash
+  curl -LO https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-macos10.10-universal.tar.gz
+  shasum -a 256 cmake-3.31.6-macos10.10-universal.tar.gz
+  tar xzf cmake-3.31.6-macos10.10-universal.tar.gz
+  export PATH="$PWD/cmake-3.31.6-macos10.10-universal/CMake.app/Contents/bin:$PATH"
+  ```
+
 - About 10 GB free and 30 minutes or more. The build can go on another drive, such as an external
-  SSD formatted APFS or Mac OS Extended (not exFAT). Rust itself still needs about 2 GB in your
-  home folder.
+  SSD formatted APFS or Mac OS Extended. Rust itself needs about 2 GB, in your home folder unless
+  `RUSTUP_HOME` and `CARGO_HOME` point elsewhere.
+- **A drive formatted exFAT** (shared with Windows) can't hold the build, because exFAT has no
+  symlinks or Unix permissions. Without erasing it, make a Mac-format disk image on it that grows
+  as it fills, and build inside that:
+
+  ```bash
+  hdiutil create -size 80g -type SPARSEBUNDLE -fs APFS -volname Projects /Volumes/<drive>/Projects.sparsebundle
+  hdiutil attach /Volumes/<drive>/Projects.sparsebundle
+  ```
+
+  Then build with `ARTCRAFT_CATALINA_WORK=/Volumes/Projects/artcraft-catalina`. After a restart,
+  double-click the `.sparsebundle` to open it again.
 
 ## Use it
 

@@ -21,7 +21,7 @@ Updated 23 Nov 2026.
   but builds the app with Vite 5 and esbuild 0.21.5 (macOS 10.13), so the build skips only that
   install step (`install-steps.js`). nx, rollup, swc, rspack, unrs-resolver and fsevents are all
   built for 10.12 to 10.15.
-- Tests: 41 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
+- Tests: 42 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
   zizmor clean, all in CI.
 - Test builds on GitHub's Intel Macs (`ci/README.md`), approved by the owner.
 - **First test build passed** (23 Nov 2026, GitHub's Intel Mac, macOS 15, Node 20): ArtCraft
@@ -39,6 +39,11 @@ Updated 23 Nov 2026.
 - **First run on the owner's Mac** (24 Nov 2026): `doctor` printed nothing. The Xcode tools were
   installed without the receipt `pkgutil` reads, and that lookup ended the script silently.
   Fixed, with a test; the script now also says so if any step ever stops it without a message.
+- **First build on the owner's Mac** (24 Nov 2026), on an exFAT SSD through an APFS disk image,
+  with Rust on the same image: it compiled up to BoringSSL (`boring-sys2`), which needs CMake.
+  GitHub's Macs come with CMake, so the test builds never showed it. `doctor` and `build` now
+  check for it, and the README says where to get a CMake that runs on 10.15 and how to build on
+  an exFAT drive.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 
