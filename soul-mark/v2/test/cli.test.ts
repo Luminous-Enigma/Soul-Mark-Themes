@@ -50,6 +50,18 @@ describe("the soul-mark command", () => {
     expect(JSON.parse(cli("export", "Aurora", "--format", "tokens").out)["soul-mark"].gradient.$type).toBe("gradient");
   });
 
+  it("export --format craft writes a Crafting Apps theme, and refuses what isn't solid", () => {
+    const r = cli("export", "Deep space and Azure", "--format", "craft");
+    expect(r.code).toBe(0);
+    const t = JSON.parse(r.out);
+    expect(t.schema).toBe("craft-design-theme");
+    expect(t.id).toBe("soul-mark.deep-space-and-azure");
+    expect(t.variants).toBe("dark");
+    const refused = cli("export", "Aurora", "--format", "craft", "--json");
+    expect(refused.code).toBe(2);
+    expect(refused.err + refused.out).toMatch(/NOT_SOLID/);
+  });
+
   it("composes, checks, lists and round-trips Soul Mark: Neon", () => {
     const made = cli("compose", "#070B14", "#00E5FF", "--glow", "#00E5FF", "--grid", "off", "--json");
     expect(made.code).toBe(0);

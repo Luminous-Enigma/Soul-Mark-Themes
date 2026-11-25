@@ -4,6 +4,11 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
 
 ## Unreleased
 
+- Soul Mark in ArtCraft's Crafting Apps: `export --format craft` (CLI and MCP) writes a Soul Mark:
+  Solid Tones theme as a `craft-design-theme` v1 file, the theme format all 17 apps share. Every
+  pinned pair meets the suite's contrast rules; buttons keep Soul Mark's accent and label, and
+  check marks get the nearest shade that reaches 3:1. Gradients, Neon and Glass are refused with
+  why (the suite's surfaces are solid), and so is a theme with the guard off.
 - Soul Mark: Glass (in review): true glass over a picture, for people who want to explore how far
   the app's design and their workspace can go. Light or charcoal glass, Frost (blur), Darkened
   (smoke), and Transparency for menus and panels, linked to Frost by default (9% at Frost 30).

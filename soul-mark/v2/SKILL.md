@@ -30,7 +30,9 @@ description: Make, check and export Soul Mark themes (Soul Mark: Solid Tones, So
     `transparency`, `linked`, `darkened`/`darkOn` and `lines`. Leave `guard` on unless the person
     asks for it off.
   - `check_theme`: is every text readable? Takes a code, a theme file's JSON, or a signature's name.
-  - `export_theme`: `format` is `css`, `json`, `tokens` or `tailwind`.
+  - `export_theme`: `format` is `css`, `json`, `tokens`, `tailwind` or `craft`. `craft` is a theme
+    file for ArtCraft's Crafting Apps (PhotoCraft, VectorCraft and the rest): one file restyles every
+    app on their shared theme system. Solid Tones only, guard on; the others are refused with why.
   - `decode_theme_code`: what a shared code contains.
 - From a terminal (`soul-mark`, in `dist/cli.js`): `compose`, `check`, `export`, `list`,
   `encode`, `decode`, each with `--json`. Exit codes: 0 readable or done, 1 falls short,

@@ -200,10 +200,10 @@ export function createServer() {
     {
       title: "Export a theme",
       description:
-        "Writes a theme out for an app or design tool: css (CSS variables), json (all composed colors), tokens (W3C Design Tokens) or tailwind (colors for a Tailwind config). Returns the text; saves no file.",
+        "Writes a theme out for an app or design tool: css (CSS variables), json (all composed colors), tokens (W3C Design Tokens) tailwind (colors for a Tailwind config) or craft (a theme file for ArtCraft's Crafting Apps; Soul Mark: Solid Tones only). Returns the text; saves no file.",
       inputSchema: {
         theme: themeInput,
-        format: z.enum(EXPORT_FORMATS as [string, ...string[]]).describe("css, json, tokens or tailwind."),
+        format: z.enum(EXPORT_FORMATS as [string, ...string[]]).describe("css, json, tokens, tailwind or craft."),
       },
       outputSchema: { format: z.string(), output: z.string(), code: z.string() },
       annotations: READ,

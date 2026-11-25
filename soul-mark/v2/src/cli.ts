@@ -32,7 +32,7 @@ Usage:
                     [--transparency 0-1] [--linked on|off] [--darkened 0-100|off] [--lines light|dark]
                     [--guard off] [--name <text>] [--json]
   soul-mark check <theme>                 Is every text readable? Exit 0 yes, 1 no.
-  soul-mark export <theme> --format css|json|tokens|tailwind
+  soul-mark export <theme> --format css|json|tokens|tailwind|craft
   soul-mark list [signatures|gradients|neon|glass|palettes|all]
   soul-mark encode <theme>                The short theme code (SM1-… solid, SM2-… gradient, SM3-… neon,
                                           SM4-… glass).

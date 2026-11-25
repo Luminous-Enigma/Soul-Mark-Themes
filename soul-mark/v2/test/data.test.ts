@@ -190,6 +190,20 @@ describe("exporting", () => {
   const aurora = signatureByName("Aurora")!;
   const starter = signatureByName("Midnight and Teal")!;
 
+  it("craft exports Solid Tones only, guard on, as a suite theme that reads", () => {
+    const t = JSON.parse(exportTheme(starter, "craft"));
+    expect(t.schema).toBe("craft-design-theme");
+    expect(t.schema_version).toBe(1);
+    expect(t.name).toBe("Soul Mark: Midnight and Teal");
+    expect(t.soul_mark.code).toMatch(/^SM1-/);
+    expect(t.seeds.status).toEqual(expect.objectContaining({ good: expect.any(String), bad: expect.any(String) }));
+    expect(() => exportTheme(aurora, "craft")).toThrow(/solid colors/);
+    expect(() => exportTheme(signatureByName("Blueprint")!, "craft")).toThrow(/solid colors/);
+    expect(() => exportTheme(signatureByName("Quartz")!, "craft")).toThrow(/solid colors/);
+    const off = themeFile(seedsFrom({ background: "#101B44", accent: "#1CB6BE", guard: false }));
+    expect(() => exportTheme(off, "craft")).toThrow(/guard on/);
+  });
+
   it("Neon exports carry the glow: css variables, json, tokens and tailwind", () => {
     const hud = signatureByName("Blueprint")!;
     const css = exportTheme(hud, "css");

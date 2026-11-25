@@ -97,21 +97,32 @@ the hardest problem here.
 ## Soul Mark in every Crafting App
 
 The owner's goal (24 Nov 2026): ship Soul Mark Themes to all 17 of ArtCraft's Crafting Apps, to
-help bring back the freedom to customize the look of your own software applications. **Starts
-once ArtCraft desktop runs on the owner's Catalina Mac**, which is the test platform for it
-(`catalina-patcher/`).
+help bring back the freedom to customize the look of your own software applications. Started
+25 Nov 2026, at the owner's word.
 
 - The apps: PhotoCraft, VectorCraft, FilmCraft, LightCraft, PdfCraft, EffectCraft, AniCraft,
   DesignCraft, FigCraft, TextureCraft, MaterialCraft, SoundCraft, WordCraft, DeckCraft, CADCraft,
-  GridCraft and Craft Anything.
-- They are native Rust apps that draw on the graphics card (no web view), each in its own
-  `storytold/<name>` repo, so CSS doesn't reach them. Each needs a small adapter that reads a
-  Soul Mark theme (its JSON or design tokens) and gives its colors to the app's own drawing code.
-  If the apps share a UI toolkit, one adapter can serve all 17.
-- The readability promise comes along: the same engine and the same tests, in every app.
-- First step: run each app on the owner's Mac (their Mac downloads are universal, so they include
-  Intel; `artcraft-catalina.sh audit` checks one without installing it) and see how each handles
-  its colors today.
+  GridCraft and Craft Anything. Native Rust apps, each in its own `storytold/<name>` repo.
+- **What we found (read from their public source, 25 Nov 2026):** all 17 are built on one shared
+  framework, `storytold/craft-libs` (on egui). It has a suite theme system (`crates/theme`,
+  `docs/suite-themes.md`): a theme is a `craft-design-theme` JSON file of seeds and pinned colors,
+  every app reads one shared folder (on a Mac, `~/Library/Application Support/ArtCraft/themes/`),
+  and one choice restyles every app. It checks WCAG contrast too. It landed about 23 Nov 2026:
+  PhotoCraft, VectorCraft, PdfCraft and WordCraft use it now; the other 13 get it as they move to a
+  newer framework.
+- [x] **Solid Tones as suite themes:** `soul-mark export <theme> --format craft` (and the MCP
+  tool) writes one. It pins Soul Mark's own colors and leaves the rest to the suite, and every
+  pinned pair meets the suite's own contrast rules, so the suite resolves it with no warnings.
+  Buttons keep Soul Mark's exact accent and label (`accent.strong`); check marks get the nearest
+  shade that reaches 3:1 (`accent.solid`). Tested on every signature and on every ready-made
+  background with every ready-made accent (1,645 themes).
+- [ ] **Try it on the owner's Mac:** install a Crafting App that has the suite system (PhotoCraft),
+  put a Soul Mark file in the themes folder's `library/`, and pick it.
+- [ ] **High Contrast:** the suite has a high-contrast slot in every theme; Soul Mark: High
+  Contrast fills it.
+- [ ] **Gradients, Neon's glow and Glass** need what the suite doesn't have yet: gradient
+  surfaces, glow and see-through layers (its surfaces must be opaque). That means proposing
+  framework features to `craft-libs`: a written plan first, sent only with the owner's say.
 - Nothing changes in those repos without the owner's say.
 
 ## Also on the list
