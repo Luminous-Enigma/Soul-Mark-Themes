@@ -43,7 +43,7 @@ node dist/cli.js compose "#0C2F1C" "#10B981" --color2 "#000000" --json
 ```
 
 ```bash
-node dist/cli.js export examples/aurora.theme.json --format tokens
+node dist/cli.js export examples/borealis.theme.json --format tokens
 ```
 
 `node dist/cli.js --help` lists every command. Exit codes: 0 readable or done, 1 falls short,

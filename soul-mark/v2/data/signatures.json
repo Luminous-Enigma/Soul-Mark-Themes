@@ -205,7 +205,7 @@
     },
     {
       "theme": "gradients",
-      "name": "Aurora",
+      "name": "Borealis",
       "colors": [
         "#0D2661",
         "#0C2F1C",
@@ -494,7 +494,7 @@
     },
     {
       "theme": "glass",
-      "name": "Aurora",
+      "name": "Polar lights",
       "code": "SM4-d-10B981-aurora-30-f-9-k-x-l",
       "kind": "dark",
       "accent": "#10B981",
@@ -1139,7 +1139,7 @@
         },
         {
           "id": "aurora",
-          "name": "Aurora",
+          "name": "Polar lights",
           "kind": "image"
         },
         {

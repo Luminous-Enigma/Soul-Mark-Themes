@@ -40,11 +40,11 @@ Usage:
   soul-mark --help | --version
 
 <theme> is a theme file (path to .json), a theme code (SM1-… to SM4-…), or a signature's name in
-quotes (for example "Neon Deep", "Blueprint" or "Quartz"; "Glass: Aurora" for Glass's Aurora).
+quotes (for example "Neon Deep", "Blueprint" or "Quartz"; "Glass: Quartz" asks for Glass's looks by name).
 
 Examples:
   soul-mark compose "#0C2F1C" "#10B981" --color2 "#000000" --json
-  soul-mark check "Aurora"
+  soul-mark check "Borealis"
   soul-mark compose "#070B14" "#00E5FF" --glow "#00E5FF" --grid on --json
   soul-mark export examples/neon-deep.theme.json --format css
   soul-mark compose "#2D81FF" --glass light --picture quartz --frost 30 --transparency 0.09 --json

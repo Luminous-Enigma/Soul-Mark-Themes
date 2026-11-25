@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/theme.schema.json",
-  "name": "Aurora",
+  "name": "Borealis",
   "theme": "gradients",
   "seeds": {
     "background": "#0D2661",

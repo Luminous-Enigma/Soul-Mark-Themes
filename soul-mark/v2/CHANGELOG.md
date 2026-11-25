@@ -4,6 +4,10 @@ Soul Mark v2's core. Versions follow semantic versioning (breaking.feature.fix).
 
 ## Unreleased
 
+- Renamed so no Soul Mark look shares a name with ArtCraft's own themes (ArtCraft has Aurora and
+  Sunset): the signature gradient Aurora is now **Borealis** (same colors, so its SM2 code is
+  unchanged), and Glass's Aurora picture and look are now **Polar lights** (the picture's id stays
+  `aurora`, so SM4 codes still work).
 - Soul Mark in ArtCraft's Crafting Apps: `export --format craft` (CLI and MCP) writes a Soul Mark:
   Solid Tones theme as a `craft-design-theme` v1 file, the theme format all 17 apps share. Every
   pinned pair meets the suite's contrast rules; buttons keep Soul Mark's accent and label, and

@@ -40,7 +40,10 @@ jobs:
       - name: Doctor
         run: bash catalina-patcher/artcraft-catalina.sh doctor
       - name: Build
-        run: bash catalina-patcher/artcraft-catalina.sh build "$(head -1 catalina-patcher/ci/request.txt)"
+        run: |
+          flags=""
+          if grep -qx 'soul-mark' catalina-patcher/ci/request.txt; then flags="--soul-mark"; fi
+          bash catalina-patcher/artcraft-catalina.sh build "$(head -1 catalina-patcher/ci/request.txt)" $flags
       # The finished app, as a download for the owner to try on Catalina. ditto keeps the
       # bundle's symlinks, permissions and signature, which a plain upload would lose.
       - name: Pack the app

@@ -49,7 +49,7 @@ point of the gradient, not just at its colors.
     <td width="50%"><img src="visual-previews/gradient-black-to-charcoal.webp" alt="ArtCraft's home page in Black to charcoal"><br><b>Black to charcoal</b><br>Black fading to charcoal, with a blue accent. The dark one.</td>
   </tr>
   <tr>
-    <td width="50%"><img src="visual-previews/gradient-aurora.webp" alt="ArtCraft's home page in Aurora"><br><b>Aurora &nbsp;<sub>3 COLORS</sub></b><br>Deep blue, deep green, then night.</td>
+    <td width="50%"><img src="visual-previews/gradient-borealis.webp" alt="ArtCraft's home page in Borealis"><br><b>Borealis &nbsp;<sub>3 COLORS</sub></b><br>Deep blue, deep green, then night.</td>
     <td width="50%"><img src="visual-previews/gradient-synthwave.webp" alt="ArtCraft's home page in Synthwave"><br><b>Synthwave &nbsp;<sub>3 COLORS</sub></b><br>Deep purple, deep rose, then night.</td>
   </tr>
   <tr>
@@ -188,7 +188,7 @@ npm ci && npm run build
 ```
 
 ```bash
-node dist/cli.js check "Aurora"
+node dist/cli.js check "Borealis"
 ```
 
 AI assistants connect to the MCP server with `node dist/mcp.js` (stdio); `SKILL.md` there teaches

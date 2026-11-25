@@ -34,7 +34,7 @@ describe("the MCP server", () => {
   });
 
   it("check_theme returns a report that matches the published schema", async () => {
-    const r = await (await connect()).callTool({ name: "check_theme", arguments: { theme: "Aurora" } });
+    const r = await (await connect()).callTool({ name: "check_theme", arguments: { theme: "Borealis" } });
     const v = validators();
     expect(v.check(r.structuredContent), JSON.stringify(v.check.errors)).toBe(true);
     expect((r.structuredContent as { readable: boolean }).readable).toBe(true);

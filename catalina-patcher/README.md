@@ -45,6 +45,18 @@ No `sudo`. Nothing is downloaded and run unpinned. It only deletes inside its ow
   image is still fine for keeping files and apps; it's only the build's nonstop writing that trips
   the driver.
 
+## Safari, and black screens
+
+ArtCraft draws its screens with the Mac's WebKit. Catalina's own is Safari 13.1's, too old for
+them (it can't read BigInt), so the window stays black. Update Safari to 15.6.1 (Software Update,
+or `softwareupdate --list`, then `sudo softwareupdate --install "<the Safari label>"`). Catalina
+keeps that newer WebKit for Safari alone, so the patcher adds a small launcher to the app that
+starts it with the newer one. Builds include it; for an app you already have:
+
+```bash
+bash artcraft-catalina.sh launcher /path/to/ArtCraft.app
+```
+
 ## Use it
 
 First check the Mac is ready. It changes nothing:

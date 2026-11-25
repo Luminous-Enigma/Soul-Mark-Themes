@@ -6,4 +6,8 @@ Small changes to ArtCraft's source so it builds and runs on macOS 10.15 Catalina
 The build checks each patch fits before applying it, applies it, then checks it took. If ArtCraft
 changed those lines in a newer release, the build stops and says which patch needs updating.
 
-None yet. They get added as the first builds show what Catalina lacks.
+None yet for Catalina itself: the first builds needed none.
+
+`soul-mark/` is different: an optional feature, not a fix. `build <tag> --soul-mark` adds Soul
+Mark Themes to the app's Appearance settings (Solid Tones, Gradients, Neon and Glass, beside
+ArtCraft's own five themes). One patch per release it was written and checked against.

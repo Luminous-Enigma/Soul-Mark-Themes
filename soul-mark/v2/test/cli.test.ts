@@ -39,15 +39,15 @@ describe("the soul-mark command", () => {
   });
 
   it("encode and decode round-trip", () => {
-    const code = JSON.parse(cli("encode", "Aurora", "--json").out).code;
+    const code = JSON.parse(cli("encode", "Borealis", "--json").out).code;
     const file = JSON.parse(cli("decode", code, "--json").out);
     expect(file.seeds.color3).toBe("#0B0E14");
   });
 
   it("export writes each format", () => {
-    expect(cli("export", "Aurora", "--format", "css").out).toMatch(/--st-gradient-page/);
-    expect(cli("export", "Aurora", "--format", "nope").code).toBe(2);
-    expect(JSON.parse(cli("export", "Aurora", "--format", "tokens").out)["soul-mark"].gradient.$type).toBe("gradient");
+    expect(cli("export", "Borealis", "--format", "css").out).toMatch(/--st-gradient-page/);
+    expect(cli("export", "Borealis", "--format", "nope").code).toBe(2);
+    expect(JSON.parse(cli("export", "Borealis", "--format", "tokens").out)["soul-mark"].gradient.$type).toBe("gradient");
   });
 
   it("export --format craft writes a Crafting Apps theme, and refuses what isn't solid", () => {
@@ -57,7 +57,7 @@ describe("the soul-mark command", () => {
     expect(t.schema).toBe("craft-design-theme");
     expect(t.id).toBe("soul-mark.deep-space-and-azure");
     expect(t.variants).toBe("dark");
-    const refused = cli("export", "Aurora", "--format", "craft", "--json");
+    const refused = cli("export", "Borealis", "--format", "craft", "--json");
     expect(refused.code).toBe(2);
     expect(refused.err + refused.out).toMatch(/NOT_SOLID/);
   });
@@ -89,8 +89,8 @@ describe("the soul-mark command", () => {
     expect(cli("decode", check.code, "--json").out).toContain('"kind":"light"');
     expect(cli("encode", "Hearth").out.trim()).toBe("SM4-d-F59E0B-fade-hearth-30-f-9-k-x-l");
     expect(cli("check", "Quartz").code).toBe(0);
-    expect(cli("check", "Glass: Aurora").out).toContain("Soul Mark: Glass");
-    expect(cli("check", "Aurora").out).toContain("Soul Mark: Gradients");
+    expect(cli("check", "Glass: Northern lights").out).toContain("Soul Mark: Glass");
+    expect(cli("check", "Borealis").out).toContain("Soul Mark: Gradients");
     expect(cli("list", "glass").out).toContain("Smoked quartz");
     const unlinked = JSON.parse(cli("compose", "#2D81FF", "--glass", "dark", "--frost", "off", "--linked", "off", "--darkened", "40", "--json").out);
     expect(unlinked.check.glass.thin).toBe(true);
