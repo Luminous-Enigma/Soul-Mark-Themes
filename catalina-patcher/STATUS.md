@@ -50,8 +50,10 @@ Updated 23 Nov 2026.
   kernel-panicked in `com.apple.driver.DiskImages`. Catalina's disk image driver doesn't hold up
   under a build's load. `doctor` and `build` now refuse a disk image on macOS 10.x, and the README
   no longer suggests one. The owner is getting a USB drive to erase as APFS.
-- **Meanwhile, test build 6** (run 45530137973) keeps the built app as a download, so the owner
-  can try ArtCraft on Catalina before building it there. Builds used: 6 of the 10 approved.
+- **Test build 6 passed** (25 Nov 2026, run 45530137973): built, asks for 10.15, the audit found
+  all 428 system functions and classes on 10.15, and the app was kept as a 46 MB download
+  (`ArtCraft-catalina-app`, until 9 Dec 2026) for the owner to try on Catalina. Builds used: 6 of
+  the 10 approved.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 
