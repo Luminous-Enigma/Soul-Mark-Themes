@@ -24,7 +24,7 @@ describe("data files", () => {
   it("lists every signature gradient, marking the three-color ones", () => {
     const g = signaturesData().signatureGradients;
     expect(g.filter((x) => x.colorCount === 3).map((x) => x.name)).toEqual([
-      "Aurora",
+      "Borealis",
       "Synthwave",
       "Nebula",
       "Ember",
@@ -187,7 +187,7 @@ describe("checking", () => {
 });
 
 describe("exporting", () => {
-  const aurora = signatureByName("Aurora")!;
+  const aurora = signatureByName("Borealis")!;
   const starter = signatureByName("Midnight and Teal")!;
 
   it("craft exports Solid Tones only, guard on, as a suite theme that reads", () => {

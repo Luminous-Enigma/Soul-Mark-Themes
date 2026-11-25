@@ -158,14 +158,14 @@ describe("providers speak their APIs' formats", () => {
   it("claude: sends tools and tool results the Messages API way", async () => {
     const sent: Record<string, unknown>[] = [];
     const replies = [
-      { content: [{ type: "tool_use", id: "t1", name: "check_theme", input: { theme: "Aurora" } }], stop_reason: "tool_use", usage: { input_tokens: 100, output_tokens: 10 } },
+      { content: [{ type: "tool_use", id: "t1", name: "check_theme", input: { theme: "Borealis" } }], stop_reason: "tool_use", usage: { input_tokens: 100, output_tokens: 10 } },
       { content: [{ type: "text", text: "Readable." }], stop_reason: "end_turn", usage: { input_tokens: 150, output_tokens: 5, cache_read_input_tokens: 50 } },
     ];
     const fakeClient = { messages: { create: async (body: Record<string, unknown>) => (sent.push(structuredClone(body)), replies.shift()) } };
     const p = claudeProvider({ model: "claude-opus-5-5", effort: "medium", client: fakeClient as never });
-    const convo = p.start("skill", [{ name: "check_theme", description: "d", inputSchema: { type: "object" } }], "Is Aurora readable?");
+    const convo = p.start("skill", [{ name: "check_theme", description: "d", inputSchema: { type: "object" } }], "Is Borealis readable?");
     const first = await convo.next();
-    expect(first).toMatchObject({ stop: "tools", calls: [{ id: "t1", name: "check_theme", args: { theme: "Aurora" } }] });
+    expect(first).toMatchObject({ stop: "tools", calls: [{ id: "t1", name: "check_theme", args: { theme: "Borealis" } }] });
     convo.addResults([{ id: "t1", content: "{}", isError: false }]);
     const second = await convo.next();
     expect(second).toMatchObject({ stop: "done", text: "Readable.", usage: { input: 200, output: 5 } });
@@ -182,7 +182,7 @@ describe("providers speak their APIs' formats", () => {
   it("deepseek: sends tools and tool results the chat completions way", async () => {
     const bodies: Record<string, unknown>[] = [];
     const replies = [
-      { choices: [{ message: { content: null, tool_calls: [{ id: "c1", type: "function", function: { name: "check_theme", arguments: '{"theme":"Aurora"}' } }] }, finish_reason: "tool_calls" }], usage: { prompt_tokens: 90, completion_tokens: 9 } },
+      { choices: [{ message: { content: null, tool_calls: [{ id: "c1", type: "function", function: { name: "check_theme", arguments: '{"theme":"Borealis"}' } }] }, finish_reason: "tool_calls" }], usage: { prompt_tokens: 90, completion_tokens: 9 } },
       { choices: [{ message: { content: "Readable." }, finish_reason: "stop" }], usage: { prompt_tokens: 120, completion_tokens: 4 } },
     ];
     const fetcher = async (_url: string, init: { body: string }) => {
@@ -190,8 +190,8 @@ describe("providers speak their APIs' formats", () => {
       return new Response(JSON.stringify(replies.shift()));
     };
     const p = deepseekProvider({ model: "deepseek-chat", price: { input: 1, output: 2 }, fetcher: fetcher as never });
-    const convo = p.start("skill", [{ name: "check_theme", description: "d", inputSchema: { type: "object" } }], "Is Aurora readable?");
-    expect(await convo.next()).toMatchObject({ stop: "tools", calls: [{ id: "c1", name: "check_theme", args: { theme: "Aurora" } }] });
+    const convo = p.start("skill", [{ name: "check_theme", description: "d", inputSchema: { type: "object" } }], "Is Borealis readable?");
+    expect(await convo.next()).toMatchObject({ stop: "tools", calls: [{ id: "c1", name: "check_theme", args: { theme: "Borealis" } }] });
     convo.addResults([{ id: "c1", content: "{}", isError: false }]);
     expect(await convo.next()).toMatchObject({ stop: "done", text: "Readable.", usage: { input: 120, output: 4 } });
     expect(bodies[0]).toMatchObject({ model: "deepseek-chat", tools: [{ type: "function", function: { name: "check_theme", parameters: { type: "object" } } }] });

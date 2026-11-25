@@ -654,7 +654,7 @@ export function signaturesData() {
 /** A signature look by name (case and spacing ignored), as a theme file. */
 export function signatureByName(name: string): ThemeFile | null {
   const key = name.toLowerCase().replace(/\s+/g, " ").trim();
-  // "Glass: Aurora" asks for Glass's look when another theme has the same name.
+  // "Glass: <name>" asks for Glass's look by name, even if another theme has the same name.
   const glassKey = key.replace(/^glass:\s*/, "");
   if (glassKey !== key) return glassSignature(glassKey);
   const t = SIGNATURE_THEMES.find((s) => s.name.toLowerCase() === key);

@@ -70,7 +70,7 @@ const seedsInput = {
 };
 const themeInput = z
   .string()
-  .describe('A theme code (SM1-… to SM4-…), a theme file\'s JSON, or a signature\'s name such as "Neon Deep", "Blueprint" or "Quartz" ("Glass: Aurora" for Glass\'s Aurora).');
+  .describe('A theme code (SM1-… to SM4-…), a theme file\'s JSON, or a signature\'s name such as "Neon Deep", "Blueprint" or "Quartz" ("Glass: Quartz" asks for Glass\'s looks by name).');
 
 const checkOutput = {
   theme: z.string().describe('"Soul Mark: Solid Tones", "Soul Mark: Gradients", "Soul Mark: Neon" or "Soul Mark: Glass".'),

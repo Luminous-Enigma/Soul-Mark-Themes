@@ -60,9 +60,8 @@ description: Make, check and export Soul Mark themes (Soul Mark: Solid Tones, So
   and pure white behind it, so it holds over any picture, uploads included. A note saying the
   menus were made a little thicker, or the accent a shade deeper, is the guard keeping text
   readable; pass it on. `thin: false` means Transparency is linked to Frost and Frost is off.
-- "Aurora" names a signature gradient and a Glass look; a name gives the gradient, and
-  "Glass: Aurora" gives Glass's. Glass's fades have their own names (Northern lights, Neon dusk,
-  Cosmos, Hearth, Evening).
+- "Glass: <name>" always gives Glass's look of that name. Glass's fades have their own names
+  (Northern lights, Neon dusk, Cosmos, Hearth, Evening).
 - "Midnight and Teal" names both a signature theme (solid) and a signature gradient. A name
   gives the solid one; for the gradient, use its code from `list_signatures`.
 
