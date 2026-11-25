@@ -120,6 +120,12 @@ printf '{"name":"broken","version":"1.0.0","scripts":{"postinstall":"node -e \\"
 OUT="$(PATH="$REAL_PATH" node "$HERE/../install-steps.js" "$FE" 2>&1)"; CODE=$?
 ok "install steps: any other failure stops it" '[[ $CODE -ne 0 ]]'
 
+run build artcraft-v0.41.1 --soul-mark --dry-run
+ok "build --soul-mark --dry-run says it adds Soul Mark, changes nothing" '[[ $CODE -eq 0 && "$OUT" == *"Soul Mark patch"* && "$OUT" == *"nothing is changed"* ]]'
+ok "the Soul Mark patch for 0.41.1 is there" '[[ -s "$HERE/../patches/soul-mark/artcraft-v0.41.1.patch" ]]'
+run build artcraft-v0.41.1 --soul-mak
+ok "build with an unknown option: exit 2" '[[ $CODE -eq 2 ]]'
+
 # The launcher: the real program moves to .bin, a script takes its place, and on macOS 10.x it
 # starts the program with Safari's staged WebKit when that exists.
 APP="$TMP/Fake.app"; mkdir -p "$APP/Contents/MacOS"; : > "$APP/Contents/Info.plist"

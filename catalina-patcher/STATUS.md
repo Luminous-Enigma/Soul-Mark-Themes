@@ -62,6 +62,14 @@ Updated 23 Nov 2026.
   `/Library/Apple/System/Library/StagedFrameworks/Safari` for Safari alone. Started with
   `DYLD_FRAMEWORK_PATH` pointing there, ArtCraft drew its screens. The new `launcher` command (also
   part of every build now) makes the app start that way by itself.
+- **Soul Mark in the desktop app** (`build <tag> --soul-mark`, patches/soul-mark/): Soul Mark
+  Themes in the Appearance settings, beside ArtCraft's own five themes, which stay as they are.
+  The engine and panel come from the ArtCraft web app fork; the desktop gets its own adapter (its
+  built-in themes are classes, its colours already read `--st-*`). Checked here: the patch applies
+  to a clean 0.41.1, every changed TypeScript file parses, and the Soul Mark files type-check. The
+  web app's one regex lookbehind (Safari 16.4+) was replaced, since Catalina's engine is Safari
+  15.6. Not yet: Neon's grid dimming and Glass's matching inside each workspace (the desktop finds
+  its pages differently). Test build 7 builds it.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 

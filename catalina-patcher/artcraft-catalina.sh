@@ -5,6 +5,7 @@
 #   bash artcraft-catalina.sh tags                    list ArtCraft releases to pick from
 #   bash artcraft-catalina.sh build <tag>             build that release for Catalina
 #   bash artcraft-catalina.sh build <tag> --dry-run   show every step without doing any
+#   bash artcraft-catalina.sh build <tag> --soul-mark add Soul Mark Themes to its Appearance settings
 #   bash artcraft-catalina.sh scan                    look for macOS 11+ functions in the source
 #   bash artcraft-catalina.sh patches <tag>           list the patches that apply to a release
 #   bash artcraft-catalina.sh check <path to .app>    what macOS a built app asks for
@@ -57,7 +58,7 @@ stop() {
   else printf 'Stopped: %s\n' "$*" >&2; fi
   exit 1
 }
-usage() { SAID=1; sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+usage() { SAID=1; sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 
 # Safety net: if a step fails without a message (it never should), say so instead of ending
 # silently, and say how to see which step it was.
@@ -242,6 +243,17 @@ apply_patches() {
   say "Patches applied: $n"
 }
 
+# Soul Mark Themes in the app's Appearance settings: an optional feature patch (not a Catalina
+# fix), one per release it was written and checked against.
+apply_soul_mark() {
+  local tag="$1" file="$PATCHES/soul-mark/$1.patch"
+  [[ -f "$file" ]] || stop "no Soul Mark patch for $tag yet (patches/soul-mark/ has the releases it fits)"
+  git -C "$SRC" apply --check "$file" 2>/dev/null || stop "the Soul Mark patch no longer fits $tag. It needs updating."
+  git -C "$SRC" apply "$file"
+  git -C "$SRC" apply --reverse --check "$file" 2>/dev/null || stop "the Soul Mark patch didn't take"
+  say "  patched: Soul Mark Themes (Appearance settings)"
+}
+
 # ---- scan: search the pinned source and its Rust dependencies for newer macOS functions ----
 
 cmd_scan() {
@@ -368,8 +380,8 @@ LAUNCHER
 # ---- build: pinned clone, patches, Intel only, minimum 10.15, ad-hoc signed ----------------
 
 cmd_build() {
-  local tag="" dry=0 a
-  for a in "$@"; do case "$a" in --dry-run) dry=1 ;; -*) usage ;; *) tag="$a" ;; esac; done
+  local tag="" dry=0 soul=0 a
+  for a in "$@"; do case "$a" in --dry-run) dry=1 ;; --soul-mark) soul=1 ;; -*) usage ;; *) tag="$a" ;; esac; done
   [[ -n "$tag" ]] || stop "pick a version. See them with: bash $0 tags"
   [[ "$tag" =~ ^[A-Za-z0-9._-]+$ ]] || stop "'$tag' doesn't look like a release tag"
 
@@ -379,6 +391,7 @@ cmd_build() {
     say "  2. get ArtCraft's source at $tag into $SRC and record the exact commit"
     local list; list="$(patches_for "$tag")"
     say "  3. apply $(printf '%s' "$list" | grep -c . || true) patch(es) listed for $tag, checking each fits and took"
+    [[ $soul -eq 1 ]] && say "     and the Soul Mark patch (patches/soul-mark/$tag.patch): Soul Mark Themes in Appearance"
     say "  4. add the Rust Intel target ($TARGET) and the Tauri build tool $TAURI_CLI_VERSION (in the work folder)"
     say "  5. build the frontend the way ArtCraft's Mac release does (npm ci, then nx run artcraft:build),"
     say "     running packages' install steps except esbuild 0.24+, which is built for macOS 11"
@@ -427,6 +440,7 @@ cmd_build() {
   [[ -f "$app_dir/tauri.conf.json" ]] || stop "ArtCraft moved its app; $APP_DIR_REL/tauri.conf.json is gone. Update APP_DIR_REL."
 
   apply_patches "$tag"
+  [[ $soul -eq 1 ]] && apply_soul_mark "$tag"
   rustup target add "$TARGET" >/dev/null
 
   # The Tauri build tool, pinned and kept in the work folder (not the home folder).

@@ -1,2 +1,3 @@
 artcraft-v0.41.1
-run 4: keep the built app as a download for the owner to try on Catalina
+soul-mark
+run 5: ArtCraft with Soul Mark Themes in Appearance, for the owner to try on Catalina
