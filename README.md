@@ -95,7 +95,66 @@ Two switches, for Neon only, and how the grid keeps out of the way of real work:
   </tr>
 </table>
 
-All 15 signature themes, 16 signature gradients and 9 Neon looks are listed in
+### Soul Mark: Glass
+
+True glass over a picture, for anyone who wants to explore how far the app's design and their own
+workspace can go. Light or charcoal glass, frosted or clear, with menus and panels as see-through
+as you like (9% here). Every text is measured over pure black and pure white behind the glass, so
+it reads over any picture, your own included. Four pictures, each in four settings:
+
+**Sunrise** in Edit Video: a warm morning, the colors coming through every panel.
+
+<table>
+  <tr>
+    <td width="50%"><img src="visual-previews/glass-sunrise-light-frosted.webp" alt="ArtCraft's Edit Video in Glass over Sunrise, light, frosted"><br><b>Light, frosted</b></td>
+    <td width="50%"><img src="visual-previews/glass-sunrise-light-clear.webp" alt="ArtCraft's Edit Video in Glass over Sunrise, light, clear"><br><b>Light, clear</b></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="visual-previews/glass-sunrise-dark-frosted.webp" alt="ArtCraft's Edit Video in Glass over Sunrise, dark, frosted"><br><b>Dark, frosted</b></td>
+    <td width="50%"><img src="visual-previews/glass-sunrise-dark-clear.webp" alt="ArtCraft's Edit Video in Glass over Sunrise, dark, clear"><br><b>Dark, clear</b></td>
+  </tr>
+</table>
+
+**Dusk** in Edit Image: a sunset behind the editor.
+
+<table>
+  <tr>
+    <td width="50%"><img src="visual-previews/glass-dusk-light-frosted.webp" alt="ArtCraft's Edit Image in Glass over Dusk, light, frosted"><br><b>Light, frosted</b></td>
+    <td width="50%"><img src="visual-previews/glass-dusk-light-clear.webp" alt="ArtCraft's Edit Image in Glass over Dusk, light, clear"><br><b>Light, clear</b></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="visual-previews/glass-dusk-dark-frosted.webp" alt="ArtCraft's Edit Image in Glass over Dusk, dark, frosted"><br><b>Dark, frosted</b></td>
+    <td width="50%"><img src="visual-previews/glass-dusk-dark-clear.webp" alt="ArtCraft's Edit Image in Glass over Dusk, dark, clear"><br><b>Dark, clear</b></td>
+  </tr>
+</table>
+
+**Confetti** in BG Change: bright shapes, to show how see-through it really is.
+
+<table>
+  <tr>
+    <td width="50%"><img src="visual-previews/glass-confetti-light-frosted.webp" alt="ArtCraft's BG Change in Glass over Confetti, light, frosted"><br><b>Light, frosted</b></td>
+    <td width="50%"><img src="visual-previews/glass-confetti-light-clear.webp" alt="ArtCraft's BG Change in Glass over Confetti, light, clear"><br><b>Light, clear</b></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="visual-previews/glass-confetti-dark-frosted.webp" alt="ArtCraft's BG Change in Glass over Confetti, dark, frosted"><br><b>Dark, frosted</b></td>
+    <td width="50%"><img src="visual-previews/glass-confetti-dark-clear.webp" alt="ArtCraft's BG Change in Glass over Confetti, dark, clear"><br><b>Dark, clear</b></td>
+  </tr>
+</table>
+
+**Neon dusk** in Frame Extract: purple fading to rose, then night.
+
+<table>
+  <tr>
+    <td width="50%"><img src="visual-previews/glass-neon-dusk-light-frosted.webp" alt="ArtCraft's Frame Extract in Glass over Neon dusk, light, frosted"><br><b>Light, frosted</b></td>
+    <td width="50%"><img src="visual-previews/glass-neon-dusk-light-clear.webp" alt="ArtCraft's Frame Extract in Glass over Neon dusk, light, clear"><br><b>Light, clear</b></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="visual-previews/glass-neon-dusk-dark-frosted.webp" alt="ArtCraft's Frame Extract in Glass over Neon dusk, dark, frosted"><br><b>Dark, frosted</b></td>
+    <td width="50%"><img src="visual-previews/glass-neon-dusk-dark-clear.webp" alt="ArtCraft's Frame Extract in Glass over Neon dusk, dark, clear"><br><b>Dark, clear</b></td>
+  </tr>
+</table>
+
+All 15 signature themes, 16 signature gradients, 9 Neon looks and 14 Glass looks are listed in
 [`soul-mark/v2/data/signatures.json`](soul-mark/v2/data/signatures.json).
 
 ## The themes
@@ -109,7 +168,7 @@ Soul Mark: Solid Tones (v1) is the theme contributed to
 | Soul Mark: Solid Tones, v2 | The same theme, agent-ready: files, CLI, CI and MCP                       | Agent-ready              |
 | Soul Mark: Gradients       | Two or three colors flowing into each other, still readable               | Agent-ready; in preview  |
 | Soul Mark: Neon            | Futuristic craftsman: neon lines and a blueprint grid on near-black       | Agent-ready; in preview  |
-| Soul Mark: Glass           | Frosted, see-through backgrounds, windows and menus, with clear text      | Planned                  |
+| Soul Mark: Glass           | Frosted, see-through backgrounds, windows and menus, with clear text      | Agent-ready; in preview  |
 | Soul Mark: High Contrast   | Strong, clear colors for anyone who wants them                            | Planned                  |
 | Soul Mark: Patterns        | Textures and patterns behind the interface                                | Planned                  |
 
