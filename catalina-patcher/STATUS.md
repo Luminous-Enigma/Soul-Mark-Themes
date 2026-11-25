@@ -21,7 +21,7 @@ Updated 23 Nov 2026.
   but builds the app with Vite 5 and esbuild 0.21.5 (macOS 10.13), so the build skips only that
   install step (`install-steps.js`). nx, rollup, swc, rspack, unrs-resolver and fsevents are all
   built for 10.12 to 10.15.
-- Tests: 42 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
+- Tests: 45 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
   zizmor clean, all in CI.
 - Test builds on GitHub's Intel Macs (`ci/README.md`), approved by the owner.
 - **First test build passed** (23 Nov 2026, GitHub's Intel Mac, macOS 15, Node 20): ArtCraft
@@ -44,6 +44,14 @@ Updated 23 Nov 2026.
   GitHub's Macs come with CMake, so the test builds never showed it. `doctor` and `build` now
   check for it, and the README says where to get a CMake that runs on 10.15 and how to build on
   an exFAT drive.
+- **Second build on the owner's Mac** (24 Nov 2026), in an APFS sparse disk image on the exFAT
+  SSD: after BoringSSL built with CMake, the Tauri build tool died with a bus error
+  (`KERN_MEMORY_ERROR`, its file couldn't be read back), and on the next try the Mac
+  kernel-panicked in `com.apple.driver.DiskImages`. Catalina's disk image driver doesn't hold up
+  under a build's load. `doctor` and `build` now refuse a disk image on macOS 10.x, and the README
+  no longer suggests one. The owner is getting a USB drive to erase as APFS.
+- **Meanwhile, test build 6** (run 45530137973) keeps the built app as a download, so the owner
+  can try ArtCraft on Catalina before building it there. Builds used: 6 of the 10 approved.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 

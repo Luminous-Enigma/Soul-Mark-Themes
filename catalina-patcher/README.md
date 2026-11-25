@@ -38,16 +38,12 @@ No `sudo`. Nothing is downloaded and run unpinned. It only deletes inside its ow
   SSD formatted APFS or Mac OS Extended. Rust itself needs about 2 GB, in your home folder unless
   `RUSTUP_HOME` and `CARGO_HOME` point elsewhere.
 - **A drive formatted exFAT** (shared with Windows) can't hold the build, because exFAT has no
-  symlinks or Unix permissions. Without erasing it, make a Mac-format disk image on it that grows
-  as it fills, and build inside that:
-
-  ```bash
-  hdiutil create -size 80g -type SPARSEBUNDLE -fs APFS -volname Projects /Volumes/<drive>/Projects.sparsebundle
-  hdiutil attach /Volumes/<drive>/Projects.sparsebundle
-  ```
-
-  Then build with `ARTCRAFT_CATALINA_WORK=/Volumes/Projects/artcraft-catalina`. After a restart,
-  double-click the `.sparsebundle` to open it again.
+  symlinks or Unix permissions. **Don't build inside a disk image on it either**: on Catalina the
+  disk image driver can crash the whole Mac under a build's load (a kernel panic in
+  `com.apple.driver.DiskImages`; it happened on the owner's Mac). `doctor` and `build` refuse a
+  disk image on macOS 10.x. Use a drive, or a USB stick, erased as APFS in Disk Utility. A disk
+  image is still fine for keeping files and apps; it's only the build's nonstop writing that trips
+  the driver.
 
 ## Use it
 
