@@ -10171,19 +10171,10 @@ index 42a3e3f..bf0da7b 100644
                      
                      if (gl_FragColor.a <= 0.0) discard;
 diff --git a/frontend/libs/components/pagescene/src/lib/engine/scene.ts b/frontend/libs/components/pagescene/src/lib/engine/scene.ts
-index 83fbae8..8f4c736 100644
+index 83fbae8..608c998 100644
 --- a/frontend/libs/components/pagescene/src/lib/engine/scene.ts
 +++ b/frontend/libs/components/pagescene/src/lib/engine/scene.ts
-@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
- import { SplatMesh } from "@sparkjsdev/spark";
- import { ensureInternalBbox } from "./internalBbox";
- import {
-+  applyGltfBudget,
-+  assertSpzWithinBudget,
-   collectObjectTextures,
-   disposeObject3D,
- } from "@storyteller/ui-viewer-3d";
-@@ -47,6 +49,15 @@ export type SceneDeps = {
+@@ -47,6 +47,15 @@ export type SceneDeps = {
    onGlbLoaded?: () => void;
  };
  
@@ -10199,7 +10190,7 @@ index 83fbae8..8f4c736 100644
  class Scene {
    name: string;
    gridHelper: InfiniteGridHelper | undefined;
-@@ -522,7 +533,8 @@ class Scene {
+@@ -522,7 +531,8 @@ class Scene {
        tl, tr, tr, br, br, bl, bl, tl, // near rectangle
      ];
      const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -10209,87 +10200,7 @@ index 83fbae8..8f4c736 100644
      const lines = new THREE.LineSegments(geometry, material);
      // Disable line raycasting: THREE picks LineSegments with a 1-world-unit
      // threshold, which dwarfs this ~0.7u frustum and selects it from far
-@@ -611,6 +623,12 @@ class Scene {
-   setColor(object_uuid: string, hex_color: string) {
-     const object = this.get_object_by_uuid(object_uuid);
-     if (!object) return;
-+    this.setObjectColor(object, hex_color);
-+  }
-+
-+  // Same as setColor, for callers that already hold the object: avoids a
-+  // whole-scene uuid search per call (scene loads restore every object).
-+  setObjectColor(object: THREE.Object3D, hex_color: string) {
-     object.userData["color"] = hex_color;
-     // Deterministic, classification-based color (see instantiate, where
-     // the persisted userData.isShape / shapeType marker is set):
-@@ -631,8 +649,10 @@ class Scene {
-       if (!isShape) return;
-       if (c.material.color === undefined) return;
-       c.material.color.set(picked);
--      if (c.name == "PointLight") {
--        const light = this.get_object_by_uuid(c.userData["light"]);
-+      if (c.userData["shapeType"] == "PointLight") {
-+        // instantiate attaches the light under its marker mesh, so look in
-+        // this subtree rather than searching the whole scene.
-+        const light = c.getObjectByProperty("uuid", c.userData["light"]);
-         if (light) {
-           (light as THREE.PointLight).color = new THREE.Color(hex_color);
-         }
-@@ -643,11 +663,15 @@ class Scene {
-   setVisible(object_uuid: string, visible: boolean) {
-     const object = this.get_object_by_uuid(object_uuid);
-     if (object) {
--      object.visible = visible;
--      object.userData["visible"] = object.visible;
-+      this.setObjectVisible(object, visible);
-     }
-   }
- 
-+  setObjectVisible(object: THREE.Object3D, visible: boolean) {
-+    object.visible = visible;
-+    object.userData["visible"] = object.visible;
-+  }
-+
-   async loadMMDWithPlaceholder(
-     media_id: string,
-     name: string,
-@@ -1041,7 +1065,9 @@ class Scene {
-         reject(error);
-         return;
-       }
--      const glbLoader = new GLTFLoader();
-+      // Reject accessor counts that would decode past the memory budget
-+      // before GLTFLoader allocates for them.
-+      const glbLoader = applyGltfBudget(new GLTFLoader());
-       glbLoader.parse(
-         buffer,
-         "", // NB: No relative path to load additional assets!
-@@ -1084,6 +1110,15 @@ class Scene {
-         return;
-       }
- 
-+      try {
-+        // The SPZ decoder sizes its storage from the header's splat count.
-+        await assertSpzWithinBudget(buffer);
-+      } catch (error) {
-+        console.error("Splat rejected:", error);
-+        reject(error);
-+        return;
-+      }
-+
-       new SplatMesh({
-         fileBytes: buffer,
-         onLoad: (mesh) => {
-@@ -1105,7 +1140,7 @@ class Scene {
-     progress: (event: ProgressEvent) => void,
-   ): Promise<GLTF> {
-     return new Promise((resolve, reject) => {
--      const glbLoader = new GLTFLoader();
-+      const glbLoader = applyGltfBudget(new GLTFLoader());
-       glbLoader.load(
-         media_url,
-         (gltf) => {
-@@ -1288,6 +1323,31 @@ class Scene {
+@@ -1288,6 +1298,31 @@ class Scene {
      return this.directional_light;
    }
  
@@ -10321,7 +10232,7 @@ index 83fbae8..8f4c736 100644
    _createGrid() {
      // Create visual infinite grid
      const size1 = 0.5; // Primary grid
-@@ -1298,6 +1358,7 @@ class Scene {
+@@ -1298,6 +1333,7 @@ class Scene {
      this.gridHelper = new InfiniteGridHelper(size1, size2, color, distance);
      this.gridHelper.layers.set(1); // Enable default layer
      this.scene.add(this.gridHelper);

@@ -69,7 +69,7 @@ Updated 23 Nov 2026.
   to a clean 0.41.1, every changed TypeScript file parses, and the Soul Mark files type-check. The
   web app's one regex lookbehind (Safari 16.4+) was replaced, since Catalina's engine is Safari
   15.6. Not yet: Neon's grid dimming and Glass's matching inside each workspace (the desktop finds
-  its pages differently). Test build 7 builds it.
+  its pages differently). Test build 7 failed: the patch had copied two 3D scene files whole from the web app fork, whose newer ArtCraft code calls `applyGltfBudget`, missing in 0.41.1. Now only our own 44 lines go onto 0.41.1's files. Test build 8 builds it.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 
