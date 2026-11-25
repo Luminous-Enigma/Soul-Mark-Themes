@@ -10,3 +10,9 @@ catalina-build › Run workflow), or when a push to a work branch (not main) cha
 
 Each run prints `REPORT_JSON` with the `check` and `audit` results, and the end of the build log
 if the build fails.
+
+A run that builds also keeps the app as a download, `ArtCraft-catalina-app`, for 14 days: open the
+run (Actions › catalina-build), scroll to Artifacts and download it. That gives the owner an app to
+try on Catalina without building on their Mac. Inside is `ArtCraft-<tag>-catalina.app.zip`;
+double-click it to unzip, move the app wherever you like, and open it the first time with
+right-click › Open (it is signed for testing only, not notarized).

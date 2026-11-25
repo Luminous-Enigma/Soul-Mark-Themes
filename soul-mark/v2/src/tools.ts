@@ -4,6 +4,7 @@
 // a color on its own.
 
 import { contrastRatio, type Hex, isHex } from "./contrast";
+import { type CraftTheme, craftTheme } from "./craft";
 import {
   BLOOM_MAX,
   composeNeon,
@@ -453,11 +454,12 @@ function worst(ms: { what: string; ratio: number; floor: number }[]): Shortfall 
 
 const round2 = (n: number) => Math.floor(n * 100) / 100;
 
-export type ExportFormat = "css" | "json" | "tokens" | "tailwind";
-export const EXPORT_FORMATS: ExportFormat[] = ["css", "json", "tokens", "tailwind"];
+export type ExportFormat = "css" | "json" | "tokens" | "tailwind" | "craft";
+export const EXPORT_FORMATS: ExportFormat[] = ["css", "json", "tokens", "tailwind", "craft"];
 
 /** The theme in a format an app or design tool can use. */
 export function exportTheme(file: ThemeFile, format: ExportFormat): string {
+  if (format === "craft") return JSON.stringify(exportCraft(file), null, 2) + "\n";
   if (isGlass(file.seeds)) return exportGlass(file, composeGlass(file.seeds), format);
   const neon = isNeon(file.seeds) ? composeNeon(file.seeds) : undefined;
   const mark = neon ? neon.mark : composeSoulMark(file.seeds);
@@ -473,6 +475,22 @@ export function exportTheme(file: ThemeFile, format: ExportFormat): string {
     default:
       throw new InputError("BAD_FORMAT", `format must be one of ${EXPORT_FORMATS.join(", ")}.`);
   }
+}
+
+/**
+ * A suite theme for ArtCraft's Crafting Apps (craft-design-theme v1). The suite's themes are
+ * solid colors, so only Soul Mark: Solid Tones fits; the others are refused with the reason.
+ */
+function exportCraft(file: ThemeFile): CraftTheme {
+  const seeds = file.seeds;
+  if (isGlass(seeds) || isNeon(seeds) || seeds.color2)
+    throw new InputError(
+      "NOT_SOLID",
+      `The Crafting Apps' themes are solid colors, so only Soul Mark: Solid Tones exports to them (this is ${THEME_NAMES[file.theme]}).`,
+    );
+  if (seeds.guard === false)
+    throw new InputError("GUARD_OFF", "Export to the Crafting Apps with the readability guard on: their themes must read everywhere.");
+  return craftTheme(composeSoulMark(seeds), file.name ?? "My theme", codeOf(seeds));
 }
 
 /** Glass in each format: the base theme on the glass color, plus the glass layers. */

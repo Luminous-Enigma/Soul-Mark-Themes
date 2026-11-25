@@ -142,6 +142,8 @@ cmd_doctor() {
     fs="$(drive_format "$WORK")"
     if [[ "$fs" == apfs || "$fs" == hfs ]]; then row "Drive format" ok "$fs ($WORK)"
     else row "Drive format" missing "'$fs' at $WORK: needs APFS or Mac OS Extended (exFAT and FAT break builds)"; fi
+    if on_disk_image "$WORK" && old_macos; then row "Not a disk image" missing "$WORK is inside a disk image. On macOS 10.x the disk image driver can crash the whole Mac under a build's load (it did on the owner's Mac). Build on a drive formatted APFS or Mac OS Extended instead"
+    else row "Not a disk image" ok "$WORK is on a real drive"; fi
     if (( free >= NEED_GB )); then row "Free space" ok "${free} GB at $WORK"
     else row "Free space" missing "${free} GB at $WORK; needs about $NEED_GB GB. Pick another drive with ARTCRAFT_CATALINA_WORK"; fi
   else row "Work folder" missing "can't make $WORK. Is the drive plugged in?"; fi
@@ -170,6 +172,19 @@ drive_format() {
   device="$(df "$1" | awk 'NR==2 {print $1}')" || device=""
   mount | awk -v d="$device" '$1 == d {print $0}' | sed -n 's/.*(\([a-z]*\).*/\1/p' | head -1
 }
+
+# Is a folder inside a mounted disk image (.dmg, .sparseimage, .sparsebundle)? An APFS volume in
+# an image sits on a synthesized disk whose physical store is the image's own disk, so follow that.
+on_disk_image() {
+  local info store
+  info="$(diskutil info "$1" 2>/dev/null)" || return 1
+  store="$(printf '%s\n' "$info" | awk -F': *' '/APFS Physical Store/ {print $2; exit}')"
+  [[ -n "$store" ]] && info="$(diskutil info "$store" 2>/dev/null)"
+  printf '%s\n' "$info" | grep -qE 'Protocol: +Disk Image'
+}
+
+# macOS 10.x (Catalina and earlier), whose disk image driver panics under build load.
+old_macos() { [[ "$(sw_vers -productVersion 2>/dev/null)" == 10.* ]]; }
 
 # ---- tags: list releases to pin to ----------------------------------------------------------
 
@@ -339,6 +354,7 @@ cmd_build() {
   (( free_gb >= NEED_GB )) || stop "only ${free_gb} GB free on the drive with $WORK; the build needs about $NEED_GB GB. Pick another drive with ARTCRAFT_CATALINA_WORK"
   fs="$(drive_format "$WORK")"
   [[ "$fs" == apfs || "$fs" == hfs ]] || stop "the drive with $WORK is formatted as '$fs'. Builds need APFS or Mac OS Extended (exFAT and FAT break them)"
+  if on_disk_image "$WORK" && old_macos; then stop "$WORK is inside a disk image. On macOS 10.x the disk image driver can crash the whole Mac under a build's load (it did on the owner's Mac). Build on a drive formatted APFS or Mac OS Extended instead"; fi
   say "Working in $WORK (${free_gb} GB free, $fs)"
 
   # Keep the big downloads on the same drive as the build.

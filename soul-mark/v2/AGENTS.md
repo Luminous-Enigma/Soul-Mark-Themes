@@ -16,6 +16,7 @@ CI checks, an MCP server, a skill and agent tests.
 | `src/neon-presets.ts`  | Neon's glows, near-black pages, fades and signature looks                     |
 | `src/glass.ts`         | Soul Mark: Glass: see-through layers, frost and smoke, checked; on the engine |
 | `src/glass-presets.ts` | Glass's pictures, fades and signature looks                                   |
+| `src/craft.ts`         | Solid Tones as a theme file for ArtCraft's Crafting Apps (`--format craft`)   |
 | `src/tools.ts`         | Shared by the CLI and MCP: theme files, check, export, signature lookup       |
 | `src/cli.ts`           | The `soul-mark` command                                                       |
 | `src/mcp.ts`           | The MCP server; every tool is effect READ                                     |
