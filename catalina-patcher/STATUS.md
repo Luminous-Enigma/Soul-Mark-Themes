@@ -21,7 +21,7 @@ Updated 23 Nov 2026.
   but builds the app with Vite 5 and esbuild 0.21.5 (macOS 10.13), so the build skips only that
   install step (`install-steps.js`). nx, rollup, swc, rspack, unrs-resolver and fsevents are all
   built for 10.12 to 10.15.
-- Tests: 45 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
+- Tests: 51 script checks and 13 audit checks (some against the real 10.15 SDK), shellcheck and
   zizmor clean, all in CI.
 - Test builds on GitHub's Intel Macs (`ci/README.md`), approved by the owner.
 - **First test build passed** (23 Nov 2026, GitHub's Intel Mac, macOS 15, Node 20): ArtCraft
@@ -54,6 +54,14 @@ Updated 23 Nov 2026.
   all 428 system functions and classes on 10.15, and the app was kept as a 46 MB download
   (`ArtCraft-catalina-app`, until 9 Dec 2026) for the owner to try on Catalina. Builds used: 6 of
   the 10 approved.
+- **ArtCraft runs on the owner's Catalina Mac** (25 Nov 2026). The download's Rust side started at
+  once (window, backend, a session with ArtCraft's servers), but the screens stayed black: the
+  window used Catalina's own WebKit, Safari 13.1's, which can't read BigInt
+  (`SyntaxError: No identifiers allowed directly after numeric literal`). Updating Safari to 15.6.1
+  doesn't change that, because Catalina keeps the newer WebKit in
+  `/Library/Apple/System/Library/StagedFrameworks/Safari` for Safari alone. Started with
+  `DYLD_FRAMEWORK_PATH` pointing there, ArtCraft drew its screens. The new `launcher` command (also
+  part of every build now) makes the app start that way by itself.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 

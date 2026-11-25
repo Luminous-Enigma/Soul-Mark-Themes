@@ -37,6 +37,7 @@ fake otool        'if [[ " $* " == *" -L "* ]]; then printf "%s:\n\t/System/Libr
   else printf "x (architecture x86_64):\nLoad command 9\n      cmd LC_BUILD_VERSION\n    minos 11.0\nx (architecture arm64):\n      cmd LC_BUILD_VERSION\n    minos 11.0\n"; fi'
 fake nm           'printf "                 (undefined) external _CGMainDisplayID (from CoreGraphics)\n                 (undefined) external _malloc (from libSystem)\n"
   [[ -n "${FAKE_NEWER:-}" ]] && printf "                 (undefined) external _CGPreflightScreenCaptureAccess (from CoreGraphics)\n"; true'
+fake codesign     'printf "%s\n" "$*" >> "${FAKE_SIGNED:-/dev/null}"'
 fake PlistBuddy   'case "$2" in *LSMinimumSystemVersion*) echo "11.0";; *CFBundleExecutable*) echo "artcraft";; esac'
 # Only frameworks the stand-in Mac "has" count as present: make AppKit exist under a fake root.
 export PATH="$FAKE:/usr/bin:/bin"
@@ -118,6 +119,22 @@ ok "install steps: a package for another platform is passed over" '[[ "$OUT" == 
 printf '{"name":"broken","version":"1.0.0","scripts":{"postinstall":"node -e \\"process.exit(3)\\""}}' > "$FE/node_modules/plain/package.json"
 OUT="$(PATH="$REAL_PATH" node "$HERE/../install-steps.js" "$FE" 2>&1)"; CODE=$?
 ok "install steps: any other failure stops it" '[[ $CODE -ne 0 ]]'
+
+# The launcher: the real program moves to .bin, a script takes its place, and on macOS 10.x it
+# starts the program with Safari's staged WebKit when that exists.
+APP="$TMP/Fake.app"; mkdir -p "$APP/Contents/MacOS"; : > "$APP/Contents/Info.plist"
+printf '#!/bin/sh\necho "DYLD=${DYLD_FRAMEWORK_PATH:-none} ARGS=$*"\n' > "$APP/Contents/MacOS/artcraft"; chmod 755 "$APP/Contents/MacOS/artcraft"
+FAKE_SIGNED="$TMP/signed" run launcher "$APP"
+ok "launcher: moves the program to .bin, writes the script, re-signs" '[[ $CODE -eq 0 && -x "$APP/Contents/MacOS/artcraft.bin" && -x "$APP/Contents/MacOS/artcraft" && $(grep -c StagedFrameworks "$APP/Contents/MacOS/artcraft") -ge 1 && -s "$TMP/signed" ]]'
+run launcher "$APP"
+ok "launcher: a second run keeps the real program" '[[ $CODE -eq 0 && $(grep -c "DYLD=" "$APP/Contents/MacOS/artcraft.bin") -eq 1 ]]'
+OUT="$("$APP/Contents/MacOS/artcraft" one two 2>&1)"
+ok "launcher: starts the real program with its arguments" '[[ "$OUT" == *"ARGS=one two"* ]]'
+ok "launcher: leaves the engine alone where Safari's staged one is missing" '[[ "$OUT" == *"DYLD=none"* ]]'
+run check "$APP"
+ok "check still works on an app with the launcher" '[[ $CODE -eq 0 ]]'
+run launcher "$TMP/nope.app"
+ok "launcher: refuses what isn't an app" '[[ $CODE -eq 1 ]]'
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [[ $fail -eq 0 ]]

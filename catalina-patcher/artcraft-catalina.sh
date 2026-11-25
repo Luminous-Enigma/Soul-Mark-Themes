@@ -9,6 +9,7 @@
 #   bash artcraft-catalina.sh patches <tag>           list the patches that apply to a release
 #   bash artcraft-catalina.sh check <path to .app>    what macOS a built app asks for
 #   bash artcraft-catalina.sh audit <path to .app>    will it open on 10.15? (every system symbol)
+#   bash artcraft-catalina.sh launcher <path to .app> make it use Safari's newer engine on 10.15
 #
 # Add --json before the command for machine-readable output.
 # Exit codes: 0 done, 1 stopped (the message says why), 2 the command was typed wrong.
@@ -56,7 +57,7 @@ stop() {
   else printf 'Stopped: %s\n' "$*" >&2; fi
   exit 1
 }
-usage() { SAID=1; sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+usage() { SAID=1; sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 
 # Safety net: if a step fails without a message (it never should), say so instead of ending
 # silently, and say how to see which step it was.
@@ -269,7 +270,7 @@ cmd_check() {
   [[ -f "$plist" ]] || stop "no Info.plist in $app"
   local asks exe archs minos missing=()
   asks="$("$PLISTBUDDY" -c 'Print :LSMinimumSystemVersion' "$plist" 2>/dev/null || echo 'not set')"
-  exe="$app/Contents/MacOS/$("$PLISTBUDDY" -c 'Print :CFBundleExecutable' "$plist")"
+  exe="$(app_exe "$app")"
   archs="$(lipo -archs "$exe" 2>/dev/null || echo unknown)"
   minos="$(otool -arch all -l "$exe" 2>/dev/null | awk '/\(architecture/ {a=$NF; gsub(/[():]/,"",a)} /LC_BUILD_VERSION/ {f=1} f && /minos/ {print (a ? a : "single") " " $2; f=0}' || true)"
   # Only macOS 10.x keeps system frameworks as files; from 11 on they live in a shared cache, so
@@ -309,11 +310,59 @@ cmd_audit() {
   [[ -d "$app" && "$app" == *.app ]] || stop "give the path to an .app, for example $WORK/ArtCraft-<tag>-catalina.app"
   need python3 "It comes with the Xcode command line tools."
   local exe sdk_args=()
-  exe="$app/Contents/MacOS/$("$PLISTBUDDY" -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")"
+  exe="$(app_exe "$app")"
   [[ -n "${ARTCRAFT_SDK:-}" ]] && sdk_args=(--sdk "$ARTCRAFT_SDK")
   SAID=1  # audit.py always reports, pass or fail
   if [[ $JSON -eq 1 ]]; then python3 "$HERE/audit.py" "$exe" "${sdk_args[@]+"${sdk_args[@]}"}" --json
   else python3 "$HERE/audit.py" "$exe" "${sdk_args[@]+"${sdk_args[@]}"}"; fi
+}
+
+# The app's real program: the CFBundleExecutable, or what `launcher` moved it to.
+app_exe() {
+  local dir="$1/Contents/MacOS" name
+  name="$("$PLISTBUDDY" -c 'Print :CFBundleExecutable' "$1/Contents/Info.plist")"
+  if [[ -f "$dir/$name.bin" ]]; then printf '%s\n' "$dir/$name.bin"; else printf '%s\n' "$dir/$name"; fi
+}
+
+# ---- launcher: use the WebKit that Safari updates install ------------------------------------
+# On macOS 10.15 the system's own WebKit stays at the version Catalina shipped (Safari 13.1); a
+# Safari update puts its newer WebKit in StagedFrameworks/Safari, which only Safari loads. Apps
+# with web screens, ArtCraft included, keep the old engine, which can't read BigInt and other
+# newer JavaScript, so their screens stay black. The launcher starts the app with
+# DYLD_FRAMEWORK_PATH pointing at the staged frameworks, on macOS 10.x only, when they exist.
+
+cmd_launcher() {
+  local app="${1:-}"
+  [[ -n "$app" ]] || usage
+  [[ -d "$app" && "$app" == *.app ]] || stop "give the path to an .app, for example $WORK/ArtCraft-<tag>-catalina.app"
+  [[ "$(uname -s)" == Darwin ]] || stop "this runs on a Mac"
+  need codesign "It comes with the Xcode command line tools."
+  add_launcher "$app"
+  say "Launcher in place: $app now starts with Safari's newer engine on macOS 10.x."
+  say "Open it as usual (the first time: right-click, then Open)."
+}
+
+add_launcher() {
+  local app="$1" dir name
+  dir="$app/Contents/MacOS"
+  name="$("$PLISTBUDDY" -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")"
+  [[ -n "$name" && -f "$dir/$name" ]] || stop "no program named '$name' in $dir"
+  if [[ ! -f "$dir/$name.bin" ]]; then
+    mv "$dir/$name" "$dir/$name.bin"
+  fi
+  cat > "$dir/$name" <<LAUNCHER
+#!/bin/sh
+# Added by catalina-patcher. On macOS 10.x, start with the WebKit a Safari update installed
+# (the system's own stays at Safari 13.1, too old for this app's screens). See the patcher README.
+here="\$(cd "\$(dirname "\$0")" && pwd)"
+staged=/Library/Apple/System/Library/StagedFrameworks/Safari
+case "\$(sw_vers -productVersion 2>/dev/null)" in
+  10.*) [ -d "\$staged/WebKit.framework" ] && export DYLD_FRAMEWORK_PATH="\$staged\${DYLD_FRAMEWORK_PATH:+:\$DYLD_FRAMEWORK_PATH}" ;;
+esac
+exec "\$here/$name.bin" "\$@"
+LAUNCHER
+  chmod 755 "$dir/$name"
+  codesign --force --deep --sign - "$app" >/dev/null 2>&1 || stop "couldn't sign $app after adding the launcher"
 }
 
 # ---- build: pinned clone, patches, Intel only, minimum 10.15, ad-hoc signed ----------------
@@ -423,6 +472,8 @@ cmd_build() {
   rm -rf "${out:?}"
   cp -R "$app" "$out"
   printf '%s %s\n' "$tag" "$commit" > "$WORK/BUILT_FROM.txt"
+  say "Adding the launcher (uses Safari's newer engine on macOS 10.x)..."
+  add_launcher "$out"
 
   say ""
   cmd_check "$out"
@@ -439,6 +490,7 @@ cmd_build() {
   say "First open: right-click it, then Open (it isn't notarized)."
   say "If it closes at once, run it from Terminal to see why:"
   say "  \"$out/Contents/MacOS/$("$PLISTBUDDY" -c 'Print :CFBundleExecutable' "$out/Contents/Info.plist")\""
+  say "Black screens mean the old engine: update Safari (Software Update), then open it again."
 }
 
 # ---- main -----------------------------------------------------------------------------------
@@ -451,6 +503,7 @@ case "${1:-}" in
   patches) shift; cmd_patches "$@" ;;
   check)   shift; cmd_check "$@" ;;
   audit)   shift; cmd_audit "$@" ;;
+  launcher) shift; cmd_launcher "$@" ;;
   build)   shift; cmd_build "$@" ;;
   *) usage ;;
 esac
