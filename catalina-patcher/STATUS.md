@@ -69,7 +69,13 @@ Updated 23 Nov 2026.
   to a clean 0.41.1, every changed TypeScript file parses, and the Soul Mark files type-check. The
   web app's one regex lookbehind (Safari 16.4+) was replaced, since Catalina's engine is Safari
   15.6. Not yet: Neon's grid dimming and Glass's matching inside each workspace (the desktop finds
-  its pages differently). Test build 7 failed: the patch had copied two 3D scene files whole from the web app fork, whose newer ArtCraft code calls `applyGltfBudget`, missing in 0.41.1. Now only our own 44 lines go onto 0.41.1's files. Test build 8 builds it.
+  its pages differently). Test build 7 failed: the patch had copied two 3D scene files whole from the web app fork, whose newer ArtCraft code calls `applyGltfBudget`, missing in 0.41.1. Now only our own 44 lines go onto 0.41.1's files. Test build 8 passed, and the owner ran it on
+  Catalina: Glass showed no picture. The desktop's body and page wrappers all carry
+  `bg-ui-background`, so the glass was stacked two or three layers deep (about 96-99% cover); it
+  is now one page layer, as on the web app. The tools now tell Glass and Neon which workspace is
+  open (the desktop's tab store, since it has one address for every tool). And Glass's
+  Transparency slider is flipped, in the web app too: higher is now more see-through (the owner
+  pushed it up for a clear view and got solid menus). Test build 9 builds it.
 
 ## Owner's approvals (23 Nov 2026, before sleep)
 

@@ -9678,18 +9678,32 @@ literal 0
 HcmV?d00001
 
 diff --git a/frontend/apps/artcraft/app/src/index.tsx b/frontend/apps/artcraft/app/src/index.tsx
-index 6c433fc..bbba371 100644
+index 6c433fc..3db1309 100644
 --- a/frontend/apps/artcraft/app/src/index.tsx
 +++ b/frontend/apps/artcraft/app/src/index.tsx
-@@ -13,6 +13,7 @@ import { SyncStorytellerApiConfig } from "./api/SyncStorytellerApiConfig";
+@@ -13,6 +13,21 @@ import { SyncStorytellerApiConfig } from "./api/SyncStorytellerApiConfig";
  import { posthog } from "posthog-js";
  import { SoundManager } from "@storyteller/soundboard";
  import { useModelsStore } from "@storyteller/tauri-api";
-+import { startTheming } from "@storyteller/ui-settings-modal";
++import { setAppWorkspace, startTheming } from "@storyteller/ui-settings-modal";
++import { useTabStore } from "./pages/Stores/TabState";
++
++/** Desktop tabs that are workspaces, by the web app's names (Soul Mark's workspace.ts). */
++const TAB_WORKSPACES: Record<string, string> = {
++  "3D": "edit-3d",
++  "2D": "edit-image",
++  VIDEO_EDITOR: "video-editor",
++  MOODBOARD: "moodboard",
++  BACKGROUND_CHANGE: "background-change",
++  VIDEO_FRAME_EXTRACTOR: "frame-extractor",
++  REMOVE_BACKGROUND: "media",
++  IMAGE_WATERMARK_REMOVAL: "media",
++  VIDEO_WATERMARK_REMOVAL: "media",
++};
  
  // TODO(bt,2025-04-19): Make these configurable
  const ENV = {
-@@ -51,20 +52,10 @@ const GlobalSettingsManager = ({ env }: { env: Record<string, string> }) => {
+@@ -51,20 +66,15 @@ const GlobalSettingsManager = ({ env }: { env: Record<string, string> }) => {
      PostHogInit();
    }, [env]);
  
@@ -9710,14 +9724,19 @@ index 6c433fc..bbba371 100644
 -    toRemove.forEach((c) => root.classList.remove(c));
 -    root.classList.add(`theme-${theme}`);
 +    startTheming();
++    // Which tool is open, for Neon's grid and Glass's workspaces (the desktop has one address
++    // for every tool, so the tab store says instead).
++    const follow = (tab: string) => setAppWorkspace(TAB_WORKSPACES[tab] ?? null);
++    follow(useTabStore.getState().activeTabId);
++    return useTabStore.subscribe((s) => follow(s.activeTabId));
    }, []);
  
    /// Initizations that run only once on 1ST mount ///
 diff --git a/frontend/apps/artcraft/app/src/styles/base.css b/frontend/apps/artcraft/app/src/styles/base.css
-index 2df03b0..a3f0c14 100644
+index 2df03b0..e4f01d2 100644
 --- a/frontend/apps/artcraft/app/src/styles/base.css
 +++ b/frontend/apps/artcraft/app/src/styles/base.css
-@@ -861,3 +861,284 @@ img {
+@@ -861,3 +861,298 @@ img {
      margin-inline: 32px;
    }
  }
@@ -9959,6 +9978,20 @@ index 2df03b0..a3f0c14 100644
 +  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
 +  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
 +  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 8px 30px rgb(0 0 0 / 0.18);
++}
++/* Desktop (catalina-patcher's Soul Mark patch): the body and the page wrappers inside it all carry
++   bg-ui-background. The body holds the picture and smoke only; the first layer inside it is the
++   page glass; full-page layers nested in that are see-through, so the page glass is one layer,
++   as on the web app (each layer would otherwise cover the picture again). */
++html[data-glass] body.bg-ui-background {
++  background-color: rgb(var(--glass-smoke-rgb));
++  -webkit-backdrop-filter: none;
++  backdrop-filter: none;
++}
++html[data-glass] body :is(.bg-ui-background, .bg-background) :is(.bg-ui-background, .bg-background) {
++  background-color: transparent;
++  -webkit-backdrop-filter: none;
++  backdrop-filter: none;
 +}
 +@media (prefers-reduced-transparency: reduce) {
 +  html[data-glass] .bg-ui-background,
@@ -10241,16 +10274,17 @@ index 83fbae8..608c998 100644
      // Create invisible ground plane for proper object placement
      const planeGeometry = new THREE.PlaneGeometry(300, 300); // Same as original grid size
 diff --git a/frontend/libs/components/settings-modal/src/index.ts b/frontend/libs/components/settings-modal/src/index.ts
-index b7ea9ed..398e990 100644
+index b7ea9ed..69713e0 100644
 --- a/frontend/libs/components/settings-modal/src/index.ts
 +++ b/frontend/libs/components/settings-modal/src/index.ts
-@@ -4,3 +4,4 @@ export {
+@@ -4,3 +4,5 @@ export {
    useExperimentalStore,
    useStoryboardPageEnabled,
  } from './lib/experimental-store';
 +export { startTheming } from './lib/soul-mark/theme-store';
++export { setAppWorkspace } from './lib/soul-mark/workspace';
 diff --git a/frontend/libs/components/settings-modal/src/lib/panes/AppearanceSettingsPane.tsx b/frontend/libs/components/settings-modal/src/lib/panes/AppearanceSettingsPane.tsx
-index e2547b0..f01f954 100644
+index e2547b0..d1fb280 100644
 --- a/frontend/libs/components/settings-modal/src/lib/panes/AppearanceSettingsPane.tsx
 +++ b/frontend/libs/components/settings-modal/src/lib/panes/AppearanceSettingsPane.tsx
 @@ -1,121 +1,1767 @@
@@ -11851,17 +11885,17 @@ index e2547b0..f01f954 100644
 +        hint={
 +          seeds.linked && !(seeds.frostOn && seeds.frost > 0)
 +            ? "Linked to Frost, and Frost is off: menus and panels are a full layer of glass. Turn Frost on, or unlink, to use this."
-+            : "How much the side menu, panels and every tool cover the picture. Lower is more see-through; the guard thickens it only as far as text needs."
++            : "How see-through the side menu, panels and every tool are. Higher shows more of the picture; the guard thickens them only as far as text needs."
 +        }
-+        value={Math.round(seeds.transparency * 100)}
-+        onChange={(v) => setSeeds({ transparency: v / 100 })}
-+        left="See-through"
-+        right="Solid"
++        value={Math.round((1 - seeds.transparency) * 100)}
++        onChange={(v) => setSeeds({ transparency: 1 - v / 100 })}
++        left="Solid"
++        right="See-through"
 +      />
 +      <div className="flex items-start justify-between gap-4">
 +        <Label
 +          title="Link Transparency to Frost"
-+          hint="Linked, Transparency applies only while the glass is frosted (9% and 30% to start). Unlinked, set them apart and tinker freely."
++          hint="Linked, Transparency applies only while the glass is frosted (Transparency 91% and Frost 30% to start). Unlinked, set them apart and tinker freely."
 +        />
 +        <Switch enabled={seeds.linked} setEnabled={(linked) => setSeeds({ linked })} offClassName="bg-white/20" />
 +      </div>
@@ -12290,7 +12324,7 @@ index 0000000..27f2b8a
 +}
 diff --git a/frontend/libs/components/settings-modal/src/lib/soul-mark/glass-adapter.ts b/frontend/libs/components/settings-modal/src/lib/soul-mark/glass-adapter.ts
 new file mode 100644
-index 0000000..ce1d532
+index 0000000..3918c05
 --- /dev/null
 +++ b/frontend/libs/components/settings-modal/src/lib/soul-mark/glass-adapter.ts
 @@ -0,0 +1,250 @@
@@ -12298,7 +12332,7 @@ index 0000000..ce1d532
 +import { type SoulMarkGlass, glassVariables } from "./glass";
 +import { GLASS_PICTURES } from "./glass-presets";
 +import { AA, cssVariables } from "./soul-mark";
-+import { workspaceGrid } from "./workspace";
++import { workspaceGrid, workspacePath } from "./workspace";
 +
 +/**
 + * Soul Mark: Glass in ArtCraft: the app's side of it. The engine (glass.ts) decides every color
@@ -12427,7 +12461,7 @@ index 0000000..ce1d532
 +  const later = () => { if (!pending) pending = window.setTimeout(run, 300); };
 +  // Which page is open: a workspace (theme/workspace.ts), and which one.
 +  const mark = () => {
-+    const path = window.location.pathname;
++    const path = workspacePath();
 +    const root = document.documentElement;
 +    if (workspaceGrid(path) !== null) root.dataset.glassWorkspace = path.split("/")[1] ?? "";
 +    else delete root.dataset.glassWorkspace;
@@ -12535,7 +12569,7 @@ index 0000000..ce1d532
 +      const gl = ctx as WebGLRenderingContext & { __glassClear?: boolean };
 +      const clearColor = gl.clearColor.bind(gl);
 +      gl.clearColor = (r, g, b, a) => {
-+        const see = document.documentElement.hasAttribute("data-glass") && window.location.pathname.startsWith("/edit-3d");
++        const see = document.documentElement.hasAttribute("data-glass") && workspacePath().startsWith("/edit-3d");
 +        return see ? clearColor(0, 0, 0, 0) : clearColor(r, g, b, a);
 +      };
 +      gl.__glassClear = true;
@@ -15458,10 +15492,10 @@ index 0000000..6755118
 +}
 diff --git a/frontend/libs/components/settings-modal/src/lib/soul-mark/workspace.ts b/frontend/libs/components/settings-modal/src/lib/soul-mark/workspace.ts
 new file mode 100644
-index 0000000..9118b9e
+index 0000000..b75c61c
 --- /dev/null
 +++ b/frontend/libs/components/settings-modal/src/lib/soul-mark/workspace.ts
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,51 @@
 +import { useEffect } from "react";
 +
 +/**
@@ -15493,4 +15527,23 @@ index 0000000..9118b9e
 +    if (grid) root.dataset.workspace = grid;
 +    else delete root.dataset.workspace;
 +  }, [pathname]);
++}
++
++// Desktop (catalina-patcher's Soul Mark patch): the desktop app has one address for every tool,
++// so it tells us which tool is open instead. Unset, the address decides (the web app).
++let appWorkspace: string | null | undefined;
++
++/** The open tool as a workspace name ("edit-3d" ...), or null for any other page. */
++export function setAppWorkspace(name: string | null) {
++  appWorkspace = name;
++  const root = document.documentElement;
++  const grid = name ? workspaceGrid(`/${name}`) : null;
++  if (grid) root.dataset.workspace = grid;
++  else delete root.dataset.workspace;
++}
++
++/** The open page as an address: the app's tool when it says, else the window's own. */
++export function workspacePath(): string {
++  if (appWorkspace === undefined) return window.location.pathname;
++  return appWorkspace ? `/${appWorkspace}` : "/";
 +}
