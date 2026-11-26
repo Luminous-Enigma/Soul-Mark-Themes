@@ -1,3 +1,3 @@
 artcraft-v0.41.1
 soul-mark
-run 6: Soul Mark patch, with only our own 3D grid changes on 0.41.1's scene files
+run 7: Glass on the desktop: one page layer, workspaces from the tab store, Transparency slider flipped

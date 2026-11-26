@@ -99,7 +99,7 @@ Two switches, for Neon only, and how the grid keeps out of the way of real work:
 
 True glass over a picture, for anyone who wants to explore how far the app's design and their own
 workspace can go. Light or charcoal glass, frosted or clear, with menus and panels as see-through
-as you like (9% here). Every text is measured over pure black and pure white behind the glass, so
+as you like (91% transparent here). Every text is measured over pure black and pure white behind the glass, so
 it reads over any picture, your own included. Four pictures, each in four settings:
 
 **Sunrise** in Edit Video: a warm morning, the colors coming through every panel.
