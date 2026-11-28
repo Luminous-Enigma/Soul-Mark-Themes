@@ -1138,6 +1138,11 @@
           "kind": "image"
         },
         {
+          "id": "confetti",
+          "name": "Confetti",
+          "kind": "image"
+        },
+        {
           "id": "aurora",
           "name": "Polar lights",
           "kind": "image"
