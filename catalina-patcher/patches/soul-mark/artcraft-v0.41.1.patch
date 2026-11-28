@@ -9733,10 +9733,10 @@ index 6c433fc..3db1309 100644
  
    /// Initizations that run only once on 1ST mount ///
 diff --git a/frontend/apps/artcraft/app/src/styles/base.css b/frontend/apps/artcraft/app/src/styles/base.css
-index 2df03b0..0343765 100644
+index 2df03b0..3bdbc05 100644
 --- a/frontend/apps/artcraft/app/src/styles/base.css
 +++ b/frontend/apps/artcraft/app/src/styles/base.css
-@@ -861,3 +861,309 @@ img {
+@@ -861,3 +861,376 @@ img {
      margin-inline: 32px;
    }
  }
@@ -10046,6 +10046,73 @@ index 2df03b0..0343765 100644
 +html[data-glass][data-glass-thin][data-glass-match][data-glass-workspace="edit-3d"] canvas {
 +  filter: drop-shadow(0 0 0.6px rgb(var(--glass-line-rgb) / 0.9)) drop-shadow(0 0 0.6px rgb(var(--glass-line-rgb) / 0.6));
 +}
++
++/* Soul Mark: the accent where it guides the eye (the owner's list, 28 Nov 2026). While a Soul Mark
++   theme is on, ArtCraft's white controls take the accent: main buttons (anything button-like
++   still filled white), switches and check boxes when on, slider fills and knobs, the selected
++   tab, the top bar's current-tab mark, focus outlines and a small bar beside page and section
++   headings (h1, h2). Labels on the accent use "white" (--st-white-rgb), which the guard measures
++   on the accent and its hover shade at 4.5:1; marks use the accent line (3:1). The components
++   carry data-sm markers that change nothing in ArtCraft's own themes. */
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) :is(button, a, label[for], [role="button"]).bg-white {
++  background-color: rgb(var(--st-accent-rgb));
++  border-color: transparent;
++  color: rgb(var(--st-white-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) :is(button, a, label[for], [role="button"]).bg-white:hover {
++  background-color: rgb(var(--st-accent-600-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) :is(button, a, label[for], [role="button"]).bg-white .text-black {
++  color: inherit;
++}
++html[data-neon] :is(button, a, label[for], [role="button"]).bg-white {
++  box-shadow:
++    0 0 0 1px rgb(var(--st-neon-glow-rgb)),
++    0 0 14px 1px rgb(var(--st-neon-glow-rgb) / var(--st-neon-bloom));
++}
++html[data-neon-text] :is(button, a, label[for], [role="button"]).bg-white,
++html[data-neon-text] :is(button, a, label[for], [role="button"]).bg-white * {
++  --st-white-rgb: var(--st-neon-label-rgb);
++  text-shadow: none;
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) [data-sm="switch"][data-sm-on],
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) [data-sm="checkbox"][data-sm-on] {
++  background-color: rgb(var(--st-accent-rgb));
++  border-color: rgb(var(--st-accent-rgb));
++  color: rgb(var(--st-white-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) [data-sm="switch"][data-sm-on] [data-sm="switch-knob"] {
++  background-color: rgb(var(--st-white-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) [data-sm="slider-fill"] {
++  background-color: rgb(var(--st-accent-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) [data-sm="slider-thumb"] {
++  background-color: rgb(var(--st-accent-rgb));
++  border-color: rgb(var(--st-white-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) [data-sm="tab-indicator"] {
++  background-color: rgb(var(--st-accent-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) [data-sm="tab"][data-selected] {
++  color: rgb(var(--st-white-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) [data-sm="menu-indicator"]::after {
++  background-color: rgb(var(--st-accent-line-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) :focus-visible {
++  outline-color: rgb(var(--st-accent-ink-rgb));
++}
++html:is([data-theme="soul-mark"], [data-theme="gradients"], [data-theme="neon"]) :is(h1, h2):not(.sr-only)::before {
++  content: "";
++  display: inline-block;
++  width: 3px;
++  height: 0.8em;
++  margin-right: 0.45em;
++  border-radius: 1px;
++  background-color: rgb(var(--st-accent-line-rgb));
++  vertical-align: -0.05em;
++}
 diff --git a/frontend/apps/artcraft/tailwind.config.ts b/frontend/apps/artcraft/tailwind.config.ts
 index d306379..f5589a5 100644
 --- a/frontend/apps/artcraft/tailwind.config.ts
@@ -10181,6 +10248,31 @@ index d306379..f5589a5 100644
        "brand-secondary": {
          DEFAULT: "#3E3E41",
          "50": "#f6f6f6",
+diff --git a/frontend/libs/components/checkbox/src/lib/checkbox.tsx b/frontend/libs/components/checkbox/src/lib/checkbox.tsx
+index fa9413b..6959079 100644
+--- a/frontend/libs/components/checkbox/src/lib/checkbox.tsx
++++ b/frontend/libs/components/checkbox/src/lib/checkbox.tsx
+@@ -96,6 +96,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
+         />
+         <span
+           aria-hidden
++          data-sm="checkbox"
++          data-sm-on={isChecked ? "" : undefined}
+           className={twMerge(
+             "relative inline-block shrink-0 rounded-[3px] border transition-colors",
+             boxDims,
+diff --git a/frontend/libs/components/menu-icon-selector/src/lib/menu-icon-selector.tsx b/frontend/libs/components/menu-icon-selector/src/lib/menu-icon-selector.tsx
+index 356a7b6..04c316a 100644
+--- a/frontend/libs/components/menu-icon-selector/src/lib/menu-icon-selector.tsx
++++ b/frontend/libs/components/menu-icon-selector/src/lib/menu-icon-selector.tsx
+@@ -94,6 +94,7 @@ export const MenuIconSelector: React.FC<MenuIconSelectorProps> = ({
+         {/* Active tab background */}
+         {selectedIndex >= 0 && (
+           <div
++            data-sm="menu-indicator"
+             className="absolute z-10 rounded-[2px] bg-base-fg/[0.08] transition-all duration-150 ease-in-out after:absolute after:inset-x-1.5 after:-bottom-1 after:h-0.5 after:bg-base-fg"
+             style={{
+               left: activeStyle.left,
 diff --git a/frontend/libs/components/pagescene/src/lib/engine/InfiniteGridHelper.ts b/frontend/libs/components/pagescene/src/lib/engine/InfiniteGridHelper.ts
 index 42a3e3f..bf0da7b 100644
 --- a/frontend/libs/components/pagescene/src/lib/engine/InfiniteGridHelper.ts
@@ -15559,3 +15651,62 @@ index 0000000..b75c61c
 +  if (appWorkspace === undefined) return window.location.pathname;
 +  return appWorkspace ? `/${appWorkspace}` : "/";
 +}
+diff --git a/frontend/libs/components/slider-v2/src/lib/slider-v2.tsx b/frontend/libs/components/slider-v2/src/lib/slider-v2.tsx
+index 3294894..99ed3f3 100644
+--- a/frontend/libs/components/slider-v2/src/lib/slider-v2.tsx
++++ b/frontend/libs/components/slider-v2/src/lib/slider-v2.tsx
+@@ -168,11 +168,13 @@ export const SliderV2 = ({
+           <div className="absolute left-0 right-0 h-2 bg-ui-border rounded-full bg-white/15" />
+           {showProgressBar && (
+             <div
++              data-sm="slider-fill"
+               className="absolute left-0 h-2 bg-white rounded-full transition-all duration-200"
+               style={{ width: `${percentage}%` }}
+             />
+           )}
+           <div
++            data-sm="slider-thumb"
+             className={twMerge(
+               "absolute top-1/2 z-10 size-4 -translate-y-1/2 rounded-full border-2 border-white bg-white shadow transition-colors duration-200 hover:ring-[4px] hover:ring-white/20",
+               isDragging ? "ring-[4px] ring-white/20" : ""
+diff --git a/frontend/libs/components/switch/src/lib/switch.tsx b/frontend/libs/components/switch/src/lib/switch.tsx
+index 4d2bbde..c8271a0 100644
+--- a/frontend/libs/components/switch/src/lib/switch.tsx
++++ b/frontend/libs/components/switch/src/lib/switch.tsx
+@@ -17,6 +17,8 @@ export function Switch({ enabled, setEnabled, id, label = "Enable notifications"
+     <HeadlessSwitch id={id} checked={enabled} onChange={setEnabled} disabled={disabled} as={Fragment}>
+       {({ checked, disabled }) => (
+         <button
++          data-sm="switch"
++          data-sm-on={checked ? "" : undefined}
+           className={clsx(
+             "group inline-flex h-6 w-11 items-center rounded-[3px] border transition-colors",
+             checked
+@@ -28,6 +30,7 @@ export function Switch({ enabled, setEnabled, id, label = "Enable notifications"
+         >
+           <span className="sr-only">{label}</span>
+           <span
++            data-sm="switch-knob"
+             className={clsx(
+               "size-4 rounded-[2px] transition",
+               checked
+diff --git a/frontend/libs/components/tab-selector/src/lib/tab-selector.tsx b/frontend/libs/components/tab-selector/src/lib/tab-selector.tsx
+index b1146be..ec69a4a 100644
+--- a/frontend/libs/components/tab-selector/src/lib/tab-selector.tsx
++++ b/frontend/libs/components/tab-selector/src/lib/tab-selector.tsx
+@@ -78,6 +78,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
+         >
+           {/* Animated indicator */}
+           <div
++            data-sm="tab-indicator"
+             className={twMerge(
+               "absolute top-1 z-10 h-[calc(100%-8px)] rounded-[2px] bg-white transition-all duration-200 ease-in-out",
+               indicatorClassName,
+@@ -90,6 +91,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
+ 
+           {tabs.map((tab, index) => (
+             <Tab
++              data-sm="tab"
+               key={tab.id}
+               ref={(el) => {
+                 if (el) {
