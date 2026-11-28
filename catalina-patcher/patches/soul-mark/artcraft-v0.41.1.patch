@@ -9733,10 +9733,10 @@ index 6c433fc..3db1309 100644
  
    /// Initizations that run only once on 1ST mount ///
 diff --git a/frontend/apps/artcraft/app/src/styles/base.css b/frontend/apps/artcraft/app/src/styles/base.css
-index 2df03b0..e4f01d2 100644
+index 2df03b0..0343765 100644
 --- a/frontend/apps/artcraft/app/src/styles/base.css
 +++ b/frontend/apps/artcraft/app/src/styles/base.css
-@@ -861,3 +861,298 @@ img {
+@@ -861,3 +861,309 @@ img {
      margin-inline: 32px;
    }
  }
@@ -9964,6 +9964,7 @@ index 2df03b0..e4f01d2 100644
 +html[data-glass] .bg-ui-background,
 +html[data-glass] .bg-background {
 +  background-color: rgb(var(--glass-rgb) / var(--glass-fill));
++  /* autoprefixer: ignore next */
 +  -webkit-backdrop-filter: blur(var(--glass-blur));
 +  backdrop-filter: blur(var(--glass-blur));
 +}
@@ -9975,6 +9976,7 @@ index 2df03b0..e4f01d2 100644
 +html[data-glass] [role="dialog"] {
 +  background-color: rgb(var(--glass-panel-rgb) / var(--glass-fill));
 +  background-image: none;
++  /* autoprefixer: ignore next */
 +  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
 +  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
 +  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 8px 30px rgb(0 0 0 / 0.18);
@@ -9985,11 +9987,13 @@ index 2df03b0..e4f01d2 100644
 +   as on the web app (each layer would otherwise cover the picture again). */
 +html[data-glass] body.bg-ui-background {
 +  background-color: rgb(var(--glass-smoke-rgb));
++  /* autoprefixer: ignore next */
 +  -webkit-backdrop-filter: none;
 +  backdrop-filter: none;
 +}
 +html[data-glass] body :is(.bg-ui-background, .bg-background) :is(.bg-ui-background, .bg-background) {
 +  background-color: transparent;
++  /* autoprefixer: ignore next */
 +  -webkit-backdrop-filter: none;
 +  backdrop-filter: none;
 +}
@@ -10003,6 +10007,7 @@ index 2df03b0..e4f01d2 100644
 +  html[data-glass] [role="listbox"],
 +  html[data-glass] [role="dialog"] {
 +    background-color: rgb(var(--glass-panel-rgb));
++    /* autoprefixer: ignore next */
 +    -webkit-backdrop-filter: none;
 +    backdrop-filter: none;
 +  }
@@ -10015,6 +10020,11 @@ index 2df03b0..e4f01d2 100644
 +html[data-glass][data-glass-thin] :is(.bg-ui-background, .bg-background) :is(.bg-sidebar, [class*="bg-ui-panel"], .bg-background):not([data-glass-over-work]):not([role="menu"]):not([role="dialog"]):not([role="listbox"]) {
 +  background-color: rgb(var(--glass-panel-rgb) / var(--glass-fill-stacked));
 +}
++/* Desktop: the top bar is fixed over the full-screen page glass but isn't inside it, so the rule
++   above misses it. It is stacked glass all the same, so Transparency thins it too. */
++html[data-glass][data-glass-thin] header.fixed[class*="bg-ui-panel"] {
++  background-color: rgb(var(--glass-panel-rgb) / var(--glass-fill-stacked));
++}
 +/* Glass in workspaces (html[data-glass-match], the owner's choice): inside a workspace, every surface takes the
 +   menu's look while frosted: the floating tools and glass over work cover as much as the menu
 +   does in all (--glass-fill-total), and the 3D scene itself (grid, floor and objects) turns as
@@ -10023,6 +10033,7 @@ index 2df03b0..e4f01d2 100644
 +   work is not promised here. */
 +html[data-glass][data-glass-thin][data-glass-match][data-glass-workspace] :is(.glass, [data-glass-over-work]) {
 +  background-color: rgb(var(--glass-panel-rgb) / var(--glass-fill-total)) !important;
++  /* autoprefixer: ignore next */
 +  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
 +  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
 +}
@@ -12580,10 +12591,10 @@ index 0000000..3918c05
 +
 diff --git a/frontend/libs/components/settings-modal/src/lib/soul-mark/glass-presets.ts b/frontend/libs/components/settings-modal/src/lib/soul-mark/glass-presets.ts
 new file mode 100644
-index 0000000..ac8b85b
+index 0000000..2a679ca
 --- /dev/null
 +++ b/frontend/libs/components/settings-modal/src/lib/soul-mark/glass-presets.ts
-@@ -0,0 +1,100 @@
+@@ -0,0 +1,101 @@
 +// Soul Mark: Glass's ready-made pictures and signature looks. Every signature is built only from
 +// these rows and the Solid Tones accents, so anyone can also make it by hand (glass.spec.ts
 +// checks it). The pictures are original art made for Glass; the fades are the three-color
@@ -12618,6 +12629,7 @@ index 0000000..ac8b85b
 +  { id: "shore", name: "Shore", kind: "image" },
 +  { id: "sunrise", name: "Sunrise", kind: "image" },
 +  { id: "marble", name: "Marble", kind: "image" },
++  { id: "confetti", name: "Confetti", kind: "image" },
 +  { id: "aurora", name: "Polar lights", kind: "image" },
 +  { id: "ink", name: "Ink", kind: "image" },
 +  { id: "night-city", name: "Night city", kind: "image" },

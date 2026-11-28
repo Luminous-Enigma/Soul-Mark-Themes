@@ -1,3 +1,3 @@
 artcraft-v0.41.1
 soul-mark
-run 7: Glass on the desktop: one page layer, workspaces from the tab store, Transparency slider flipped
+run 10: Glass on the desktop: Frost reaches Safari 15 (the build no longer strips -webkit-backdrop-filter), Transparency thins the top bar, Confetti picture
